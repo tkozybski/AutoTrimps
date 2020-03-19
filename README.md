@@ -15,7 +15,7 @@ https://www.tampermonkey.net/
 
 Step 2: 
 
-Click this link: https://github.com/Zorn192/AutoTrimps/raw/gh-pages/.user.js
+Click this link: https://github.com/Psycho-Ray/AutoTrimps/raw/gh-pages/.user.js
 
 Step 3: 
 
