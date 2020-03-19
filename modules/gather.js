@@ -7,6 +7,7 @@ MODULES["gather"].minScienceSeconds = 60;
 
 //OLD: "Auto Gather/Build"
 function manualLabor2() {
+    console.log('DEBUG Well, its something, right');
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
@@ -19,6 +20,7 @@ function manualLabor2() {
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
+	    console.log('DEBUG IF1');
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned))
                 setGather('food');
@@ -28,27 +30,33 @@ function manualLabor2() {
     }
 
     if(trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
+	    console.log('DEBUG IF2');
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
     }
     else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
+	    console.log('DEBUG IF3');
         setGather('trimps');
         if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
+	    console.log('DEBUG IF3');
         setGather('science');
     //if we have more than 2 buildings in queue, or (our modifier is fast (Scientist V equivalent or higher) and trapstorm is off), build
     else if (!bwRewardUnlocked("Foremany") && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) {
+	    console.log('DEBUG IF4');
         setGather('buildings');
     }
     //if trapstorm is off (likely we havent gotten it yet, the game is still early, buildings take a while to build ), then Prioritize Storage buildings when they hit the front of the queue (should really be happening anyway since the queue should be >2(fits the clause above this), but in case they are the only object in the queue.)
     else if (!game.global.trapBuildToggled && (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1')){
+	    console.log('DEBUG IF5');
         setGather('buildings');
     }
     //if we have some upgrades sitting around which we don't have enough science for, gather science
     else if (game.resources.science.owned < scienceNeeded && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
+	    console.log('DEBUG IF6');
         // debug('Science needed ' + scienceNeeded);
         if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && hasTurkimp)||getPageSetting('ManualGather2') == 2){
             //if manual is less than science production, switch on turkimp
@@ -59,6 +67,7 @@ function manualLabor2() {
         }
     }
     else if (trapTrimpsOK && notFullPop){
+	    console.log('DEBUG IF7');
 	//RAY [DEBUG]
 	console.log('notFulPop is true!');
 	console.log('Trimps Owned: ', game.resources.trimps.owned);
@@ -73,6 +82,7 @@ function manualLabor2() {
             setGather('trimps');
     }
     else {
+	    console.log('It really is something');
         var manualResourceList = {
             'food': 'Farmer',
             'wood': 'Lumberjack',
@@ -126,8 +136,9 @@ function manualLabor2() {
 }
 
 function autogather3() {
-if ((game.global.buildingsQueue.length <= 1 && getPageSetting('gathermetal') == false) || (getPageSetting('gathermetal') == true)) setGather('metal');
-else setGather('buildings')
+	console.log('DEBUG What is even going on');
+	if ((game.global.buildingsQueue.length <= 1 && getPageSetting('gathermetal') == false) || (getPageSetting('gathermetal') == true)) setGather('metal');
+	else setGather('buildings')
 }
 
 //RGather
@@ -135,6 +146,7 @@ else setGather('buildings')
 MODULES["gather"].RminScienceAmount = 200;
 
 function RmanualLabor2() {
+	console.log('DEBUG This is fucked up...');
 		
     //Vars
     var lowOnTraps = game.buildings.Trap.owned < 5;
