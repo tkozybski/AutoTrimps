@@ -1,7 +1,7 @@
 //updated
 MODULES["gather"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["gather"].minTraps = 5;
+MODULES["gather"].minTraps = 10;
 MODULES["gather"].minScienceAmount = 100;
 MODULES["gather"].minScienceSeconds = 60;
 
@@ -10,7 +10,7 @@ function manualLabor2() {
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
-    var lowOnTraps = game.buildings.Trap.owned < 5;
+    var lowOnTraps = game.buildings.Trap.owned < 10;
     var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = getPageSetting('GeneticistTimer');
@@ -58,7 +58,7 @@ function manualLabor2() {
             setGather('science');
         }
     }
-    else if (trapTrimpsOK){
+    else if (trapTrimpsOK && notFullPop){
         //combined to optimize code.
         if (game.buildings.Trap.owned < 5 && canAffordBuilding('Trap')) {
             safeBuyBuilding('Trap');
