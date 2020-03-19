@@ -59,6 +59,9 @@ function manualLabor2() {
         }
     }
     else if (trapTrimpsOK && notFullPop){
+	debug('notFulPop is true!', '*spinner3');
+	debug(game.resources.trimps.owned, '*spinner3');
+	debug(game.resources.trimps.realMax(), '*spinner3');
         //combined to optimize code.
         if (game.buildings.Trap.owned < 5 && canAffordBuilding('Trap')) {
             safeBuyBuilding('Trap');
