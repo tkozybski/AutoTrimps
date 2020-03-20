@@ -60,13 +60,8 @@ function manualLabor2() {
             setGather('science');
         }
     }
-    else if (trapTrimpsOK && notFullPop){
-	//RAY [DEBUG]
-	debug('notFulPop is true!', '*hammer2');
-	console.log('Trimps Owned: ' + game.resources.trimps.owned, '*hammer2');
-	console.log('Real Max: ' + game.resources.trimps.realMax(), '*hammer2');
-	    
-        //combined to optimize code.
+	//Low Priority Trapping. But only if not full of Trimps
+    else if (trapTrimpsOK && notFullPop) {
         if (game.buildings.Trap.owned < 5 && canAffordBuilding('Trap')) {
             safeBuyBuilding('Trap');
             setGather('buildings');
@@ -75,7 +70,6 @@ function manualLabor2() {
             setGather('trimps');
     }
     else {
-	    debug('It really is something', '*hammer2');
         var manualResourceList = {
             'food': 'Farmer',
             'wood': 'Lumberjack',
