@@ -4,11 +4,9 @@ MODULES["gather"] = {};
 MODULES["gather"].minTraps = 10;
 MODULES["gather"].minScienceAmount = 100;
 MODULES["gather"].minScienceSeconds = 60;
-enableDebug = true;
 
 //OLD: "Auto Gather/Build"
 function manualLabor2() {
-    debug('Teste', '*rocket');
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
@@ -31,34 +29,28 @@ function manualLabor2() {
     }
 
     if(trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
-	    debug('DEBUG IF2', '*rocket');
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
     }
     else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
-	    debug('DEBUG IF3', '*rocket');
         setGather('trimps');
         if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
-	    debug('DEBUG IF3', '*rocket');
         setGather('science');
     }
     //if we have more than 2 buildings in queue, or (our modifier is fast (Scientist V equivalent or higher) and trapstorm is off), build
     else if (!bwRewardUnlocked("Foremany") && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) {
-	    debug('DEBUG IF4', '*rocket');
         setGather('buildings');
     }
     //if trapstorm is off (likely we havent gotten it yet, the game is still early, buildings take a while to build ), then Prioritize Storage buildings when they hit the front of the queue (should really be happening anyway since the queue should be >2(fits the clause above this), but in case they are the only object in the queue.)
     else if (!game.global.trapBuildToggled && (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1')){
-	    debug('DEBUG IF5', '*rocket');
         setGather('buildings');
     }
     //if we have some upgrades sitting around which we don't have enough science for, gather science
     else if (game.resources.science.owned < scienceNeeded && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
-	    debug('DEBUG IF6', '*rocket');
         // debug('Science needed ' + scienceNeeded);
         if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && hasTurkimp)||getPageSetting('ManualGather2') == 2){
             //if manual is less than science production, switch on turkimp
@@ -69,7 +61,6 @@ function manualLabor2() {
         }
     }
     else if (trapTrimpsOK && notFullPop){
-	    debug('DEBUG IF7', '*rocket');
 	//RAY [DEBUG]
 	debug('notFulPop is true!', '*hammer2');
 	console.log('Trimps Owned: ' + game.resources.trimps.owned, '*hammer2');
