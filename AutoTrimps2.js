@@ -1,6 +1,18 @@
-var ATversion='Zek v4.3.0',atscript=document.getElementById('AutoTrimps-script'),basepath='https://Zorn192.github.io/AutoTrimps/',modulepath='modules/';null!==atscript&&(basepath=atscript.src.replace(/AutoTrimps2\.js$/,''));
-function ATscriptLoad(a,b){null==b&&debug('Wrong Syntax. Script could not be loaded. Try ATscriptLoad(modulepath, \'example.js\'); ');var c=document.createElement('script');null==a&&(a=''),c.src=basepath+a+b+'.js',c.id=b+'_MODULE',document.head.appendChild(c)}
-function ATscriptUnload(a){var b=document.getElementById(a+"_MODULE");b&&(document.head.removeChild(b),debug("Removing "+a+"_MODULE","other"))}
+var ATversion = 'Zek v4.3.0';
+var atscript = document.getElementById('AutoTrimps-script');
+var basepath = 'https://Psycho-Ray.github.io/AutoTrimps/', modulepath='modules/';
+atscript !== null && (basepath = atscript.src.replace(/AutoTrimps2\.js$/,''));
+
+function ATscriptLoad(a,b) {
+	b==null && debug('Wrong Syntax. Script could not be loaded. Try ATscriptLoad(modulepath, \'example.js\'); ');
+	var c = document.createElement('script'); a==null && (a=''), c.src=basepath+a+b+'.js',c.id=b+'_MODULE', document.head.appendChild(c)
+}
+
+function ATscriptUnload(a) {
+	var b = document.getElementById(a+"_MODULE");
+	b && (document.head.removeChild(b), debug("Removing "+a+"_MODULE","other"))
+}
+
 ATscriptLoad(modulepath, 'utils');
 
 function initializeAutoTrimps() {
