@@ -4,6 +4,7 @@ MODULES["gather"] = {};
 MODULES["gather"].minTraps = 10;
 MODULES["gather"].minScienceAmount = 100;
 MODULES["gather"].minScienceSeconds = 60;
+enableDebug = true;
 
 //OLD: "Auto Gather/Build"
 function manualLabor2() {
