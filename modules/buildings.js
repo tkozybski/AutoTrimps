@@ -4,7 +4,7 @@ MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
 //Psycho-Ray
-MODULES("Buildings").gemEfficiencyIgnoresLimit = true;
+MODULES["Buildings"].gemEfficiencyIgnoresLimit = true;
 
 //Helium
 
@@ -121,7 +121,7 @@ function buyGemEfficientHousing() {
     for (var best in keysSorted) {
         var max = getPageSetting('Max' + keysSorted[best]);
         if (max === false) max = -1;
-        if (game.buildings[keysSorted[best]].owned < max || max == -1 || MODULES("Buildings").gemEfficiencyIgnoresLimit == true) {
+        if (game.buildings[keysSorted[best]].owned < max || max == -1 || MODULES["Buildings"].gemEfficiencyIgnoresLimit == true) {
             bestBuilding = keysSorted[best];
             document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
             var skipWarp = false;
