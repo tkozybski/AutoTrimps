@@ -65,7 +65,7 @@ function manualLabor2() {
     }
 	//Low Priority Trapping. But only if not full of Trimps
     else if (trapTrimpsOK && notFullPop) {
-        if (canAffordBuilding('Trap') && (lowOnTrap || trapBuffering && !trapsReady) {
+        if (canAffordBuilding('Trap') && (lowOnTrap || trapBuffering && !trapsReady)) {
             safeBuyBuilding('Trap');
             setGather('buildings');
 	    trapBuffering = true;
