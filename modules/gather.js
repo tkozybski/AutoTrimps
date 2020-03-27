@@ -55,7 +55,7 @@ function manualLabor2() {
     //if we have some upgrades sitting around which we don't have enough science for, gather science
     else if (game.resources.science.owned < scienceNeeded && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
         // debug('Science needed ' + scienceNeeded);
-        if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && hasTurkimp)||getPageSetting('ManualGather2') == 2){
+        if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && hasTurkimp) || getPageSetting('ManualGather2') == 2){
             //if manual is less than science production, switch on turkimp
             setGather('metal');
         }
@@ -65,12 +65,15 @@ function manualLabor2() {
     }
 	//Low Priority Trapping. But only if not full of Trimps
     else if (trapTrimpsOK && notFullPop) {
-        if (!trapsReady && canAffordBuilding('Trap')) {
+        if (canAffordBuilding('Trap') && (lowOnTrap || trapBuffering && !trapsReady) {
             safeBuyBuilding('Trap');
             setGather('buildings');
+	    trapBuffering = true;
         }
-        else if (!lowOnTraps)
+        else if (!lowOnTraps) {
             setGather('trimps');
+            trapBuffering = false;
+	}
     }
     else {
         var manualResourceList = {
