@@ -20,7 +20,7 @@ function manualLabor2() {
     var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 
     //FRESH GAME NO HELIUM CODE.
-    if (game.global.world <=3 && game.global.totalHeliumEarned <= 500000) {
+    if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned))
                 setGather('food');
@@ -29,15 +29,15 @@ function manualLabor2() {
         }
     }
 
-    if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !trapsReady && canAffordBuilding('Trap')) {
-        //safeBuyBuilding returns false if item is already in queue
-        if(!safeBuyBuilding('Trap'))
-            setGather('buildings');
-    }
-    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) &&  !lowOnTraps) {
+	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) &&  !lowOnTraps) {
         setGather('trimps');
         if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || !trapsReady) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
+    }
+    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !trapsReady && canAffordBuilding('Trap')) {
+        //safeBuyBuilding returns false if item is already in queue
+        if(!safeBuyBuilding('Trap'))
+            setGather('buildings');
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
         setGather('science');
@@ -124,7 +124,6 @@ function manualLabor2() {
 }
 
 function autogather3() {
-	console.log('DEBUG What is even going on');
 	if ((game.global.buildingsQueue.length <= 1 && getPageSetting('gathermetal') == false) || (getPageSetting('gathermetal') == true)) setGather('metal');
 	else setGather('buildings')
 }
@@ -133,9 +132,7 @@ function autogather3() {
 
 MODULES["gather"].RminScienceAmount = 200;
 
-function RmanualLabor2() {
-	debug('DEBUG This is fucked up...', '*hammer2');
-		
+function RmanualLabor2() {	
     //Vars
     var lowOnTraps = game.buildings.Trap.owned < 5;
     var trapTrimpsOK = getPageSetting('RTrapTrimps');
