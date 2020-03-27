@@ -12,7 +12,7 @@ function manualLabor2() {
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
     var lowOnTraps = game.buildings.Trap.owned < MODULES["gather"].minTraps;
-	var trapsReady = game.buildings.Trap.owned <= MODULES["gather"].maxTraps;
+	var trapsReady = game.buildings.Trap.owned >= MODULES["gather"].maxTraps;
     var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = getPageSetting('GeneticistTimer');
@@ -28,16 +28,15 @@ function manualLabor2() {
                 setGather('wood');
         }
     }
-
-	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) &&  !lowOnTraps) {
-        setGather('trimps');
-        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || !trapsReady) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
-            safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
-    }
-    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !trapsReady && canAffordBuilding('Trap')) {
+	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !trapsReady && canAffordBuilding('Trap')) {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
+    }
+	else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) &&  !lowOnTraps) {
+        setGather('trimps');
+        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || !trapsReady) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
+            safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
         setGather('science');
@@ -116,7 +115,7 @@ function manualLabor2() {
                 setGather(lowestResource);
         }
         //Build more traps if we have TrapTrimps on, and we own less than (100) traps.
-        else if(trapTrimpsOK && game.global.trapBuildToggled == true && lowOnTraps)
+        else if(trapTrimpsOK && game.global.trapBuildToggled == true && !trapsReady)
             setGather('buildings');
         else
             setGather(lowestResource);
