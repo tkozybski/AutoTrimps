@@ -12,12 +12,13 @@ function manualLabor2() {
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
     var lowOnTraps = game.buildings.Trap.owned < MODULES["gather"].minTraps;
-	var trapsReady = game.buildings.Trap.owned >= MODULES["gather"].maxTraps;
+    var trapsReady = game.buildings.Trap.owned >= MODULES["gather"].maxTraps;
     var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = getPageSetting('GeneticistTimer');
     var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
     var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
+	var trapBuffering = false;
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
@@ -28,12 +29,13 @@ function manualLabor2() {
                 setGather('wood');
         }
     }
-	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !trapsReady && canAffordBuilding('Trap')) {
-        //safeBuyBuilding returns false if item is already in queue
-        if(!safeBuyBuilding('Trap'))
-            setGather('buildings');
+    if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && canAffordBuilding('Trap') && (lowOnTraps || (trapBuffering && !trapsReady)) {
+        trapBuffering = true;
+		//safeBuyBuilding returns false if item is already in queue
+        if (!safeBuyBuilding('Trap')) setGather('buildings');
     }
-	else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) &&  !lowOnTraps) {
+    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) &&  !lowOnTraps) {
+		trapBuffering = false;
         setGather('trimps');
         if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || !trapsReady) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
