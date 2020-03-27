@@ -21,7 +21,6 @@ function manualLabor2() {
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned <= 500000) {
-	    console.log('DEBUG IF1');
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned))
                 setGather('food');
@@ -64,11 +63,11 @@ function manualLabor2() {
     }
 	//Low Priority Trapping. But only if not full of Trimps
     else if (trapTrimpsOK && notFullPop) {
-        if (game.buildings.Trap.owned < 5 && canAffordBuilding('Trap')) {
+        if (!trapsReady && canAffordBuilding('Trap')) {
             safeBuyBuilding('Trap');
             setGather('buildings');
         }
-        else if (game.buildings.Trap.owned > 0)
+        else if (!lowOnTraps)
             setGather('trimps');
     }
     else {
