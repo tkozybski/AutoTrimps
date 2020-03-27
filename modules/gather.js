@@ -18,7 +18,7 @@ function manualLabor2() {
     var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 
     //FRESH GAME NO HELIUM CODE.
-    if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
+    if (game.global.world <=3 && game.global.totalHeliumEarned <= 500000) {
 	    console.log('DEBUG IF1');
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned))
@@ -28,14 +28,14 @@ function manualLabor2() {
         }
     }
 
-    if(trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
+    if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && lowOnTraps && canAffordBuilding('Trap')) {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
     }
-    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
+    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !lowOnTraps) {
         setGather('trimps');
-        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
+        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || lowOnTraps) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
