@@ -2,6 +2,7 @@
 MODULES["gather"] = {};
 //These can be changed (in the console) if you know what you're doing:
 MODULES["gather"].minTraps = 10;
+MODULES["gather"].maxTraps = 100;
 MODULES["gather"].minScienceAmount = 100;
 MODULES["gather"].minScienceSeconds = 60;
 
@@ -10,7 +11,8 @@ function manualLabor2() {
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
-    var lowOnTraps = game.buildings.Trap.owned < 10;
+    var lowOnTraps = game.buildings.Trap.owned < MODULES["gather"].minTraps;
+	var trapsReady = game.buildings.Trap.owned <= MODULES["gather"].maxTraps;
     var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = getPageSetting('GeneticistTimer');
@@ -28,14 +30,14 @@ function manualLabor2() {
         }
     }
 
-    if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && lowOnTraps && canAffordBuilding('Trap')) {
+    if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !trapsReady && canAffordBuilding('Trap')) {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
     }
-    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && !lowOnTraps) {
+    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) &&  !lowOnTraps) {
         setGather('trimps');
-        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || lowOnTraps) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
+        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || !trapsReady) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
