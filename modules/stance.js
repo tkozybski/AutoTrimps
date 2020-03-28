@@ -87,11 +87,18 @@ function autoStance() {
     dDamageNoCrit *= isdba;
     xDamageNoCrit *= isdba;
 
+    var electricityChallenge = game.global.challengeActive == "Electricity";
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
     var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
     var leadChallenge = game.global.challengeActive == 'Lead';
-    if (drainChallenge) {
+    if (electricityChallenge) {
+        var hplost = game.challenges.Electricity.stacks * 0.1;
+        dDamage += dHealth * hplost;
+        xDamage += xHealth * hplost;
+        bDamage += bHealth * hplost;
+    }
+    else if (drainChallenge) {
         var hplost = 0.20;
         dDamage += dHealth * hplost;
         xDamage += xHealth * hplost;
