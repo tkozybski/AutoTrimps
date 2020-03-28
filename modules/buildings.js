@@ -1,4 +1,5 @@
 MODULES["buildings"] = {};
+MODULES["buildings"].nurseryWall = 10;
 MODULES["buildings"].storageMainCutoff = 0.85;
 MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
@@ -204,9 +205,13 @@ function buyBuildings() {
     if (!game.buildings.Tribute.locked && !hidebuild &&(getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {
         safeBuyBuilding('Tribute');
     }
+    
     //Nurseries
     if (game.buildings.Nursery.locked == 0 && (!hidebuild &&( game.global.world >= getPageSetting('NoNurseriesUntil') || getPageSetting('NoNurseriesUntil') < 1) && (getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1)) || (game.global.challengeActive != "Daily" && getPageSetting('PreSpireNurseries') > game.buildings.Nursery.owned && isActiveSpireAT()) || (game.global.challengeActive == "Daily" && getPageSetting('dPreSpireNurseries') > game.buildings.Nursery.owned && disActiveSpireAT())) {
-	safeBuyBuilding('Nursery');
+        //Nursery Wall
+        var nurseryWallpct = MODULES["buildings"].nurseryWall;
+        if (nurseryWallpct <= 1 || getBuildingItemPrice(game.buildings.Nursery, "gem", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) < (game.resources.gem.owned / nurseryWallpct))
+            safeBuyBuilding('Nursery');
     }
 
     postBuy2(oldBuy);
