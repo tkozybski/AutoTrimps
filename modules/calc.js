@@ -238,12 +238,15 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	if (game.goldenUpgrades.Battle.currentBonus > 0) {
 		number *= game.goldenUpgrades.Battle.currentBonus + 1;
 	}
+	
+	//Challenge^2 Rewards
+	if (game.global.totalSquaredReward > 0) {
+		number *= ((game.global.totalSquaredReward / 100) + 1);
+	}
+	
 	if (game.talents.voidPower.purchased && game.global.voidBuff) {
 		var vpAmt = (game.talents.voidPower2.purchased) ? ((game.talents.voidPower3.purchased) ? 65 : 35) : 15;
 		number *= ((vpAmt / 100) + 1);
-	}
-	if (game.global.totalSquaredReward > 0) {
-		number *= ((game.global.totalSquaredReward / 100) + 1);
 	}
 	if (getPageSetting('fullice') == true && getEmpowerment() == "Ice") {
 		number *= (Fluffy.isRewardActive('naturesWrath') ? 3 : 2);
