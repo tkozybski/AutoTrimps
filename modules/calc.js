@@ -413,6 +413,9 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         else if (game.global.challengeActive == "Lead"){
             number *= (1 + (game.challenges.Lead.stacks * 0.04));
         }
+		if (game.global.challengeActive == 'Life') {
+			number *= 6;
+    	}
         else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) {
             number *= 10;
         }
@@ -518,7 +521,7 @@ function calcEnemyHealth(world, map) {
         health *= 2;
     }
     if (game.global.challengeActive == 'Life') {
-        health *= 10;
+        health *= 11;
     }
     if (game.global.challengeActive == "Domination") {
         if (game.global.lastClearedCell == 98) {
