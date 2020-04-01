@@ -184,14 +184,14 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	var maxFluct = -1;
 	var minFluct = -1;
 	
-	console.log('Before: ', number);
+	//console.log('Before: ', number);
 	
 	//Amalgamator
 	if (game.jobs.Amalgamator.owned > 0) {
 		number *= game.jobs.Amalgamator.getDamageMult();
 	}
 	
-	console.log('Amalg: ', number);
+	//console.log('Amalg: ', number);
 	
 	//Anticipation
 	if (getPageSetting('45stacks') == false && game.global.antiStacks > 0) {
@@ -201,7 +201,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		number *= ((45 * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
 	}
 	
-	console.log('Antic: ', number);
+	//console.log('Antic: ', number);
 	
 	//Map Bonus
 	if (game.global.mapBonus > 0) {
@@ -210,14 +210,14 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		number *= ((mapBonus * .2) + 1);
 	}
 	
-	console.log('MapBonus: ', number);
+	//console.log('MapBonus: ', number);
 	
 	//Achievements
 	if (game.global.achievementBonus > 0) {
 		number *= (1 + (game.global.achievementBonus / 100));
 	}
 	
-	console.log('Achiev: ', number);
+	//console.log('Achiev: ', number);
 	
 	//Range
 	if (game.portal.Range.level > 0) {
@@ -255,21 +255,21 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		number *= 1.5;
 	}
 	
-	console.log('Stuff: ', number);
+	//console.log('Stuff: ', number);
 	
 	//Battle Goldens
 	if (game.goldenUpgrades.Battle.currentBonus > 0) {
 		number *= game.goldenUpgrades.Battle.currentBonus + 1;
 	}
 	
-	console.log('Golden: ', number);
+	//console.log('Golden: ', number);
 	
 	//Challenge^2 Rewards
 	if (game.global.totalSquaredReward > 0) {
 		number *= ((game.global.totalSquaredReward / 100) + 1);
 	}
 	
-	console.log('Rewards: ', number);
+	//console.log('Rewards: ', number);
 	
 	if (game.talents.voidPower.purchased && game.global.voidBuff) {
 		var vpAmt = (game.talents.voidPower2.purchased) ? ((game.talents.voidPower3.purchased) ? 65 : 35) : 15;
@@ -345,7 +345,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		}
 	}
 	
-	console.log('LotsAndLots: ', number);
+	//console.log('LotsAndLots: ', number);
 	
 	//Heirlooms
 	number = calcHeirloomBonus("Shield", "trimpAttack", number)
@@ -356,7 +356,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	    	number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
 	}
 	
-	console.log('Heirlooms: ', number);
+	//console.log('Heirlooms: ', number);
 
 
 	if (!incStance && game.global.formation != 0) {
@@ -371,7 +371,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	avg *= getCritMulti(false);
 	max *= (getCritMulti(false)*1.2);
 	
-	console.log('Crit: ', avg);
+	//console.log('Crit: ', avg);
 
 	if (incFlucts) {
 		if (minFluct > 1) minFluct = 1;
@@ -383,7 +383,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		avg *= 1 + (maxFluct - minFluct)/2;
 	}
 	
-	console.log('Avg: ', avg);
+	//console.log('Avg: ', avg);
 
 	if (minMaxAvg == "min") return min;
 	else if (minMaxAvg == "max") return max;
