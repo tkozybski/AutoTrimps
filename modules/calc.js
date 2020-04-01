@@ -220,7 +220,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	console.log('Achiev: ', number);
 	
 	//Range
-	else if (game.portal.Range.level > 0) {
+	if (game.portal.Range.level > 0) {
 		minFluct = fluctuation - (.02 * game.portal.Range.level);
 	}
 	
@@ -322,9 +322,9 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	if (game.global.challengeActive == "Daily" && game.talents.daily.purchased){
 		number *= 1.5;
 	}
-    if (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1 && game.global.world != 179) {
-        number /= 1.5;
-    }
+	if (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1 && game.global.world != 179) {
+		number /= 1.5;
+	}
 	if (game.global.challengeActive == "Daily"){
 		if (typeof game.global.dailyChallenge.minDamage !== 'undefined'){
 			if (minFluct == -1) minFluct = fluctuation;
@@ -335,10 +335,10 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 			maxFluct += dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
 		}
 		if (typeof game.global.dailyChallenge.oddTrimpNerf !== 'undefined' && ((game.global.world % 2) == 1)){
-				number *= dailyModifiers.oddTrimpNerf.getMult(game.global.dailyChallenge.oddTrimpNerf.strength);
+			number *= dailyModifiers.oddTrimpNerf.getMult(game.global.dailyChallenge.oddTrimpNerf.strength);
 		}
 		if (typeof game.global.dailyChallenge.evenTrimpBuff !== 'undefined' && ((game.global.world % 2) == 0)){
-				number *= dailyModifiers.evenTrimpBuff.getMult(game.global.dailyChallenge.evenTrimpBuff.strength);
+			number *= dailyModifiers.evenTrimpBuff.getMult(game.global.dailyChallenge.evenTrimpBuff.strength);
 		}
 		if (typeof game.global.dailyChallenge.rampage !== 'undefined'){
 			number *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
