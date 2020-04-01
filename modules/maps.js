@@ -377,21 +377,28 @@ function autoMap() {
         }
     }
     
+	//Calculates Siphonology and Extra Map Levels
     var siphlvl = shouldFarmLowerZone ? game.global.world - 10 : game.global.world - game.portal.Siphonology.level;
-    var maxlvl = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
-    maxlvl += extraMapLevels;
+    var maxlvl = extraMapLevels + game.global.world - (game.talents.mapLoot.purchased) ?  1 : 0;
+	
+	//If enabled, then
     if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone) {
+		//For each Map Level we can go below our current zone...
         for (siphlvl; siphlvl < maxlvl; siphlvl++) {
+			//Finds Maximum Enemy HP on this map
             var maphp = getEnemyMaxHealth(siphlvl) * 1.1;
+			
+			//Applies Corrupt Scale + Magma
             var cpthlth = getCorruptScale("health") / 2;
-            if (mutations.Magma.active())
-                maphp *= cpthlth;
-            var mapdmg = ourBaseDamage2;
-            if (game.upgrades.Dominance.done)
-                mapdmg *= 4;
-            if (mapdmg < maphp) {
-                break;
-            }
+            if (mutations.Magma.active()) maphp *= cpthlth;
+		
+			//Applies Dominance + Titimp
+			var mapdmg = ourBaseDamage2;
+            if (game.upgrades.Dominance.done) mapdmg *= 4;
+			if (game.unlocks.imps.Titimp) mapdmg *= 2;
+			
+			//Stop increasing map level if we can't one hit on it
+            if (mapdmg < maphp) break;
         }
     }
     var obj = {};
