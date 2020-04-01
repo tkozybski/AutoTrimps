@@ -179,15 +179,19 @@ function calcOurBlock(stance) {
 }
 
 function calcOurDmg(minMaxAvg, incStance, incFlucts) {
-  var number = getTrimpAttack();
-  var fluctuation = .2;
+	var number = getTrimpAttack();
+	var fluctuation = .2;
 	var maxFluct = -1;
 	var minFluct = -1;
+	
+	console.log('Before: ', number);
 	
 	//Amalgamator
 	if (game.jobs.Amalgamator.owned > 0) {
 		number *= game.jobs.Amalgamator.getDamageMult();
 	}
+	
+	console.log('Amalg: ', number);
 	
 	//Anticipation
 	if (getPageSetting('45stacks') == false && game.global.antiStacks > 0) {
@@ -197,6 +201,8 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		number *= ((45 * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
 	}
 	
+	console.log('Antic: ', number);
+	
 	//Map Bonus
 	if (game.global.mapBonus > 0) {
 	    var mapBonus = game.global.mapBonus;
@@ -204,19 +210,23 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		number *= ((mapBonus * .2) + 1);
 	}
 	
+	console.log('MapBonus: ', number);
+	
 	//Achievements
 	if (game.global.achievementBonus > 0) {
 		number *= (1 + (game.global.achievementBonus / 100));
 	}
 	
-	//Discipline
-	if (game.global.challengeActive == "Discipline") {
-		fluctuation = .995;
-	}
+	console.log('Achiev: ', number);
 	
 	//Range
 	else if (game.portal.Range.level > 0) {
 		minFluct = fluctuation - (.02 * game.portal.Range.level);
+	}
+	
+	//Discipline
+	if (game.global.challengeActive == "Discipline") {
+		fluctuation = .995;
 	}
 	
 	//Decay
@@ -245,15 +255,21 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 		number *= 1.5;
 	}
 	
+	console.log('Stuff: ', number);
+	
 	//Battle Goldens
 	if (game.goldenUpgrades.Battle.currentBonus > 0) {
 		number *= game.goldenUpgrades.Battle.currentBonus + 1;
 	}
 	
+	console.log('Golden: ', number);
+	
 	//Challenge^2 Rewards
 	if (game.global.totalSquaredReward > 0) {
 		number *= ((game.global.totalSquaredReward / 100) + 1);
 	}
+	
+	console.log('Rewards: ', number);
 	
 	if (game.talents.voidPower.purchased && game.global.voidBuff) {
 		var vpAmt = (game.talents.voidPower2.purchased) ? ((game.talents.voidPower3.purchased) ? 65 : 35) : 15;
@@ -328,6 +344,10 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 			number *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
 		}
 	}
+	
+	console.log('LotsAndLots: ', number);
+	
+	//Heirlooms
 	number = calcHeirloomBonus("Shield", "trimpAttack", number)
 	if (Fluffy.isActive()){
 		number *= Fluffy.getDamageModifier();
@@ -335,33 +355,39 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0))) >= 5)) {
 	    	number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
 	}
+	
+	console.log('Heirlooms: ', number);
 
 
-  if (!incStance && game.global.formation != 0) {
-    number /= (game.global.formation == 2) ? 4 : 0.5;
-  }
+	if (!incStance && game.global.formation != 0) {
+		number /= (game.global.formation == 2) ? 4 : 0.5;
+	}
 
-  var min = number;
-  var max = number;
-  var avg = number;
+	var min = number;
+	var max = number;
+	var avg = number;
 
-  min *= (getCritMulti(false)*0.8);
-  avg *= getCritMulti(false);
-  max *= (getCritMulti(false)*1.2);
+	min *= (getCritMulti(false)*0.8);
+	avg *= getCritMulti(false);
+	max *= (getCritMulti(false)*1.2);
+	
+	console.log('Crit: ', avg);
 
-  if (incFlucts) {
-    if (minFluct > 1) minFluct = 1;
-    if (maxFluct == -1) maxFluct = fluctuation;
-    if (minFluct == -1) minFluct = fluctuation;
+	if (incFlucts) {
+		if (minFluct > 1) minFluct = 1;
+		if (maxFluct == -1) maxFluct = fluctuation;
+  		if (minFluct == -1) minFluct = fluctuation;
 
-    min *= (1 - minFluct);
-    max *= (1 + maxFluct);
-    avg *= 1 + (maxFluct - minFluct)/2;
-  }
+		min *= (1 - minFluct);
+		max *= (1 + maxFluct);
+		avg *= 1 + (maxFluct - minFluct)/2;
+	}
+	
+	console.log('Avg: ', avg);
 
-  if (minMaxAvg == "min") return min;
-  else if (minMaxAvg == "max") return max;
-  else if (minMaxAvg == "avg") return avg;
+	if (minMaxAvg == "min") return min;
+	else if (minMaxAvg == "max") return max;
+	else if (minMaxAvg == "avg") return avg;
 }
 
 function calcDailyAttackMod(number) {
