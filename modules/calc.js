@@ -5,28 +5,39 @@ var trimpAA = 1;
 //Helium
 
 function getTrimpAttack() {
-	var dmg = 6;
-        var equipmentList = ["Dagger", "Mace", "Polearm", "Battleaxe", "Greatsword", "Arbalest"];
-        for(var i = 0; i < equipmentList.length; i++){
-            if(game.equipment[equipmentList[i]].locked !== 0) continue;
-            var attackBonus = game.equipment[equipmentList[i]].attackCalculated;
-            var level       = game.equipment[equipmentList[i]].level;
-            dmg += attackBonus*level;
-        }
-	if (mutations.Magma.active()){
-		dmg *= mutations.Magma.getTrimpDecay();
-	}
-	dmg *= game.resources.trimps.maxSoldiers;
-	if (game.portal.Power.level > 0) {
-		dmg += (dmg * game.portal.Power.level * game.portal.Power.modifier);
-	}
+    var dmg = 6;
+    var equipmentList = ["Dagger", "Mace", "Polearm", "Battleaxe", "Greatsword", "Arbalest"];
+	
+    //For each weapon...
+    for(var i = 0; i < equipmentList.length; i++) {
+	//If unlocked, adds up it's damage
+        if(game.equipment[equipmentList[i]].locked !== 0) continue;
+        var attackBonus = game.equipment[equipmentList[i]].attackCalculated;
+        var level       = game.equipment[equipmentList[i]].level;
+        dmg += attackBonus * level;
+    }
+    
+    //Magma
+    if (mutations.Magma.active()){
+        dmg *= mutations.Magma.getTrimpDecay();
+    }
+    
+    //Power I
+    if (game.portal.Power.level > 0) {
+            dmg += (dmg * game.portal.Power.level * game.portal.Power.modifier);
+    }
+    
+    //Power II
     if (game.portal.Power_II.level > 0) {
-		dmg *= (1 + (game.portal.Power_II.modifier * game.portal.Power_II.level));
-	}
-	if (game.global.formation !== 0){
-		dmg *= (game.global.formation == 2) ? 4 : 0.5;
-	}
-	return dmg;
+        dmg *= (1 + (game.portal.Power_II.modifier * game.portal.Power_II.level));
+    }
+    
+    //Formation
+    if (game.global.formation !== 0){
+        dmg *= (game.global.formation == 2) ? 4 : 0.5;
+    }
+    
+    return dmg * game.resources.trimps.maxSoldiers;
 }
 
 function calcOurHealth(stance) {
