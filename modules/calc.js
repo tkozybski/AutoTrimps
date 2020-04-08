@@ -148,33 +148,35 @@ function getCritMulti(high) {
 
 function calcOurBlock(stance) {
     var block = 0;
+    
+    //Gyms
     var gym = game.buildings.Gym;
-    if (gym.owned > 0) {
-        var gymStrength = gym.owned * gym.increase.by;
-        block += gymStrength;
-    }
+    if (gym.owned > 0) block += gym.owned * gym.increase.by;
+    
+    //Shield Block
     var shield = game.equipment.Shield;
-    if (shield.blockNow && shield.level > 0) {
-        var shieldStrength = shield.level * shield.blockCalculated;
-        block += shieldStrength;
-    }
+    if (shield.blockNow && shield.level > 0) block += shield.level * shield.blockCalculated;
+    
+    //Trainers
     var trainer = game.jobs.Trainer;
     if (trainer.owned > 0) {
         var trainerStrength = trainer.owned * (trainer.modifier / 100);
-        trainerStrength = calcHeirloomBonus("Shield", "trainerEfficiency", trainerStrength);
-        block *= (trainerStrength + 1);
+        block *= 1 + calcHeirloomBonus("Shield", "trainerEfficiency", trainerStrength);
     }
+    
+    //Coordination
     block *= game.resources.trimps.maxSoldiers;
-    if (stance && game.global.formation == 3) {
-        block *= 4;
-    }
+
+    //Stances
+    if (stance && game.global.formation != 0) block *= game.global.formation == 3 ? 4 : 0.5;
+    
+    //Heirloom
     var heirloomBonus = calcHeirloomBonus("Shield", "trimpBlock", 0, true);
-    if (heirloomBonus > 0) {
-        block *= ((heirloomBonus / 100) + 1);
-    }
-    if (game.global.radioStacks > 0) {
-        block *= (1 - (game.global.radioStacks * 0.1));
-    }
+    if (heirloomBonus > 0) block *= ((heirloomBonus / 100) + 1);
+    
+    //Radio Stacks
+    if (game.global.radioStacks > 0) block *= (1 - (game.global.radioStacks * 0.1));
+    
     return block;
 }
 
