@@ -182,16 +182,19 @@ function buyBuildings() {
         var skipGym = false;
 	
 	//Dynamic Gyms
-        if (getPageSetting('DynamicGyms'))
-            if (!game.global.preMapsActive && calcOurBlock(true) * game.upgrades.Gymystic.modifier > calcBadGuyDmg(getCurrentEnemy(), null, true,true))
+        if (getPageSetting('DynamicGyms')) {
+	    var nextGym = game.upgrades.Gymystic.modifier + game.upgrades.Gymystic.owned - 1;
+            if (!game.global.preMapsActive && calcOurBlock(true) > nextGym * calcBadGuyDmg(getCurrentEnemy(), null, true,true))
                 skipGym = true;
+	}
 	
 	//Gym Wall
         var gymwallpct = getPageSetting('GymWall');
-        if (gymwallpct > 1)
+        if (gymwallpct > 1) {
             if (getBuildingItemPrice(game.buildings.Gym, "wood", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)
                 > (game.resources.wood.owned / gymwallpct))
                     skipGym = true;
+	}
 
         //ShieldBlock cost Effectiveness:
         if (game.equipment['Shield'].blockNow) {
@@ -202,7 +205,7 @@ function buyBuildings() {
         }
 	
 	//Buy Gym
-        if (!needGymystic) safeBuyBuilding('Gym');
+        if (!needGymystic && !skipGym) safeBuyBuilding('Gym');
        	needGymystic = false;
     }
     
