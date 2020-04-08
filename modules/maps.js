@@ -90,23 +90,22 @@ var advExtraMapLevels = 0;
 function testMapSpecialModController() {
     var a = [];
     if (Object.keys(mapSpecialModifierConfig).forEach(function(o) {
-            var p = mapSpecialModifierConfig[o];
-            game.global.highestLevelCleared + 1 >= p.unlocksAt && a.push(p.abv.toLowerCase());
-        }), !(1 > a.length)) {
-        var c = document.getElementById("advSpecialSelect");
-        if (c) {
-            if (59 <= game.global.highestLevelCleared) {
-                if (needPrestige && a.includes("p")) {
-                    c.value = "p";
-                } else if (shouldFarm || !enoughHealth || preSpireFarming) {
-                    c.value = a.includes("lmc") ? "lmc" : a.includes("hc") ? "hc" : a.includes("smc") ? "smc" : "lc";
-                } else c.value = "fa";
+        var p = mapSpecialModifierConfig[o];
+        game.global.highestLevelCleared + 1 >= p.unlocksAt && a.push(p.abv.toLowerCase());
+    }), !(1 > a.length)) {
+    var c = document.getElementById("advSpecialSelect");
+    if (c) {
+        if (59 <= game.global.highestLevelCleared) {
+            if (needPrestige && a.includes("p")) {
+                c.value = "p";
+            } else if (shouldFarm || !enoughHealth || preSpireFarming) {
+                c.value = a.includes("lmc") ? "lmc" : a.includes("hc") ? "hc" : a.includes("smc") ? "smc" : "lc";
+            } else c.value = "fa";
                 for (var d = updateMapCost(!0), e = game.resources.fragments.owned, f = 100 * (d / e); 0 < c.selectedIndex && d > e;) {
                     c.selectedIndex -= 1;
                     "0" != c.value && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
                 }
-                var d = updateMapCost(!0),
-                    e = game.resources.fragments.owned;
+                var d = updateMapCost(!0), e = game.resources.fragments.owned;
                 "0" != c.value && debug("Set the map special modifier to: " + mapSpecialModifierConfig[c.value].name + ". Cost: " + (100 * (d / e)).toFixed(2) + "% of your fragments.");
             }
             var g = getSpecialModifierSetting(),
@@ -128,7 +127,6 @@ function testMapSpecialModController() {
 }
 
 function autoMap() {
-
     //Failsafes
     if (!game.global.mapsUnlocked || calcOurDmg("avg", false, true) <= 0) {
         enoughDamage = true;
@@ -377,30 +375,34 @@ function autoMap() {
         }
     }
     
-	//Calculates Siphonology and Extra Map Levels
+    //Calculates Siphonology and Extra Map Levels
     var siphlvl = game.global.world - (shouldFarmLowerZone ?  10 : game.portal.Siphonology.level);
     var maxlvl = extraMapLevels + game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
 	
-	//If enabled, then
+    //If enabled, then
     if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone) {
-		//For each Map Level we can go below our current zone...
+        //For each Map Level we can go below our current zone...
         for (siphlvl; siphlvl < maxlvl; siphlvl++) {
-			//Finds Maximum Enemy HP on this map
+            //Finds Maximum Enemy HP on this map
             var maphp = getEnemyMaxHealth(siphlvl) * 1.1;
 			
-			//Applies Corrupt Scale + Magma
+            //Applies Corrupt Scale + Magma
             var cpthlth = getCorruptScale("health") / 2;
             if (mutations.Magma.active()) maphp *= cpthlth;
 		
-			//Applies Dominance + Titimp
-			var mapdmg = ourBaseDamage2;
+            //Applies Dominance + Titimp
+            var mapdmg = ourBaseDamage2;
             if (game.upgrades.Dominance.done) mapdmg *= 4;
-			if (game.unlocks.imps.Titimp) mapdmg *= 2;
+            if (game.unlocks.imps.Titimp) mapdmg *= 2;
 			
-			//Stop increasing map level if we can't one hit on it
+            //Stop increasing map level if we can't one hit on it
             if (mapdmg < maphp) break;
         }
     }
+    
+    //Farms on "Oneshoot Zone + 1"
+    if (shouldFarmLowerZone) siphlvl++;
+    
     var obj = {};
     var siphonMap = -1;
     for (var map in game.global.mapsOwnedArray) {
