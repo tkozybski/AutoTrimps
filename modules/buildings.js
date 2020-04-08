@@ -180,15 +180,19 @@ function buyBuildings() {
     //Gyms:
     if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
         var skipGym = false;
-        if (getPageSetting('DynamicGyms')) {
-            if (!game.global.preMapsActive && calcOurBlock(true) > calcBadGuyDmg(getCurrentEnemy(), null, true,true))
+	
+	//Dynamic Gyms
+        if (getPageSetting('DynamicGyms'))
+            if (!game.global.preMapsActive && calcOurBlock(true) * game.upgrades.Gymystic.modifier > calcBadGuyDmg(getCurrentEnemy(), null, true,true))
                 skipGym = true;
-        }
+	
+	//Gym Wall
         var gymwallpct = getPageSetting('GymWall');
-        if (gymwallpct > 1) {
-            if (getBuildingItemPrice(game.buildings.Gym, "wood", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.wood.owned / gymwallpct))
-                skipGym = true;
-        }
+        if (gymwallpct > 1)
+            if (getBuildingItemPrice(game.buildings.Gym, "wood", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)
+                > (game.resources.wood.owned / gymwallpct))
+                    skipGym = true;
+
         //ShieldBlock cost Effectiveness:
         if (game.equipment['Shield'].blockNow) {
             var gymEff = evaluateEquipmentEfficiency('Gym');
@@ -196,15 +200,15 @@ function buyBuildings() {
             if ((gymEff.Wall) || (gymEff.Factor <= shieldEff.Factor && !gymEff.Wall))
                 skipGym = true;
         }
-        if (needGymystic) skipGym = true;
-        if (!skipGym)
-            safeBuyBuilding('Gym');
-       	    needGymystic = false;
+	
+	//Buy Gym
+        if (!needGymystic) safeBuyBuilding('Gym');
+       	needGymystic = false;
     }
+    
     //Tributes:
-    if (!game.buildings.Tribute.locked && !hidebuild && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {
+    if (!game.buildings.Tribute.locked && !hidebuild && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1))
         safeBuyBuilding('Tribute');
-    }
     
     //Nurseries
     if (game.buildings.Nursery.locked == 0 && (!hidebuild && (game.global.world >= getPageSetting('NoNurseriesUntil') || getPageSetting('NoNurseriesUntil') < 1) && (getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1)) || (game.global.challengeActive != "Daily" && getPageSetting('PreSpireNurseries') > game.buildings.Nursery.owned && isActiveSpireAT()) || (game.global.challengeActive == "Daily" && getPageSetting('dPreSpireNurseries') > game.buildings.Nursery.owned && disActiveSpireAT())) {
