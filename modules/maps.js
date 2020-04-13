@@ -385,6 +385,9 @@ function autoMap() {
         for (siphlvl; siphlvl < maxlvl; siphlvl++) {
             //Finds Maximum Enemy HP on this map
             var maphp = getEnemyMaxHealth(siphlvl) * 1.1;
+            
+            //Apply "Coordinate" (challenge)
+            if (game.global.challengeActive == "Coordinate") maphp *= getBadCoordLevel();
 			
             //Applies Corrupt Scale + Magma
             var cpthlth = getCorruptScale("health") / 2;
