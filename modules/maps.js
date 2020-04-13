@@ -2,6 +2,7 @@
 
 MODULES.maps={};
 MODULES.maps.numHitsSurvived=1.5;
+MODULES.maps.farmOnLowHealth=false;
 MODULES.maps.LeadfarmingCutoff=10;
 MODULES.maps.NomfarmingCutoff=10;
 MODULES.maps.NomFarmStacksCutoff=[7,30,100];
@@ -32,7 +33,6 @@ var vanillaMapatZone=!1;
 var additionalCritMulti=2<getPlayerCritChance()?25:5;
 
 function updateAutoMapsStatus(get) {
-
     var status;
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
 
@@ -294,6 +294,10 @@ function autoMap() {
     //Farming
     var selectedMap = "world";
     var shouldFarmLowerZone = false;
+    
+    //Farm on Low Health
+    shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth);
+    
     shouldDoMaps = false;
     if (ourBaseDamage > 0) {
         shouldDoMaps = (!enoughDamage || shouldFarm || scryerStuck);
