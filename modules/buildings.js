@@ -122,7 +122,7 @@ function buyGemEfficientHousing() {
     for (var best in keysSorted) {
         var max = getPageSetting('Max' + keysSorted[best]);
         if (max === false) max = -1;
-        if (game.buildings[keysSorted[best]].owned < max || max == -1 || (MODULES["buildings"].gemEfficiencyIgnoresLimit && bestBuilding != "Gateway")) {
+        if (game.buildings[keysSorted[best]].owned < max || max == -1 || (MODULES["buildings"].gemEfficiencyIgnoresLimit && keysSorted[best] != "Gateway")) {
             bestBuilding = keysSorted[best];
             document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
             var skipWarp = false;
