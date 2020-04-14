@@ -123,10 +123,10 @@ function autoStance() {
         bDamage += added;
     }
     if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed') {
-        var added = game.global.soldierHealth * (enemy.corrupted == 'healthyBleed' ? 0.30 : 0.20);
-        dDamage += added;
-        xDamage += added;
-        bDamage += added;
+        var hplost = (enemy.corrupted == 'healthyBleed') ? 0.30 : 0.20;
+        dDamage += dHealth * hplost;
+        xDamage += xHealth * hplost;
+        bDamage += bHealth * hplost;
     }
     var xExplosionOK = true;
     var dExplosionOK = true;
