@@ -381,7 +381,7 @@ function autoMap() {
     
     //Calculates Siphonology and Extra Map Levels
     var siphlvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level);
-    var maxlvl = extraMapLevels + game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
+    var maxlvl = extraMapLevels + game.global.world - (game.talents.mapLoot.purchased ?  0 : -1);
 	
     //If enabled, then
     if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone) {
