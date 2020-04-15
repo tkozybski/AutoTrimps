@@ -4,6 +4,7 @@ MODULES["breedtimer"].voidCheckPercent = 95;
 var DecimalBreed = Decimal.clone({precision: 30, rounding: 4});
 var missingTrimps = new DecimalBreed(0);
 
+//Custom Timer for Lead Challenge
 function customLeadTimer() {
     return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
 }
