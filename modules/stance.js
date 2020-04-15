@@ -59,11 +59,14 @@ function autoStance() {
 		if (enemy.corrupted == 'healthyTough')
         enemyHealth *= 7.5;
 
+    //Formation Damage
     var xDamage = (enemyDamage - baseBlock);
     var dDamage = (enemyDamage - baseBlock / 2);
     var bDamage = (enemyDamage - baseBlock * 4);
     var dDamageNoCrit = (enemyDamage/critMulti - baseBlock/2);
     var xDamageNoCrit = (enemyDamage/critMulti - baseBlock);
+
+    //Block Pierce
     var pierce = 0;
     if (game.global.brokenPlanet && !game.global.mapsActive) {
         pierce = getPierceAmt();
@@ -86,49 +89,46 @@ function autoStance() {
     bDamage *= isdba;
     dDamageNoCrit *= isdba;
     xDamageNoCrit *= isdba;
-
+    
+    //Active Challenges
     var electricityChallenge = game.global.challengeActive == "Electricity";
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
     var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
     var leadChallenge = game.global.challengeActive == 'Lead';
-    if (electricityChallenge) {
-        var hplost = game.challenges.Electricity.stacks * 0.1;
-        dDamage += dHealth * hplost;
-        xDamage += xHealth * hplost;
-        bDamage += bHealth * hplost;
-    }
-    else if (drainChallenge) {
-        var hplost = 0.20;
-        dDamage += dHealth * hplost;
-        xDamage += xHealth * hplost;
-        bDamage += bHealth * hplost;
-    } else if (dailyPlague) {
+    var challengeDamage = 0;
+
+    //Electricity
+    if (electricityChallenge) challengeDamage = game.challenges.Electricity.stacks * 0.1;
+
+    //Lead
+    else if (leadChallenge) challengeDamage = game.challenges.Lead.stacks * 0.0003;
+
+    //Drain
+    else if (drainChallenge) challengeDamage = 0.20;
+
+    //Plague (Daily)
+    else if (dailyPlague) {
         drainChallenge = true;
-        var hplost = dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength, 1 + game.global.dailyChallenge.plague.stacks);
-        dDamage += dHealth * hplost;
-        xDamage += xHealth * hplost;
-        bDamage += bHealth * hplost;
-    } else if (dailyBogged) {
+        challengeDamage = dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength, 1 + game.global.dailyChallenge.plague.stacks);
+    }
+
+    //Bogged (Daily)
+    else if (dailyBogged) {
         drainChallenge = true;
-        var hplost = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
-        dDamage += dHealth * hplost;
-        xDamage += xHealth * hplost;
-        bDamage += bHealth * hplost;
-    } else if (leadChallenge) {
-        var leadDamage = game.challenges.Lead.stacks * 0.0003;
-        var added = game.global.soldierHealthMax * leadDamage;
-        dDamage += added;
-        xDamage += added;
-        bDamage += added;
-	
+        challengeDamage = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
     }
-    if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed') {
-        var hplost = (enemy.corrupted == 'healthyBleed') ? 0.30 : 0.20;
-        dDamage += dHealth * hplost;
-        xDamage += xHealth * hplost;
-        bDamage += bHealth * hplost;
-    }
+
+    //Bleed (from Void or Corruption)
+    if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed')
+        challengeDamage += (enemy.corrupted == 'healthyBleed') ? 0.30 : 0.20;
+
+    //Adds challenge damage
+    dDamage += dHealth * challengeDamage;
+    xDamage += xHealth * challengeDamage;
+    bDamage += bDamage * challengeDamage;
+
+    //Explosive Daily
     var xExplosionOK = true;
     var dExplosionOK = true;
     if (typeof game.global.dailyChallenge['explosive'] !== 'undefined') {
@@ -140,6 +140,8 @@ function autoStance() {
         xExplosionOK = ((xHealth - missingHealth > explosionDmg) || (enemyHealth > playerXCritDmg));
         dExplosionOK = (newSquadRdy || (dHealth - missingHealth > explosionDmg) || (enemyHealth > playerDCritDmg));
     }
+
+    //Flags that tell on which situations your trimps can survive
     var oneshotFast = enemyFast ? enemyHealth <= baseDamage : false;
     var surviveD = ((newSquadRdy && dHealth > dDamage) || (dHealth - missingHealth > dDamage));
     var surviveX = ((newSquadRdy && xHealth > xDamage) || (xHealth - missingHealth > xDamage));
@@ -153,7 +155,10 @@ function autoStance() {
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
 	//D if it can survive it
-        if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok && dExplosionOK) setFormation(2);
+        if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok && dExplosionOK) {
+            console.log("SurviveD: " + surviveD + ".oneshotFast: " + oneshotFast);
+            setFormation(2);
+	}
         
 	//Critical Things
 	else if (isCritThing && !voidCritinDok) {
