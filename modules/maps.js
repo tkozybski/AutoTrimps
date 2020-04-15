@@ -2,7 +2,7 @@
 
 MODULES.maps={};
 MODULES.maps.numHitsSurvived=1.5;
-MODULES.maps.farmOnLowHealth=false;
+MODULES.maps.farmOnLowHealth=true;
 MODULES.maps.LeadfarmingCutoff=10;
 MODULES.maps.NomfarmingCutoff=10;
 MODULES.maps.NomFarmStacksCutoff=[7,30,100];
@@ -239,6 +239,7 @@ function autoMap() {
     } else
         needPrestige = prestige != "Off" && game.mapUnlocks[prestige] && game.mapUnlocks[prestige].last <= (game.global.world + extraMapLevels) - 5 && game.global.challengeActive != "Frugal";
 
+    //Prestige Skip 1
     skippedPrestige = false;
     if (needPrestige && getPsString("gems", true) > 0 && (getPageSetting('PrestigeSkip1_2') == 1 || getPageSetting('PrestigeSkip1_2') == 2)) {
         var prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest', 'Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Bestplate', 'GambesOP'];
@@ -254,6 +255,7 @@ function autoMap() {
         }
     }
 
+    //Prestige Skip 2
     if ((needPrestige || skippedPrestige) && (getPageSetting('PrestigeSkip1_2') == 1 || getPageSetting('PrestigeSkip1_2') == 3)) {
         const prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest'];
         const numLeft = prestigeList.filter(prestige => game.mapUnlocks[prestige].last <= (game.global.world + extraMapLevels) - 5);
@@ -268,12 +270,15 @@ function autoMap() {
     var ourBaseDamage = calcOurDmg("avg", false, true);
     var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.0), true, true);
     var enemyHealth = calcEnemyHealth();
-
+    
+    //Farm Trigger
+    var farmTrigger = (game.global.challengeActive == 'Lead') ? getPageSetting("mapcuntoff") : getPageSetting('DisableFarm');
     if (getPageSetting('DisableFarm') > 0) {
-        shouldFarm = (calcHDratio() >= getPageSetting('DisableFarm'));
+        shouldFarm = calcHDratio() >= farmTrigger;
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm)
             toggleSetting('repeatUntil');
     }
+
     if (game.global.spireActive) {
         enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
     }
