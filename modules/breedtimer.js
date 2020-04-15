@@ -6,7 +6,7 @@ var missingTrimps = new DecimalBreed(0);
 
 //Lowers breed timer proportionally to the amount of Momentum during Lead
 function customLeadTimer() {
-    if (calcHDratio <= getPageSetting("mapcuntoff")) return 30;
+    if (calcHDratio() <= getPageSetting("mapcuntoff")) return 30;
     return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
 }
 
