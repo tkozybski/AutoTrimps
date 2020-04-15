@@ -146,7 +146,6 @@ function autoStance() {
     var surviveD = ((newSquadRdy && dHealth > dDamage) || (dHealth - missingHealth > dDamage));
     var surviveX = ((newSquadRdy && xHealth > xDamage) || (xHealth - missingHealth > xDamage));
     var surviveB = ((newSquadRdy && bHealth > bDamage) || (bHealth - missingHealth > bDamage));
-    var leadAttackOK = !leadChallenge || oneshotFast || surviveD;
     var drainAttackOK = !drainChallenge || oneshotFast || surviveD;
     var isCritThing = isCritVoidMap || isCritDaily || isCrushed;
     var voidCritinDok = !isCritThing || oneshotFast || surviveD;
@@ -155,7 +154,7 @@ function autoStance() {
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
 	//D if it can survive it
-        if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok && dExplosionOK) {
+        if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) {
             console.log("SurviveD: " + surviveD + ".oneshotFast: " + oneshotFast);
             setFormation(2);
 	}
@@ -184,12 +183,9 @@ function autoStance() {
 	else if (game.upgrades.Formations.done && !xExplosionOK) setFormation(1);
         
         //X if can survive on it
-	else if (game.upgrades.Formations.done && surviveX) {
-            if ((game.global.challengeActive == 'Lead') && (xHealth - missingHealth < xDamage + (xHealth * leadDamage))) setFormation(1);
-            else setFormation("0");
-        }
+	else if (game.upgrades.Formations.done && surviveX) setFormation("0");
         
-        //B if can survive on it
+        //B if can survive on it (implicitly checks if you change survive the formation switch)
         else if (game.upgrades.Barrier.done && surviveB) {
             if (game.global.formation != 3) {
                 setFormation(3);
