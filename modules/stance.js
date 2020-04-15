@@ -154,10 +154,7 @@ function autoStance() {
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
 	//D if it can survive it
-        if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) {
-            console.log("SurviveD: " + surviveD + ".oneshotFast: " + oneshotFast);
-            setFormation(2);
-	}
+        if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) setFormation(2);
         
 	//Critical Things
 	else if (isCritThing && !voidCritinDok) {
