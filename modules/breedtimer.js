@@ -74,7 +74,7 @@ function ATGA2() {
 			target = new Decimal(Math.ceil(isNaN(atl) ? target : atl/1000*(((game.portal.Agility.level) ? 1000 * Math.pow(1 - game.portal.Agility.modifier, game.portal.Agility.level) : 1000) + ((game.talents.hyperspeed2.purchased && (game.global.world <= Math.floor((game.global.highestLevelCleared + 1) * 0.5))) || (game.global.mapExtraBonus == "fa")) * -100 + (game.talents.hyperspeed.purchased) * -100)));
 		}
 		
-		if (game.global.challengeActive == 'Lead') target = customLeadTimer();
+		if (game.global.challengeActive == 'Lead') target = new Decimal(customLeadTimer());
 
 		var now = new Date().getTime();
 		var thresh = new DecimalBreed(totalTime.mul(0.02));
