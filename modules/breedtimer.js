@@ -3,6 +3,11 @@ MODULES["breedtimer"].voidCheckPercent = 95;
 
 var DecimalBreed = Decimal.clone({precision: 30, rounding: 4});
 var missingTrimps = new DecimalBreed(0);
+
+function customLeadTime() {
+    return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
+}
+
 function ATGA2() {
 	if (game.jobs.Geneticist.locked == false && getPageSetting('ATGA2') == true && getPageSetting('ATGA2timer') > 0 && game.global.challengeActive != "Trapper"){
 		var trimps = game.resources.trimps;
@@ -67,6 +72,8 @@ function ATGA2() {
 			atl = Math.ceil((Math.sqrt((plagueDamagePerStack/2+boggedDamage)**2 - 2 * plagueDamagePerStack * (boggedDamage-1)) - (plagueDamagePerStack/2+boggedDamage)) / plagueDamagePerStack);
 			target = new Decimal(Math.ceil(isNaN(atl) ? target : atl/1000*(((game.portal.Agility.level) ? 1000 * Math.pow(1 - game.portal.Agility.modifier, game.portal.Agility.level) : 1000) + ((game.talents.hyperspeed2.purchased && (game.global.world <= Math.floor((game.global.highestLevelCleared + 1) * 0.5))) || (game.global.mapExtraBonus == "fa")) * -100 + (game.talents.hyperspeed.purchased) * -100)));
 		}
+		
+		if (game.global.challengeActive == 'Lead') target = customLeadTimer();
 
 		var now = new Date().getTime();
 		var thresh = new DecimalBreed(totalTime.mul(0.02));
