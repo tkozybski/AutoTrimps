@@ -121,6 +121,7 @@ function autoStance() {
         dDamage += added;
         xDamage += added;
         bDamage += added;
+	
     }
     if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed') {
         var hplost = (enemy.corrupted == 'healthyBleed') ? 0.30 : 0.20;
@@ -149,46 +150,50 @@ function autoStance() {
     var voidCritinDok = !isCritThing || oneshotFast || surviveD;
     var voidCritinXok = !isCritThing || oneshotFast || surviveX;
 
+    //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
+	//D if it can survive it
+        if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok && dExplosionOK) setFormation(2);
         
-        if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok && dExplosionOK) {
-            setFormation(2);
-
-        } else if (isCritThing && !voidCritinDok) {
+	//Critical Things
+	else if (isCritThing && !voidCritinDok) {
+	    //B before it takes a hit that won't leave enough health to change formation
+            if (game.global.formation == "0" && game.global.soldierHealth - xDamage < bHealth) {
+                if (game.upgrades.Barrier.done && (newSquadRdy || missingHealth < bHealth)) setFormation(3);
+            }
             
-            if (game.global.formation == "0" && game.global.soldierHealth - xDamage < bHealth){
-                if (game.upgrades.Barrier.done && (newSquadRdy || missingHealth < bHealth))
-                    setFormation(3);
-            }
-            else if (xDamage == 0 || ((game.global.formation == 2 || game.global.formation == 4) && voidCritinXok)){
-                setFormation("0");
-            }
-            else {
-                if (game.global.formation == "0"){
-                    if (game.upgrades.Barrier.done && (newSquadRdy || missingHealth < bHealth))
-                        setFormation(3);
-                    else
-                        setFormation(1);
-                }
-                else if (game.upgrades.Barrier.done && (game.global.formation == 2 || game.global.formation == 4))
-                    setFormation(3);
-            }
-        } else if (game.upgrades.Formations.done && !xExplosionOK) {
-            setFormation(1);
-        } else if (game.upgrades.Formations.done && surviveX) {
-            if ((game.global.challengeActive == 'Lead') && (xHealth - missingHealth < xDamage + (xHealth * leadDamage)))
-                setFormation(1);
-            else
-                setFormation("0");
-        } else if (game.upgrades.Barrier.done && surviveB) {
+            //X if B isn't necessary
+            else if (xDamage == 0 || ((game.global.formation == 2 || game.global.formation == 4) && voidCritinXok)) setFormation("0");
+            
+            //If on X, then B if there is enough health to do so, else H
+            else if (game.global.formation == "0") {
+                if (game.upgrades.Barrier.done && (newSquadRdy || missingHealth < bHealth)) setFormation(3);
+                else setFormation(1);
+	    }
+            
+            //If everything else fails, then B (because, c'mon, these if are messy af)
+            else if (game.upgrades.Barrier.done && (game.global.formation == 2 || game.global.formation == 4)) setFormation(3);
+        }
+
+	//H If it can't take the explosion on X
+	else if (game.upgrades.Formations.done && !xExplosionOK) setFormation(1);
+        
+        //X if can survive on it
+	else if (game.upgrades.Formations.done && surviveX) {
+            if ((game.global.challengeActive == 'Lead') && (xHealth - missingHealth < xDamage + (xHealth * leadDamage))) setFormation(1);
+            else setFormation("0");
+        }
+        
+        //B if can survive on it
+        else if (game.upgrades.Barrier.done && surviveB) {
             if (game.global.formation != 3) {
                 setFormation(3);
                 debug("AutoStance B/3","other");
             }
-        } else {
-            if (game.global.formation != 1)
-                setFormation(1);
         }
+        
+        //H otherwise
+        else if (game.global.formation != 1) setFormation(1);
     }
     return true;
 }
