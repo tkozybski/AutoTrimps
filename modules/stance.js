@@ -192,8 +192,6 @@ function autoStance() {
         
         //H otherwise
         else if (game.global.formation != 1) setFormation(1);
-
-        console.log("Look, we tried, ok?");
     }
     return true;
 }
