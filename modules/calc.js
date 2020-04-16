@@ -452,12 +452,9 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         else if (game.global.challengeActive == "Watch") {
             number *= 1.25;
         }
-        else if (game.global.challengeActive == "Lead"){
-            number *= (1 + (game.challenges.Lead.stacks * 0.04));
+        if (game.global.challengeActive == 'Life') {
+            number *= 6;
         }
-		if (game.global.challengeActive == 'Life') {
-			number *= 6;
-    	}
         else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) {
             number *= 10;
         }
@@ -481,6 +478,11 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     }
     if (!enemy && game.global.usingShriek) {
         number *= game.mapUnlocks.roboTrimp.getShriekValue();
+    }
+
+    //Challenges that must be added even if the enemy is known
+    if (game.global.challengeActive == "Lead"){
+        number *= (1 + (game.challenges.Lead.stacks * 0.04));
     }
 
     if (!disableFlucts) {
