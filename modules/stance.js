@@ -154,13 +154,7 @@ function autoStance() {
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
 	//D if it can survive it
-        if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) {
-            console.log("We have: " + (dHealth - missingHealth));
-            console.log("We are taking: " + dDamage);
-            console.log("By the way, lead damage is: " + challengeDamage + ". Or : " + challengeDamage * dHealth);
-            console.log("");
-            setFormation(2);
-	}
+        if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) setFormation(2);
 
 	//Critical Things
 	else if (isCritThing && !voidCritinDok) {
