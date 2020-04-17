@@ -574,6 +574,7 @@ function calcEnemyHealth(world, map) {
 function calcHDratio(map) {
     var ratio = 0;
     var ourBaseDamage = calcOurDmg("avg", false, true);
+    var zonesAhead = game.global.world + ((game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1);
 
     //Shield
     highDamageShield();
@@ -588,7 +589,7 @@ function calcHDratio(map) {
 	ourBaseDamage *= getCritMulti(true);
     }
     if (!map || map < 1) {
-        ratio = calcEnemyHealth() / ourBaseDamage;
+        ratio = calcEnemyHealth(zonesAhead) / ourBaseDamage;
     }
     if (map || map >= 1)
 	ratio = calcEnemyHealth(map, true) / ourBaseDamage;
