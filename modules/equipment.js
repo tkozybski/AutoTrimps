@@ -278,9 +278,9 @@ function autoLevelEquipment() {
     if (getPageSetting('dloomswap') > 0 && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg'))
 	ourDamage *= trimpAA;
 
-    var calcLeadcalcLead = (game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1;
-    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world + calcLead, 50, 'Snimp', 1.0), true, true);
-    var enemyHealth = calcEnemyHealth(game.global.world + calcLead);
+    var zonesAhead = game.global.world + (game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1;
+    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(zonesAhead, 50, 'Snimp', 1.0), true, true);
+    var enemyHealth = calcEnemyHealth(zonesAhead);
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     var numHits = MODULES["equipment"].numHitsSurvived;
     var enoughHealthE = (calcOurHealth(true) > numHits * (enemyDamage - calcOurBlock(true) > 0 ? enemyDamage - calcOurBlock(true) : enemyDamage * pierceMod));
