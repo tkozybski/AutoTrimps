@@ -185,15 +185,15 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, noCrit) {
 	
 	//Amalgamator
 	if (game.jobs.Amalgamator.owned > 0) {
-		number *= game.jobs.Amalgamator.getDamageMult();
+            number *= game.jobs.Amalgamator.getDamageMult();
 	}
 	
 	//Anticipation
-	if (getPageSetting('45stacks') == false && game.global.antiStacks > 0) {
-		number *= ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
+	if ((getPageSetting('45stacks') == false || getPageSetting('45stacks') == "false")  && game.global.antiStacks > 0) {
+            number *= ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
 	}
-	if (getPageSetting('45stacks') == true && game.global.antiStacks > 0) {
-		number *= ((45 * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
+	else if (game.global.antiStacks > 0) {
+            number *= ((45 * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
 	}
 	
 	//console.log('Antic: ', number);
