@@ -90,7 +90,7 @@ if (useoverkill && game.portal.Overkill.level == 0)
 if (useoverkill && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()) && getPageSetting('ScryerUseinSpire2')==0)
     useoverkill = false;
 if (useoverkill && game.portal.Overkill.level > 0 && getPageSetting('UseScryerStance') == true) {
-    var minDamage = calcOurDmg("min",false,true);
+    var minDamage = calcOurDmg("min",false,true, true);
     var Sstance = 0.5;
     var ovkldmg = minDamage * Sstance * (game.portal.Overkill.level*0.005);
     var ovklHDratio = getCurrentEnemy(1).maxHealth / ovkldmg;
