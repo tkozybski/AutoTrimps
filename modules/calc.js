@@ -119,29 +119,24 @@ function highDamageShield() {
 	}
 }
 
-function getCritMulti(high) {
+function getCritMulti(high, noCrit) {
 
 	var critChance = getPlayerCritChance();
 	var CritD = getPlayerCritDamageMult();
+	
+	if (noCrit) critChance = Math.floor(critChance);
 
-	if (
-	    high && 
-	    (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily") || 
-	    (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily")
-	) {
-	    highDamageShield();
-	    critChance = critCC;
-	    CritD = critDD;
+	if (high && (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily") || 
+	      (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily")) {
+	          highDamageShield();
+	          critChance = critCC;
+	          CritD = critDD;
 	}
 
-	if (critChance < 0)
-		CritDHModifier = (1+critChance - critChance/5);
-	if (critChance >= 0 && critChance < 1)
-		CritDHModifier = (1-critChance + critChance * CritD);
-	if (critChance >= 1 && critChance < 2)
-		CritDHModifier = ((critChance-1) * getMegaCritDamageMult(2) * CritD + (2-critChance) * CritD);
-	if (critChance >= 2)
-		CritDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * CritD + (3-critChance) * getMegaCritDamageMult(2) * CritD);
+	if      (critChance < 0) CritDHModifier = (1+critChance - critChance/5);
+	else if (critChance < 1) CritDHModifier = (1-critChance + critChance * CritD);
+	else if (critChance < 2) CritDHModifier = ((critChance-1) * getMegaCritDamageMult(2) * CritD + (2-critChance) * CritD);
+	else                     CritDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * CritD + (3-critChance) * getMegaCritDamageMult(2) * CritD);
 
   return CritDHModifier;
 }
@@ -180,7 +175,7 @@ function calcOurBlock(stance) {
     return block;
 }
 
-function calcOurDmg(minMaxAvg, incStance, incFlucts) {
+function calcOurDmg(minMaxAvg, incStance, incFlucts, noCrit) {
 	var number = getTrimpAttack();
 	var fluctuation = .2;
 	var maxFluct = -1;
@@ -192,8 +187,6 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	if (game.jobs.Amalgamator.owned > 0) {
 		number *= game.jobs.Amalgamator.getDamageMult();
 	}
-	
-	//console.log('Amalg: ', number);
 	
 	//Anticipation
 	if (getPageSetting('45stacks') == false && game.global.antiStacks > 0) {
@@ -369,9 +362,9 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts) {
 	var max = number;
 	var avg = number;
 
-	min *= (getCritMulti(false)*0.8);
-	avg *= getCritMulti(false);
-	max *= (getCritMulti(false)*1.2);
+	min *= (getCritMulti(false, noCrit));
+	avg *= getCritMulti(false, noCrit);
+	max *= (getCritMulti(false, noCrit));
 	
 	//console.log('Crit: ', avg);
 
