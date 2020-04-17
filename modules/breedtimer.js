@@ -10,7 +10,7 @@ function customLeadTimer() {
     if (calcHDratio(false) <= getPageSetting("mapcuntoff")) return 30;
 
     //Timer = 10 to 30, according to the number of stacks. Or from 5-30 if Scrying
-    if (game.global.formation == 4) return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
+    if (game.global.formation != 4) return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
     else return Math.min(30, 36 - game.challenges.Lead.stacks/6.5);
 }
 
