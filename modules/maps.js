@@ -267,7 +267,7 @@ function autoMap() {
     }
 
     //Calc
-    var zonesAhead = game.global.world + (game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1;
+    var zonesAhead = game.global.world + ((game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1);
     var ourBaseDamage = calcOurDmg("avg", false, true);
     var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(zonesAhead, 50, 'Snimp', 1.0), true, true);
     var enemyHealth = calcEnemyHealth(zonesAhead);
