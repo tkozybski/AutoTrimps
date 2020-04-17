@@ -267,15 +267,14 @@ function autoMap() {
     }
 
     //Calc
-    var leadCalc = (game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1;
+    var zonesAhead = game.global.world + (game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1;
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world + leadCalc, 50, 'Snimp', 1.0), true, true);
-    var enemyHealth = calcEnemyHealth(game.global.world + leadCalc);
+    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(zonesAhead, 50, 'Snimp', 1.0), true, true);
+    var enemyHealth = calcEnemyHealth(zonesAhead);
     
     //Farm Trigger
-    var farmTrigger = (game.global.challengeActive == 'Lead') ? getPageSetting("mapcuntoff") : getPageSetting('DisableFarm');
     if (getPageSetting('DisableFarm') > 0) {
-        shouldFarm = calcHDratio() >= farmTrigger;
+        shouldFarm = calcHDratio() >= getPageSetting("mapcuntoff");
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm)
             toggleSetting('repeatUntil');
     }
