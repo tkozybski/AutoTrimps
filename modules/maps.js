@@ -1,7 +1,7 @@
 //Helium
 
 MODULES.maps={};
-MODULES.maps.numHitsSurvived=1.5;
+MODULES.maps.numHitsSurvived=10;
 MODULES.maps.farmOnLowHealth=true;
 MODULES.maps.LeadfarmingCutoff=10;
 MODULES.maps.NomfarmingCutoff=10;
