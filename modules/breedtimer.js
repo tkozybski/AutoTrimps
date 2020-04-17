@@ -6,8 +6,12 @@ var missingTrimps = new DecimalBreed(0);
 
 //Lowers breed timer proportionally to the amount of Momentum during Lead
 function customLeadTimer() {
+    //If instakilling, timer = 30
     if (calcHDratio(false) <= getPageSetting("mapcuntoff")) return 30;
-    return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
+
+    //Timer = 10 to 30, according to the number of stacks. Or from 5-30 if Scrying
+    if (game.global.formation == 4) Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
+    else Math.min(30, 36 - game.challenges.Lead.stacks/6.5);
 }
 
 function ATGA2() {
