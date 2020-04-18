@@ -199,7 +199,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, noCrit) {
 	//console.log('Antic: ', number);
 	
 	//Map Bonus
-	if (game.global.mapBonus > 0 && (game.global.challengeActive != "Lead" || (game.global.world % 2) == 1)) {
+	if (game.global.mapBonus > 0) {
 	    var mapBonus = game.global.mapBonus;
             if (game.talents.mapBattery.purchased && mapBonus == 10) mapBonus *= 2;
 		number *= ((mapBonus * .2) + 1);
