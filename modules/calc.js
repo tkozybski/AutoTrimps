@@ -511,70 +511,66 @@ function calcEnemyBaseHealth(zone, level, name) {
     return health;
 }
 
-function calcEnemyHealth(world, map) {
+function calcEnemyHealth(world, map, full) {
+    //Init
     world = !world ? game.global.world : world;
     var health = calcEnemyBaseHealth(world, 50, "Snimp");
-    var corrupt = mutations.Corruption.active();
-    var healthy = mutations.Healthy.active();
-    if (map) {
-	corrupt = false;
-	healthy = false;
-	if (game.global.universe == 1) {
-	    health *= 0.5;
-	}
-    }
+    var corrupt = !map && world >= mutations.Corruption.start();
+    var healthy = !map && mutations.Healthy.active();
+
+    //Maps
+    if (map && game.global.universe == 1) health *= 0.5;
+
+    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy) {
-        var cptnum = getCorruptedCellsNum();
-        var cpthlth = getCorruptScale("health");
-        var cptpct = cptnum / 100;
-        var hlthprop = cptpct * cpthlth;
-        if (hlthprop >= 1)
-            health *= hlthprop;
+        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+        var corruptionAmount = ~~((world - mutations.Corruption.start())/3) + 2; //Integer division
+        var corruptionWeight = ((100 - corruptionAmount) + corruptionAmount * getCorruptScale("health");
+        health *= corruptionWeight;
     }
+
+    //Healthy
     if (healthy) {
-    var scales = Math.floor((game.global.world - 150) / 6);
-    health *= 14*Math.pow(1.05, scales);
-    health *= 1.15;
+        var scales = Math.floor((world - 150) / 6);
+        health *= 14*Math.pow(1.05, scales);
+        health *= 1.15;
     }
+
+    //Obliterated + Eradicated
     if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated") {
         var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
         var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
         oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
         health *= oblitMult;
     }
-    if (game.global.challengeActive == "Coordinate"){
-	health *= getBadCoordLevel();
-    }
-    if (game.global.challengeActive == "Toxicity") {
-        health *= 2;
-    }
-    if (game.global.challengeActive == 'Lead') {
-        health *= (1 + (game.challenges.Lead.stacks * 0.04));
-    }
-    if (game.global.challengeActive == 'Balance') {
-        health *= 2;
-    }
-    if (game.global.challengeActive == 'Meditate') {
-        health *= 2;
-    }
-    if (game.global.challengeActive == 'Life') {
-        health *= 11;
-    }
+
+    //Challenges
+    if (game.global.challengeActive == 'Balance')    health *= 2;
+    if (game.global.challengeActive == 'Meditate')   health *= 2;
+    if (game.global.challengeActive == "Toxicity")   health *= 2;
+    if (game.global.challengeActive == 'Life')       health *= 11;
+    if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
+    if (game.global.challengeActive == 'Lead')       health *= (1 + (game.challenges.Lead.stacks * 0.04));
+
+    //Domination Challenge
     if (game.global.challengeActive == "Domination") {
-        if (game.global.lastClearedCell == 98) {
-            health *= 7.5;
-        } else health *= 0.1;
+        if (game.global.lastClearedCell == 98) health *= 7.5;
+        else health *= 0.1;
     }
-    if (game.global.spireActive) {
-	health = calcSpire(99, game.global.gridArray[99].name, 'health');
-    }
+    
+    //Spire
+    if (game.global.spireActive) health = calcSpire(99, game.global.gridArray[99].name, 'health');
+
     return health;
 }
 
 function calcHDratio(map) {
     var ratio = 0;
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var zonesAhead = game.global.world + ((game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1);
+    var targetZone = game.global.world;
+
+    //Lead
+    if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
 
     //Shield
     highDamageShield();
@@ -589,7 +585,7 @@ function calcHDratio(map) {
 	ourBaseDamage *= getCritMulti(true);
     }
     if (!map || map < 1) {
-        ratio = calcEnemyHealth(zonesAhead) / ourBaseDamage;
+        ratio = calcEnemyHealth(targetZone) / ourBaseDamage;
     }
     if (map || map >= 1)
 	ratio = calcEnemyHealth(map, true) / ourBaseDamage;
