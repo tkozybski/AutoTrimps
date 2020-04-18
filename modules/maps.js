@@ -266,11 +266,14 @@ function autoMap() {
         }
     }
 
+    //Lead farms one zone ahead on odd numbered zones
+    var targetZone = game.global.world;
+    if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
+
     //Calc
-    var zonesAhead = game.global.world + ((game.global.challengeActive == "Lead" && game.global.world%2 == 1) ? 2 : 1);
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(zonesAhead, 50, 'Snimp', 1.0), true, true);
-    var enemyHealth = calcEnemyHealth(zonesAhead);
+    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
+    var enemyHealth = calcEnemyHealth(targetZone);
     
     //Farm Trigger
     if (getPageSetting('DisableFarm') > 0) {
