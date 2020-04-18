@@ -406,11 +406,14 @@ function autoMap() {
             var cpthlth = getCorruptScale("health") / 2;
             if (mutations.Magma.active()) maphp *= cpthlth;
 		
-            //Applies Dominance + Titimp
+            //Applies Titimp
             var mapdmg = ourBaseDamage2;
-            if (game.upgrades.Dominance.done) mapdmg *= 4;
             if (game.unlocks.imps.Titimp) mapdmg *= 2;
-			
+
+            //Farms on Scrier if available, or Dominance, or just X
+            if (game.global.world >= 60 && getHighestLevelCleared() >= 180) mapdmg /= 2;
+            else if (game.upgrades.Dominance.done) mapdmg *= 4;
+
             //Stop increasing map level if we can't one hit on it
             if (mapdmg < maphp) break;
         }
