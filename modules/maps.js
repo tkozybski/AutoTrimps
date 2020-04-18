@@ -278,7 +278,7 @@ function autoMap() {
     
     //Farm Trigger
     if (getPageSetting('DisableFarm') > 0) {
-        shouldFarm = calcHDratio() >= getPageSetting("mapcuntoff");
+        shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm)
             toggleSetting('repeatUntil');
     }
