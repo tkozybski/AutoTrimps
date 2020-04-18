@@ -526,7 +526,7 @@ function calcEnemyHealth(world, map, full) {
         //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
         var corruptionAmount = ~~((world - mutations.Corruption.start())/3) + 2; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("health");
-        health *= corruptionWeight;
+        health *= corruptionWeight/100;
     }
 
     //Healthy
