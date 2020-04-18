@@ -17,6 +17,7 @@ MODULES.maps.shouldFarmCell=59;
 MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 
+var isFarming = !1;
 var doVoids=!1;
 var needToVoid=!1;
 var needPrestige=!1;
@@ -275,13 +276,6 @@ function autoMap() {
     var ourBaseDamage = calcOurDmg("avg", false, true);
     var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
     var enemyHealth = calcEnemyHealth(targetZone);
-    
-    //Farm Trigger
-    if (getPageSetting('DisableFarm') > 0) {
-        shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
-        if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm)
-            toggleSetting('repeatUntil');
-    }
 
     if (game.global.spireActive) {
         enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
@@ -303,10 +297,20 @@ function autoMap() {
     //Farming
     var selectedMap = "world";
     var shouldFarmLowerZone = false;
+
+    //Farm Trigger
+    if (getPageSetting('DisableFarm') > 0) {
+        //Farm on Low Damage
+        shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
+
+        //Farm on Low Health
+        shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus < getPageSetting('MaxMapBonushealth'));
+
+        //Toggle "Repeat Until"
+        if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm) toggleSetting('repeatUntil');
+    }
     
-    //Farm on Low Health
-    shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus < getPageSetting('MaxMapBonushealth'));
-    
+    isFarming = shouldFarm;
     shouldDoMaps = false;
     if (ourBaseDamage > 0) {
         shouldDoMaps = (!enoughDamage || shouldFarm || scryerStuck);
