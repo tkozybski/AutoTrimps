@@ -362,9 +362,9 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, noCrit) {
 	var max = number;
 	var avg = number;
 
-	min *= (getCritMulti(false, noCrit));
+	min *= 0.8 * getCritMulti(false, noCrit);
 	avg *= getCritMulti(false, noCrit);
-	max *= (getCritMulti(false, noCrit));
+	max *= 1.2 * getCritMulti(false, noCrit);
 	
 	//console.log('Crit: ', avg);
 
