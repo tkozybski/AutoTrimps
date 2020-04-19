@@ -287,6 +287,11 @@ function autoLevelEquipment() {
     var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
     var enemyHealth = calcEnemyHealth(targetZone);
 
+    //Spire
+    if (game.global.spireActive) {
+        enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
+    }
+
     //Extra Calc
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     var numHits = MODULES["equipment"].numHitsSurvived;
