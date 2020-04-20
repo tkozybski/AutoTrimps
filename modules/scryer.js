@@ -81,7 +81,7 @@ var willSuicide = getPageSetting('ScryerDieZ');
         die = game.global.world >= dieZ && (!dieC || (game.global.lastClearedCell + 1 >= dieC));
     }
     if (game.global.formation == 0 || game.global.formation == 1)
-        oktoswitch = die || newSquadRdy || (missingHealth < (baseHealth / 2));
+        oktoswitch = die || newSquadRdy || (missingHealth < baseHealth / ((game.global.formation == 1) ? 8 : 2));
 
 //Overkill
 var useoverkill = getPageSetting('ScryerUseWhenOverkill');
