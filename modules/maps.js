@@ -278,9 +278,15 @@ function autoMap() {
     var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
     var enemyHealth = calcEnemyHealth(targetZone);
 
-    if (game.global.spireActive) {
-        enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
+    //Spire Calc
+    if (game.global.spireActive) enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
+    
+    //Void Maps
+    if (doVoids) {
+        enemyDamage *= 4.5;
+	enemyHealth *= 4.5;
     }
+    
     highDamageShield();
     if (getPageSetting('loomswap') > 0 && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg'))
         ourBaseDamage *= trimpAA;
