@@ -432,7 +432,7 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     var healthy = mutations.Healthy.active();
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    if (corrupt && !healthy) {
+    if (corrupt && !healthy && getCurrentMapObject().location != "Void") {
         //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
         var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
