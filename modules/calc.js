@@ -451,9 +451,6 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) {
             number *= 10;
         }
-        else if (game.global.challengeActive == "Corrupted"){
-            number *= 3;
-	}
         else if (game.global.challengeActive == "Domination"){
             	if (game.global.lastClearedCell == 98) {
 		    number *= 2.5;
@@ -476,6 +473,9 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     //Challenges that must be added even if the enemy is known
     if (game.global.challengeActive == "Lead"){
         number *= (1 + (game.challenges.Lead.stacks * 0.04));
+    }
+    else if (game.global.challengeActive == "Corrupted"){
+        number *= 3;
     }
 
     if (!disableFlucts) {
