@@ -423,16 +423,23 @@ function calcSpire(cell, name, what) {
 }
 
 function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
-    var number;
-    if (enemy)
-        number = enemy.attack;
-    else
-        number = attack;
+    //Init
+    var number = (enemy) ? enemy.attack : attack;
     var fluctuation = .2;
     var maxFluct = -1;
     var minFluct = -1;
+    var corrupt = mutations.Corruption.active();
+    var healthy = mutations.Healthy.active();
 
-    if (!enemy && game.global.challengeActive){
+    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+    if (corrupt && !healthy) {
+        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+        var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
+        number *= corruptionWeight/100;
+    }
+
+    if (game.global.challengeActive){
         if (game.global.challengeActive == "Coordinate"){
             number *= getBadCoordLevel();
         }
@@ -445,8 +452,14 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         else if (game.global.challengeActive == "Watch") {
             number *= 1.25;
         }
-        if (game.global.challengeActive == 'Life') {
+        else if (game.global.challengeActive == 'Life') {
             number *= 6;
+        }
+        else if (game.global.challengeActive == "Lead"){
+            number *= (1 + (game.challenges.Lead.stacks * 0.04));
+        }
+        else if (game.global.challengeActive == "Corrupted"){
+            number *= 3;
         }
         else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) {
             number *= 10;
@@ -468,14 +481,6 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     }
     if (!enemy && game.global.usingShriek) {
         number *= game.mapUnlocks.roboTrimp.getShriekValue();
-    }
-
-    //Challenges that must be added even if the enemy is known
-    if (game.global.challengeActive == "Lead"){
-        number *= (1 + (game.challenges.Lead.stacks * 0.04));
-    }
-    else if (game.global.challengeActive == "Corrupted"){
-        number *= 3;
     }
 
     if (!disableFlucts) {
