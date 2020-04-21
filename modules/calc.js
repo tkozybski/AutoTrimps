@@ -516,10 +516,10 @@ function calcEnemyBaseHealth(zone, level, name) {
     return health;
 }
 
-function calcEnemyHealth(world, map, full) {
+function calcEnemyHealth(world, map, full, name) {
     //Init
     world = !world ? game.global.world : world;
-    var health = calcEnemyBaseHealth(world, 50, "Snimp");
+    var health = calcEnemyBaseHealth(world, 50, name ? name : "Snimp");
     var corrupt = !map && world >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
 
