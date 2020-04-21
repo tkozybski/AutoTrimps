@@ -86,23 +86,22 @@ var willSuicide = getPageSetting('ScryerDieZ');
     if (game.global.formation == 0 || game.global.formation == 1)
         oktoswitch = die || newSquadRdy || (missingHealth < baseHealth / ((game.global.formation == 1) ? 8 : 2));
 
+//Checks if Overkill is allowed
+var useoverkill = getPageSetting('UseScryerStance') == true && game.portal.Overkill.level > 0 && getPageSetting('ScryerUseWhenOverkill');
+    useoverkill &= !(getPageSetting('ScryerUseinSpire2') == 0 && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()));
+
 //Overkill
-var useoverkill = getPageSetting('ScryerUseWhenOverkill');
-if (useoverkill && game.portal.Overkill.level == 0)
-    setPageSetting('ScryerUseWhenOverkill', false);
-if (useoverkill && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()) && getPageSetting('ScryerUseinSpire2')==0)
-    useoverkill = false;
-if (useoverkill && game.portal.Overkill.level > 0 && getPageSetting('UseScryerStance') == true) {
-    var minDamage = calcOurDmg("min",false,true, true);
-    var Sstance = 0.5;
-    var ovkldmg = minDamage * Sstance * (game.portal.Overkill.level*0.005);
-    var ovklHDratio = getCurrentEnemy(1).maxHealth / ovkldmg;
-    if (ovklHDratio < 2) {
-        if (oktoswitch)
-            setFormation(4);
-            return;
-        }
+if (useoverkill) {
+    //Calculates the minimum left "over damage" possible
+    var minDamage = 0.5 * calcOurDmg("min", false, true, true);
+    var leftOverDmg = Math.min(0, minDamage - getCurrentEnemy().health);
+
+    //Switches to S if it has enough damage to secure an overkill
+    if (okaytoswitch && 0.005 * game.portal.Overkill.level * leftOverDmd > getCurrentEnemy(2).maxHealth) {
+        setFormation(4);
+        return
     }
+}
 
 //Default
 var min_zone = getPageSetting('ScryerMinZone');
