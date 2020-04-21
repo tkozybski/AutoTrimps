@@ -97,7 +97,9 @@ if (useoverkill) {
     var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
 
     //Switches to S if it has enough damage to secure an overkill
-    if (oktoswitch && 0.005 * game.portal.Overkill.level * leftOverDmg > getCurrentEnemy(2).maxHealth) {
+    var overkillDmg = 0.005 * game.portal.Overkill.level * leftOverDmg;
+    var nextEnemyHealth = calcSpecificEnemyHealth(game.global.world, game.global.mapsActive, getCurrentEnemy(2).level);
+    if (oktoswitch && overkillDmg > nextEnemyHealth) {
         setFormation(4);
         return
     }
