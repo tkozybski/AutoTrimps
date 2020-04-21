@@ -94,10 +94,10 @@ var useoverkill = getPageSetting('UseScryerStance') == true && game.portal.Overk
 if (useoverkill) {
     //Calculates the minimum left "over damage" possible
     var minDamage = 0.5 * calcOurDmg("min", false, true, true);
-    var leftOverDmg = Math.min(0, minDamage - getCurrentEnemy().health);
+    var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
 
     //Switches to S if it has enough damage to secure an overkill
-    if (oktoswitch && 0.005 * game.portal.Overkill.level * leftOverDmd > getCurrentEnemy(2).maxHealth) {
+    if (oktoswitch && 0.005 * game.portal.Overkill.level * leftOverDmg > getCurrentEnemy(2).maxHealth) {
         setFormation(4);
         return
     }
