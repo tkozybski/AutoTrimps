@@ -91,7 +91,7 @@ var useoverkill = getPageSetting('UseScryerStance') == true && game.portal.Overk
     useoverkill &= !(getPageSetting('ScryerUseinSpire2') == 0 && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()));
 
 //Overkill
-if (useoverkill) {
+if (useoverkill && getCurrentEnemy(2)) {
     //Calculates the minimum left "over damage" possible
     var minDamage = 0.5 * calcOurDmg("min", false, true, true);
     var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
