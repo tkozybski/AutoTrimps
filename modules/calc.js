@@ -495,6 +495,13 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         return number;
 }
 
+function calcCorruptionScale(world, base) {
+    var startPoint = (game.global.challengeActive == "Corrupted" || game.global.challengeActive == "Eradicated") ? 1 : 150;
+    var scales = Math.floor((world - startPoint) / 6);
+    base *= Math.pow(1.05, scales);
+    return base;
+}
+
 function calcEnemyBaseHealth(zone, level, name) {
     var health = 0;
     health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2);
@@ -516,30 +523,13 @@ function calcEnemyBaseHealth(zone, level, name) {
     return health;
 }
 
-function calcEnemyHealth(world, map, full, name) {
+function calcEnemyHealthCore(world, map, cell, name) {
     //Init
     world = !world ? game.global.world : world;
-    var health = calcEnemyBaseHealth(world, 50, name ? name : "Snimp");
-    var corrupt = !map && world >= mutations.Corruption.start();
-    var healthy = !map && mutations.Healthy.active();
+    var health = calcEnemyBaseHealth(world, cell, name);
 
     //Maps
     if (map && game.global.universe == 1) health *= 0.5;
-
-    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    if (corrupt && !healthy) {
-        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
-        var corruptionAmount = ~~((world - mutations.Corruption.start())/3) + 2; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("health");
-        health *= corruptionWeight/100;
-    }
-
-    //Healthy
-    if (healthy) {
-        var scales = Math.floor((world - 150) / 6);
-        health *= 14*Math.pow(1.05, scales);
-        health *= 1.15;
-    }
 
     //Obliterated + Eradicated
     if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated") {
@@ -565,6 +555,54 @@ function calcEnemyHealth(world, map, full, name) {
     
     //Spire
     if (game.global.spireActive) health = calcSpire(99, game.global.gridArray[99].name, 'health');
+
+    return health;
+}
+
+function calcEnemyHealth(world, map, full) {
+    //Init
+    var health = calcEnemyHealthCore(world, map, 99, "Turtlimp");
+    var corrupt = !map && world >= mutations.Corruption.start();
+    var healthy = !map && mutations.Healthy.active();
+
+    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+    if (corrupt && !healthy) {
+        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+        var corruptionAmount = ~~((world - mutations.Corruption.start())/3) + 2; //Integer division
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(world, 10);
+        health *= corruptionWeight/100;
+    }
+
+    //Healthy
+    if (healthy) {
+        var scales = Math.floor((world - 150) / 6);
+        health *= 14*Math.pow(1.05, scales);
+        health *= 1.15;
+    }
+
+    return health;
+}
+
+function calcSpecificEnemyHealth(world, map, cell) {
+    //Init
+    var enemy = game.global.gridArray[cell-1];
+    var corrupt = enemy.hasOwnProperty("corrupted");
+    var healthy = enemy.hasOwnProperty("healthy");
+    var name = (corrupted || healthy) ? "Chimp" : enemy.name;
+    var health = calcEnemyHealthCore(world, map, cell, name);
+
+    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+    if (corrupt && !healthy) {
+        health *= calcCorruptionScale(world, 10);
+        if (enemy.corrupted == "corruptTough") health *= 10;
+    }
+
+    //Healthy
+    if (healthy) {
+        var scales = Math.floor((world - 150) / 6);
+        health *= 14*Math.pow(1.05, scales);
+        health *= 1.15;
+    }
 
     return health;
 }
