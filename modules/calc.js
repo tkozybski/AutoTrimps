@@ -588,7 +588,7 @@ function calcSpecificEnemyHealth(world, map, cell) {
     var enemy = game.global.gridArray[cell-1];
     var corrupt = enemy.hasOwnProperty("corrupted");
     var healthy = enemy.hasOwnProperty("healthy");
-    var name = (corrupted || healthy) ? "Chimp" : enemy.name;
+    var name = (corrupt || healthy) ? "Chimp" : enemy.name;
     var health = calcEnemyHealthCore(world, map, cell, name);
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
