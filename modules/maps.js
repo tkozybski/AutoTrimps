@@ -306,6 +306,7 @@ function autoMap() {
     var shouldFarmLowerZone = false;
 
     //Farm Trigger
+    shouldFarm = false;
     if (getPageSetting('DisableFarm') > 0) {
         //Farm on Low Damage
         shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
