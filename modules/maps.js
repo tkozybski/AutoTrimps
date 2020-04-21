@@ -311,7 +311,7 @@ function autoMap() {
         shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
 
         //Farm on Low Health
-        shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus < getPageSetting('MaxMapBonushealth'));
+        shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
 
         //Toggle "Repeat Until"
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm) toggleSetting('repeatUntil');
