@@ -153,11 +153,8 @@ function autoStance() {
 
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
-        //Map farms on S
-        if (game.global.world >= 60 && getHighestLevelCleared() >= 180 && isFarming && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) setFormation(4);
-
 	//D if it can survive it
-        else if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) setFormation(2);
+        if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) setFormation(2);
 
 	//Critical Things
 	else if (isCritThing && !voidCritinDok) {
