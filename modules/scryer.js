@@ -14,16 +14,17 @@ if (game.global.uberNature == "Wind" && getEmpowerment() != "Wind") {
     }
 
 //Never
-var never_scry =   game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
-    never_scry |=  game.global.world <= 60;
-    never_scry |=  getPageSetting('UseScryerStance') &&  game.global.mapsActive && getPageSetting('ScryerUseinMaps2') == 0 && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic" && getCurrentMapObject().level <= game.global.world;
-    never_scry |=  getPageSetting('UseScryerStance') &&  game.global.mapsActive && getPageSetting('ScryerUseinPMaps') == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic";
-    never_scry |=  getPageSetting('UseScryerStance') &&  game.global.mapsActive && getCurrentMapObject().location == "Void" && getPageSetting('ScryerUseinVoidMaps2') == 0;
-    never_scry |=  getPageSetting('UseScryerStance') &&  game.global.mapsActive && getCurrentMapObject().location == "Bionic" && getPageSetting('ScryerUseinBW') == 0;
-    never_scry |=  getPageSetting('UseScryerStance') && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()) && getPageSetting('ScryerUseinSpire2') == 0;
-    never_scry |= (getPageSetting('UseScryerStance') && !game.global.mapsActive && getPageSetting('ScryerSkipBoss2') == 1 && game.global.world < getPageSetting('VoidMaps') && game.global.lastClearedCell == 98) || (getPageSetting('ScryerSkipBoss2') == 0 && game.global.lastClearedCell == 98;
-    never_scry |=  getPageSetting('UseScryerStance') && !game.global.mapsActive && (getEmpowerment() == "Poison" && (getPageSetting('ScryUseinPoison') == 0 || (getPageSetting('ScryUseinPoison') > 0 && game.global.world >= getPageSetting('ScryUseinPoison')))) || (getEmpowerment() == "Wind" && (getPageSetting('ScryUseinWind') == 0 || (getPageSetting('ScryUseinWind') > 0 && game.global.world >= getPageSetting('ScryUseinWind')))) || (getEmpowerment() == "Ice" && (getPageSetting('ScryUseinIce') == 0 || (getPageSetting('ScryUseinIce') > 0 && game.global.world >= getPageSetting('ScryUseinIce'))));
-    never_scry |=  getPageSetting('UseScryerStance') && !game.global.mapsActive && getPageSetting('screwessence') == true && countRemainingEssenceDrops() < 1;
+var never_scry =  game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
+    never_scry |= game.global.world <= 60;
+    never_scry |= getPageSetting('UseScryerStance') &&  game.global.mapsActive && getPageSetting('ScryerUseinMaps2') == 0 && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic" && getCurrentMapObject().level <= game.global.world;
+    never_scry |= getPageSetting('UseScryerStance') &&  game.global.mapsActive && getPageSetting('ScryerUseinPMaps') == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic";
+    never_scry |= getPageSetting('UseScryerStance') &&  game.global.mapsActive && getCurrentMapObject().location == "Void" && getPageSetting('ScryerUseinVoidMaps2') == 0;
+    never_scry |= getPageSetting('UseScryerStance') &&  game.global.mapsActive && getCurrentMapObject().location == "Bionic" && getPageSetting('ScryerUseinBW') == 0;
+    never_scry |= getPageSetting('UseScryerStance') && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()) && getPageSetting('ScryerUseinSpire2') == 0;
+    never_scry |= getPageSetting('UseScryerStance') && !game.global.mapsActive && getPageSetting('ScryerSkipBoss2') == 1 && game.global.world < getPageSetting('VoidMaps') && game.global.lastClearedCell == 98;
+    never_scry |= getPageSetting('ScryerSkipBoss2') == 0 && game.global.lastClearedCell == 98;
+    never_scry |= getPageSetting('UseScryerStance') && !game.global.mapsActive && (getEmpowerment() == "Poison" && (getPageSetting('ScryUseinPoison') == 0 || (getPageSetting('ScryUseinPoison') > 0 && game.global.world >= getPageSetting('ScryUseinPoison')))) || (getEmpowerment() == "Wind" && (getPageSetting('ScryUseinWind') == 0 || (getPageSetting('ScryUseinWind') > 0 && game.global.world >= getPageSetting('ScryUseinWind')))) || (getEmpowerment() == "Ice" && (getPageSetting('ScryUseinIce') == 0 || (getPageSetting('ScryUseinIce') > 0 && game.global.world >= getPageSetting('ScryUseinIce'))));
+    never_scry |= getPageSetting('UseScryerStance') && !game.global.mapsActive && getPageSetting('screwessence') == true && countRemainingEssenceDrops() < 1;
 
     //check Corrupted Never
     var curEnemy = getCurrentEnemy(1);
