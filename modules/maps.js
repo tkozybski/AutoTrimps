@@ -307,7 +307,7 @@ function autoMap() {
 
     //Farm Trigger
     shouldFarm = false;
-    if (getPageSetting('DisableFarm') > 0) {
+    if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
         //Farm on Low Damage
         shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
 
