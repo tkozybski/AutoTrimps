@@ -1,8 +1,8 @@
 //Helium
 
 MODULES["equipment"] = {};
-MODULES["equipment"].numHitsSurvived = 30;
-MODULES["equipment"].numHitsSurvivedScry = 80;
+MODULES["equipment"].numHitsSurvived = 40;
+MODULES["equipment"].numHitsSurvivedScry = 100;
 MODULES["equipment"].capDivisor = 10;
 MODULES["equipment"].alwaysLvl2 = getPageSetting('always2');
 MODULES["equipment"].waitTill60 = true;
