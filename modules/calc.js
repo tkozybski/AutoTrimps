@@ -561,6 +561,7 @@ function calcEnemyHealthCore(world, map, cell, name) {
 
 function calcEnemyHealth(world, map, full) {
     //Init
+    if (!world) world = game.global.world;
     var health = calcEnemyHealthCore(world, map, 99, "Turtlimp");
     var corrupt = !map && world >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
