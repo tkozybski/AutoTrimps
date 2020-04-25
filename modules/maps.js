@@ -269,36 +269,24 @@ function autoMap() {
         }
     }
 
-    //Lead farms one zone ahead on odd numbered zones
-    var targetZone = game.global.world;
-    if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
-
-    //Calc
+    //H:D Calc
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
-    var enemyHealth = calcEnemyHealth(targetZone);
-
-    //Spire Calc
-    if (game.global.spireActive) enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
+    var enemyHealth = calcEnemyHealth(targetZone) * (doVoids ? 4.5 : 1);
     
-    //Void Maps
-    if (doVoids) {
-        enemyDamage *= 4.5;
-	enemyHealth *= 4.5;
-    }
-    
+    //Shield Calc
     highDamageShield();
     if (getPageSetting('loomswap') > 0 && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg'))
         ourBaseDamage *= trimpAA;
     if (getPageSetting('dloomswap') > 0 && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg'))
         ourBaseDamage *= trimpAA;
+
+    //Damage with Map Multipliers
     var mapbonusmulti = 1 + (0.20 * game.global.mapBonus);
-    var ourBaseDamage2 = ourBaseDamage;
-    ourBaseDamage2 /= mapbonusmulti;
-    var pierceMod = (game.global.brokenPlanet) ? getPierceAmt() : 0;
-    const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
-    enoughHealth = calcHealthRatio() > customVars.numHitsSurvived;
-    enoughDamage = (ourBaseDamage * mapenoughdamagecutoff > enemyHealth);
+    var ourBaseDamage2 = ourBaseDamage / mapbonusmulti;
+
+    //Check for Health & Damage
+    enoughHealth = calcHealthRatio(false, doVoids) > customVars.numHitsSurvived;
+    enoughDamage = ourBaseDamage * mapenoughdamagecutoff > enemyHealth;
     updateAutoMapsStatus();
 
     //Farming
