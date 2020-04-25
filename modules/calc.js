@@ -559,7 +559,7 @@ function calcEnemyHealthCore(world, map, cell, name) {
     if (game.global.challengeActive == 'Meditate')   health *= 2;
     if (game.global.challengeActive == "Toxicity")   health *= 2;
     if (game.global.challengeActive == 'Life')       health *= 11;
-    if (game.global.challengeActive == "Domination") health *= 7.5;
+    if (game.global.challengeActive == "Domination") health *= 7.5 * 4;
     if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
     if (game.global.challengeActive == 'Lead')       health *= 1 + (0.04 * game.challenges.Lead.stacks);
     
@@ -620,7 +620,7 @@ function calcSpecificEnemyHealth(world, map, cell) {
 
     //Cancel out the Domination Challenge's Overkills
     if (game.global.challengeActive == 'Domination') {
-        if (!game.global.mapsActive && game.global.lastClearedCell != 98) health /= 75;
+        if (!game.global.mapsActive && game.global.lastClearedCell != 98) health /= 75 * 4;
         if (game.global.mapsActive && game.global.lastClearedMapCell != game.global.mapGridArray.length-1) health /= 75;
     }
 
