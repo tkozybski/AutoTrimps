@@ -106,14 +106,14 @@ function calcOurHealth(stance) {
     return health;
 }
 
-function calcHealthRatio(targetZone) {
+function calcHealthRatio(targetZone, stance) {
     //Pre-Init
     if (!targetZone) targetZone = game.global.world;
     const formationMod = game.upgrades.Dominance.done ? 2 : 1;
 
     //Our Health and Block
-    var health = calcOurHealth() / formationMod;
-    var block = calcOurBlock() / formationMod;
+    var health = calcOurHealth(stance) / formationMod;
+    var block = calcOurBlock(stance) / formationMod;
 
     //Enemy Damage and Pierce
     var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
