@@ -465,50 +465,32 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         number *= corruptionWeight/100;
     }
 
-    if (game.global.challengeActive){
-        if (game.global.challengeActive == "Coordinate"){
-            number *= getBadCoordLevel();
-        }
-        else if (game.global.challengeActive == "Meditate"){
-            number *= 1.5;
-        }
-        else if (enemy && game.global.challengeActive == "Nom" && typeof enemy.nomStacks !== 'undefined'){
-            number *= Math.pow(1.25, enemy.nomStacks);
-        }
-        else if (game.global.challengeActive == "Watch") {
-            number *= 1.25;
-        }
-        else if (game.global.challengeActive == 'Life') {
-            number *= 6;
-        }
-        else if (game.global.challengeActive == "Lead"){
-            number *= (1 + (game.challenges.Lead.stacks * 0.04));
-        }
-        else if (game.global.challengeActive == "Corrupted"){
-            number *= 3;
-        }
-        else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) {
-            number *= 10;
-        }
-        else if (game.global.challengeActive == "Domination"){
-            	if (game.global.lastClearedCell == 98) {
-		    number *= 2.5;
-	    	}
-		else number *= 0.1;
-	}
+    //Challenges
+    if (game.global.challengeActive) {
+        if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
+        else if (game.global.challengeActive == "Meditate") number *= 1.5;
+        else if (enemy && game.global.challengeActive == "Nom" && typeof enemy.nomStacks !== 'undefined') number *= Math.pow(1.25, enemy.nomStacks);
+        else if (game.global.challengeActive == "Watch") number *= 1.25;
+        else if (game.global.challengeActive == 'Life') number *= 6;
+        else if (game.global.challengeActive == "Lead") number *= (1 + (game.challenges.Lead.stacks * 0.04));
+        else if (game.global.challengeActive == "Corrupted") number *= 3;
+        else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
+        else if (game.global.challengeActive == "Domination") number *= 2.5;
         else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
-			var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
-			var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
-			oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
-			number *= oblitMult;
+            var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
+            var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
+            oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
+            number *= oblitMult;
 	}
-        if (daily)
-            number = calcDailyAttackMod(number);
-    }
-    if (!enemy && game.global.usingShriek) {
-        number *= game.mapUnlocks.roboTrimp.getShriekValue();
+
+        //Daily
+        if (daily) number = calcDailyAttackMod(number);
     }
 
+    //RoboTrimp
+    if (!enemy && game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
+
+    //Fluctuations
     if (!disableFlucts) {
         if (minFluct > 1) minFluct = 1;
         if (maxFluct == -1) maxFluct = fluctuation;
@@ -517,8 +499,7 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         var max = Math.ceil(number + (number * maxFluct));
         return maxormin ? max : min;
     }
-    else
-        return number;
+    else return number;
 }
 
 function calcCorruptionScale(world, base) {
@@ -571,13 +552,8 @@ function calcEnemyHealthCore(world, map, cell, name) {
     if (game.global.challengeActive == "Toxicity")   health *= 2;
     if (game.global.challengeActive == 'Life')       health *= 11;
     if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
-    if (game.global.challengeActive == 'Lead')       health *= (1 + (game.challenges.Lead.stacks * 0.04));
-
-    //Domination Challenge
-    if (game.global.challengeActive == "Domination") {
-        if (game.global.lastClearedCell == 98) health *= 7.5;
-        else health *= 0.1;
-    }
+    if (game.global.challengeActive == 'Lead')       health *= 1 + (0.04 * game.challenges.Lead.stacks);
+    if (game.global.challengeActive == "Domination") health *= 7.5;
     
     //Spire
     if (game.global.spireActive) health = calcSpire(99, game.global.gridArray[99].name, 'health');
