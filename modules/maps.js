@@ -65,11 +65,11 @@ function updateAutoMapsStatus(get) {
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
     else if (shouldFarm && !doVoids && !enoughHealth && calcHDratio() >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio().toFixed(4) + 'x';
-    else if (shouldFarm && !doVoids && !enoughHealth) status = 'Farming more Health';
+    else if (shouldFarm && !doVoids && !enoughHealth) status = 'Farming more Health '  + calcHDratio().toFixed(4) + 'x';
     else if (shouldFarm && !doVoids) status = 'Farming more Damage ' + calcHDratio().toFixed(4) + 'x';
     else if (!enoughHealth && !enoughDamage) status = 'Want Health and Damage';
     else if (!enoughDamage) status = 'Want ' + calcHDratio().toFixed(4) + 'x &nbspmore Damage';
-    else if (!enoughHealth) status = 'Want more health';
+    else if (!enoughHealth) status = 'Want ' + calcHealthRatio().toFixed(4) + 'x &nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
     if (skippedPrestige)
@@ -297,7 +297,7 @@ function autoMap() {
     ourBaseDamage2 /= mapbonusmulti;
     var pierceMod = (game.global.brokenPlanet) ? getPierceAmt() : 0;
     const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
-    enoughHealth = (calcOurHealth() / FORMATION_MOD_1 > customVars.numHitsSurvived * (enemyDamage - calcOurBlock() / FORMATION_MOD_1 > 0 ? enemyDamage - calcOurBlock() / FORMATION_MOD_1 : enemyDamage * pierceMod));
+    enoughHealth = calcHealthRatio() > customVars.numHitsSurvived;
     enoughDamage = (ourBaseDamage * mapenoughdamagecutoff > enemyHealth);
     updateAutoMapsStatus();
 
