@@ -264,7 +264,7 @@ function autoLevelEquipment() {
 
     //H:D Calc
     var ourDamage = calcOurDmg("avg", false, true);
-    var enemyHp = calcEnemyHealth(targetZone);
+    var enemyHp = calcEnemyHealth();
 
     //Map Bonus Multiplier
     ourDamage *= 1 + (0.20 * game.global.mapBonus);
