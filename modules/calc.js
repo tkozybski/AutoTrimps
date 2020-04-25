@@ -531,8 +531,11 @@ function calcEnemyBaseHealth(zone, level, name) {
 }
 
 function calcEnemyHealthCore(world, map, cell, name) {
+    //Pre-Init
+    if (!world) world = game.global.world;
+    if (game.global.challengeActive == 'Lead' && world%2 == 1) world++;
+
     //Init
-    world = !world ? game.global.world : world;
     var health = calcEnemyBaseHealth(world, cell, name);
 
     //Maps
@@ -562,8 +565,11 @@ function calcEnemyHealthCore(world, map, cell, name) {
 }
 
 function calcEnemyHealth(world, map, full) {
-    //Init
+    //Pre-Init
     if (!world) world = game.global.world;
+    if (game.global.challengeActive == 'Lead' && world%2 == 1) world++;
+
+    //Init
     var health = calcEnemyHealthCore(world, map, 99, "Turtlimp");
     var corrupt = !map && world >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
