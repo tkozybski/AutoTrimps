@@ -271,7 +271,7 @@ function autoMap() {
 
     //H:D Calc
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var enemyHealth = calcEnemyHealth(targetZone) * (doVoids ? 4.5 : 1);
+    var enemyHealth = calcEnemyHealth() * (doVoids ? 4.5 : 1);
     
     //Shield Calc
     highDamageShield();
