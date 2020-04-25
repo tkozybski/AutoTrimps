@@ -553,7 +553,7 @@ function calcEnemyHealthCore(world, map, cell, name) {
     if (game.global.challengeActive == 'Life')       health *= 11;
     if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
     if (game.global.challengeActive == 'Lead')       health *= 1 + (0.04 * game.challenges.Lead.stacks);
-    if (game.global.challengeActive == "Domination") health *= 7.5;
+    if (game.global.challengeActive == "Domination") health *= 7.5 * 4; //This x4 may improve progress by a lot
     
     //Spire
     if (game.global.spireActive) health = calcSpire(99, game.global.gridArray[99].name, 'health');
