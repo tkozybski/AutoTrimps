@@ -613,6 +613,9 @@ function calcSpecificEnemyHealth(world, map, cell) {
         health *= 1.15;
     }
 
+    //Cancel out the Domination Challenge's Overkills
+    if (game.global.challengeActive == 'Domination') health /= 7.5 * 4;
+
     return health;
 }
 
