@@ -261,42 +261,27 @@ function autoLevelEquipment() {
             Cost: 0
         };
     }
+
+    //H:D Calc
     var ourDamage = calcOurDmg("avg", false, true);
-    var mapbonusmulti = 1 + (0.20 * game.global.mapBonus);
-    if (game.global.mapBonus > 0) {
-        ourDamage *= mapbonusmulti;
-    }
-    if (game.global.challengeActive == 'Lead') {
-        if (game.global.world % 2 == 1 && game.global.world != 179) {
-            ourDamage /= 1.5;
-        }
-    }
-    //Shield
+    var enemyHp = calcEnemyHealth(targetZone);
+
+    //Map Bonus Multiplier
+    ourDamage *= 1 + (0.20 * game.global.mapBonus);
+
+    //Disconsider Lead Damage (what the fuck for?)
+    if (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1 && game.global.world != 179) ourDamage /= 1.5;
+
+    //Shield Heirloom Damage
     highDamageShield();
     if (getPageSetting('loomswap') > 0 && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg'))
 	ourDamage *= trimpAA;
     if (getPageSetting('dloomswap') > 0 && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg'))
 	ourDamage *= trimpAA;
 
-    //Lead farms one zone ahead on odd numbered zones
-    var targetZone = game.global.world;
-    if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
-
-    //Calc
-    var ourBaseDamage = calcOurDmg("avg", false, true);
-    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
-    var enemyHealth = calcEnemyHealth(targetZone);
-
-    //Spire
-    if (game.global.spireActive) {
-        enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
-    }
-
-    //Extra Calc
-    var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    var numHits = MODULES["equipment"].numHitsSurvived;
-    var enoughHealthE = (calcOurHealth(true) > numHits * (enemyDamage - calcOurBlock(true) > 0 ? enemyDamage - calcOurBlock(true) : enemyDamage * pierceMod));
-    var enoughDamageE = (ourDamage * enoughDamageCutoff > enemyHealth);
+    //Check for H & D
+    var enoughHealthE = calcHealthRatio(true) > MODULES["equipment"].numHitsSurvived;
+    var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
 
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];
