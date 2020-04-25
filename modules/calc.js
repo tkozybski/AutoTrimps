@@ -106,6 +106,24 @@ function calcOurHealth(stance) {
     return health;
 }
 
+function calcHealthRatio(targetZone) {
+    //Pre-Init
+    if (!targetZone) targetZone = game.global.world;
+    const formationMod = game.upgrades.Dominance.done ? 2 : 1;
+
+    //Our Health and Block
+    var health = calcOurHealth() / formationMod;
+    var block = calcOurBlock() / formationMod;
+
+    //Enemy Damage and Pierce
+    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
+    var pierceDmg = enemyDamage * ((game.global.brokenPlanet) ? getPierceAmt() : 0);
+
+    //The Resulting Ratio
+    var finalDmg = Math.Max(enemyDmg - block, pierceDmg);
+    return health / finalDmg;
+}
+
 function highDamageShield() {
 	if (game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name == getPageSetting('highdmg')) {
 		critCC = getPlayerCritChance();
