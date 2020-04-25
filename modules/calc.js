@@ -128,7 +128,7 @@ function calcHealthRatio(stance, considerVoid) {
     if (considerVoid) enemyDamage *= 4.5;
 
     //The Resulting Ratio
-    var finalDmg = Math.Max(enemyDamage - block, pierceDmg);
+    var finalDmg = Math.max(enemyDamage - block, pierceDmg);
     return health / finalDmg;
 }
 
