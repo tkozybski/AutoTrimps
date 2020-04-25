@@ -25,7 +25,10 @@ function autoStance() {
     if (!game.upgrades.Formations.done) return true;
 
     //Keep on D vs the Domination bosses
-    if (game.global.challengeActive == "Domination" && game.global.lastClearedCell == 98) autoStance2();
+    if (game.global.challengeActive == "Domination" && game.global.lastClearedCell == 98) {
+        autoStance2();
+        return;
+    }
 
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
