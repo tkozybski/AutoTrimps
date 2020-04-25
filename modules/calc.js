@@ -106,18 +106,26 @@ function calcOurHealth(stance) {
     return health;
 }
 
-function calcHealthRatio(targetZone, stance) {
-    //Pre-Init
-    if (!targetZone) targetZone = game.global.world;
+function calcHealthRatio(stance, considerVoid) {
+    //Init
+    var enemyDamage;
+    var targetZone = game.global.world;
     const formationMod = game.upgrades.Dominance.done ? 2 : 1;
 
     //Our Health and Block
     var health = calcOurHealth(stance) / formationMod;
     var block = calcOurBlock(stance) / formationMod;
 
+    //Lead farms one zone ahead
+    if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
+
     //Enemy Damage and Pierce
-    var enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
+    if (!game.global.spireActive) enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
+    else enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
+    
+    //Pierce & Voids
     var pierceDmg = enemyDamage * ((game.global.brokenPlanet) ? getPierceAmt() : 0);
+    if (considerVoid) enemyDamage *= 4.5;
 
     //The Resulting Ratio
     var finalDmg = Math.Max(enemyDmg - block, pierceDmg);
