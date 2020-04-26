@@ -65,8 +65,11 @@ function safeBuyBuilding(building) {
 }
 
 function advancedNurseries() {
-    if (calcHealthRatio() < MODULES.maps.numHitsSurvived && calcHDratio() > getPageSetting("mapcuntoff")) return true;
-    return false;
+    //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C) Has Max Map stacks
+    var A = calcHealthRatio() < MODULES.maps.numHitsSurvived
+    var B = calcHDratio() < getPageSetting("DisableFarm");
+    var C = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit');
+    return A && B && C;
 }
 
 function buyFoodEfficientHousing() {
