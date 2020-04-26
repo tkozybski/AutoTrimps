@@ -272,7 +272,7 @@ function autoMap() {
     //H:D Calc
     var ourBaseDamage = calcOurDmg("avg", false, true);
     var enemyHealth = calcEnemyHealth() * (doVoids ? 4.5 : 1);
-    var numHits = customVars.numHitsSurvived * (game.global.world >= getPageSetting('ScryerMinZone') ? 3 : 1);
+    var numHits = customVars.numHitsSurvived * (game.global.world >= getPageSetting('ScryerMinZone') ? 2 : 1);
     
     //Shield Calc
     highDamageShield();
