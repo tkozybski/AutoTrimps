@@ -6,6 +6,7 @@ MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
 //Psycho-Ray
 MODULES["buildings"].gemEfficiencyIgnoresLimit = true;
+MODULES["buildings"].advancedNurseries = true; //Use on Magma. HIGHLY EXPERIMENTAL
 
 //Helium
 
