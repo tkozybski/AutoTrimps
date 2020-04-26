@@ -608,7 +608,7 @@ function calcSpecificEnemyHealth(world, map, cell) {
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy) {
         health *= calcCorruptionScale(world, 10);
-        if (enemy.corrupted == "corruptTough") health *= 10;
+        if (enemy.corrupted == "corruptTough") health *= 5;
     }
 
     //Healthy
