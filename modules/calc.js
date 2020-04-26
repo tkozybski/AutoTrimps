@@ -466,7 +466,7 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     }
 
     //Challenges
-    if (game.global.challengeActive) {
+    if (!enemy) {
         //A few challenges
         if      (game.global.challengeActive == "Meditate")   number *= 1.5;
         else if (game.global.challengeActive == "Watch")      number *= 1.25;
