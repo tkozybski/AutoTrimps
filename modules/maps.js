@@ -286,7 +286,7 @@ function autoMap() {
     var ourBaseDamage2 = ourBaseDamage / mapbonusmulti;
 
     //Check for Health & Damage
-    enoughHealth = calcHealthRatio(false, doVoids) > customVars.numHitsSurvived;
+    enoughHealth = calcHealthRatio(false, doVoids) > numHits;
     enoughDamage = ourBaseDamage * mapenoughdamagecutoff > enemyHealth;
     updateAutoMapsStatus();
 
