@@ -138,7 +138,6 @@ function getMapCutOff() {
     var mapology = game.global.challengeActive == "Mapology";
     var daily = game.global.challengeActive == "Daily";
     var c2 = game.global.runningChallengeSquared;
-    var spire = game.global.spireActive;
 
     //Mapology
     if (getPageSetting("mapc2hd") > 0 && mapology) cut = getPageSetting("mapc2hd");
@@ -159,9 +158,6 @@ function getMapCutOff() {
 
     //Windstack
     if (wind && && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
-
-    //Spire - DEBUG
-    if (spire) cut /= MODULES.maps.spireLessHealth;
 
     return cut;
 }
@@ -302,7 +298,6 @@ function autoMap() {
     //H:D Calc
     var ourBaseDamage = calcOurDmg("avg", false, true);
     var enemyHealth = calcEnemyHealth() * (doVoids ? 4.5 : 1);
-    var numHits = customVars.numHitsSurvived * (game.global.world >= getPageSetting('ScryerMinZone') ? 2 : 1);
     
     //Shield Calc
     highDamageShield();
@@ -314,6 +309,11 @@ function autoMap() {
     //Damage with Map Multipliers
     var mapbonusmulti = 1 + (0.20 * game.global.mapBonus);
     var ourBaseDamage2 = ourBaseDamage / mapbonusmulti;
+
+    //Number of hits to survive
+    var numHits = customVars.numHitsSurvived
+    if (game.global.spireActive) numHits /= MODULES.maps.spireLessHealth;
+    else if (game.global.world >= getPageSetting('ScryerMinZone')) numHits *= 2;
 
     //Check for Health & Damage
     enoughHealth = calcHealthRatio(false, doVoids, true) > numHits;
