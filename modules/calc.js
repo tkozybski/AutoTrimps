@@ -453,7 +453,7 @@ function calcSpire(what, cell, name) {
     base *= game.badGuys[enemy][what];
 
     //Compensations
-    if (game.global.challengeActive == "Domination" && exitCell != 100) base /= (what == "attack") ? 25 : 75 * 4;
+    if (game.global.challengeActive == "Domination" && exitCell != 100) base /= (what == "attack") ? 10 : 75 * 4;
 
     return base;
 }
