@@ -66,7 +66,7 @@ function safeBuyBuilding(building) {
 
 function advancedNurseries() {
     //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C) Has Max Map stacks
-    var a = calcHealthRatio(false, false, true) < MODULES.maps.numHitsSurvived
+    var a = calcHealthRatio(false, doVoids, true) < MODULES.maps.numHitsSurvived
     var b = calcHDratio() < getPageSetting("DisableFarm");
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit');
     return a && b && c;
