@@ -320,8 +320,8 @@ function autoMap() {
     var ourBaseDamage2 = ourBaseDamage / mapbonusmulti;
 
     //Check for Health & Damage
-    enoughHealth = calcHealthRatio(false, doVoids, true) > numHits;
-    enoughDamage = ourBaseDamage * getMapHealthCutOff() > enemyHealth;
+    enoughHealth = calcHealthRatio(false, doVoids, true) > getMapHealthCutOff();
+    enoughDamage = ourBaseDamage * getMapCutOff > enemyHealth;
     updateAutoMapsStatus();
 
     //Farming
