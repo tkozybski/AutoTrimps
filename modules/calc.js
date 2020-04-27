@@ -40,7 +40,7 @@ function getTrimpAttack() {
     return dmg * game.resources.trimps.maxSoldiers;
 }
 
-function calcOurHealth(stance) {
+function calcOurHealth(stance, fullGeneticist) {
     var health = 50;
 
     if (game.resources.trimps.maxSoldiers > 0) {
@@ -67,7 +67,7 @@ function calcOurHealth(stance) {
     }
     var geneticist = game.jobs.Geneticist;
     if (geneticist.owned > 0) {
-        health *= (Math.pow(1.01, game.global.lastLowGen));
+        health *= (Math.pow(1.01, fullGeneticist ? geneticist.owned : game.global.lastLowGen));
     }
     if (stance && game.global.formation > 0) {
         var formStrength = 0.5;
@@ -106,14 +106,14 @@ function calcOurHealth(stance) {
     return health;
 }
 
-function calcHealthRatio(stance, considerVoid) {
+function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     //Init
     var enemyDamage;
     var targetZone = game.global.world;
     const formationMod = game.upgrades.Dominance.done ? 2 : 1;
 
     //Our Health and Block
-    var health = calcOurHealth(stance) / formationMod;
+    var health = calcOurHealth(stance, considerVoid, fullGeneticist) / formationMod;
     var block = calcOurBlock(stance) / formationMod;
 
     //Lead farms one zone ahead
