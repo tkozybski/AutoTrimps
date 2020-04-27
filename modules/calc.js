@@ -113,7 +113,7 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     const formationMod = game.upgrades.Dominance.done ? 2 : 1;
 
     //Our Health and Block
-    var health = calcOurHealth(stance, considerVoid, fullGeneticist) / formationMod;
+    var health = calcOurHealth(stance, fullGeneticist) / formationMod;
     var block = calcOurBlock(stance) / formationMod;
 
     //Lead farms one zone ahead
@@ -650,7 +650,7 @@ function calcSpecificEnemyHealth(world, map, cell) {
     return health;
 }
 
-function calcHDratio(map) {
+function calcHDratio(map, considerVoid) {
     var ratio = 0;
     var ourBaseDamage = calcOurDmg("avg", false, true);
     var targetZone = game.global.world;
@@ -675,6 +675,10 @@ function calcHDratio(map) {
     }
     if (map || map >= 1)
 	ratio = calcEnemyHealth(map, true) / ourBaseDamage;
+
+    //Voids
+    if (considerVoid && !game.global.spireActive) enemyDamage *= 4.5;
+
     return ratio;
 }
 
