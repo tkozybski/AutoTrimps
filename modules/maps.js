@@ -17,6 +17,9 @@ MODULES.maps.shouldFarmCell=59;
 MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 
+//Psycho
+MODULES.maps.spireLessHealth = 10;
+
 var isFarming = !1;
 var doVoids=!1;
 var needToVoid=!1;
@@ -129,6 +132,40 @@ function testMapSpecialModController() {
     }
 }
 
+function getMapCutOff() {
+    //Init
+    var cut = getPageSetting("mapcuntoff");
+    var mapology = game.global.challengeActive == "Mapology";
+    var daily = game.global.challengeActive == "Daily";
+    var c2 = game.global.runningChallengeSquared;
+    var spire = game.global.spireActive;
+
+    //Mapology
+    if (getPageSetting("mapc2hd") > 0 && mapology) cut = getPageSetting("mapc2hd");
+
+    //Windstacking
+    var wind = getEmpowerment() == 'Wind';
+    var autoStance, windMin, windCut
+    if (daily) {
+        autoStance = getPageSetting("AutoStance") == 3 || getPageSetting("use3daily") == true;
+        windMin = getPageSetting("dWindStackingMin") > 0 && game.global.world >= getPageSetting("dWindStackingMin");
+        windCut = getPageSetting("dwindcutoffmap") > 0;
+    }
+    else {
+        autoStance = getPageSetting("AutoStance") == 3;
+        windMin = getPageSetting("WindStackingMin") > 0 && game.global.world >= getPageSetting("WindStackingMin")
+        windCut = getPageSetting("windcutoffmap") > 0
+    }
+
+    //Windstack
+    if (wind && && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
+
+    //Spire - DEBUG
+    if (spire) cut /= MODULES.maps.spireLessHealth;
+
+    return cut;
+}
+
 function autoMap() {
     //Failsafes
     if (!game.global.mapsUnlocked || calcOurDmg("avg", false, true) <= 0) {
@@ -138,19 +175,12 @@ function autoMap() {
         updateAutoMapsStatus();
         return;
     }
+
+    //No Mapology Credits HUD Update
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) {
         updateAutoMapsStatus();
         return;
     }
-
-    //WS
-    var mapenoughdamagecutoff = getPageSetting("mapcuntoff");
-    if (getEmpowerment() == 'Wind' && game.global.challengeActive != "Daily" && !game.global.runningChallengeSquared && getPageSetting("AutoStance") == 3 && getPageSetting("WindStackingMin") > 0 && game.global.world >= getPageSetting("WindStackingMin") && getPageSetting("windcutoffmap") > 0)
-        mapenoughdamagecutoff = getPageSetting("windcutoffmap");
-    if (getEmpowerment() == 'Wind' && game.global.challengeActive == "Daily" && !game.global.runningChallengeSquared && (getPageSetting("AutoStance") == 3 || getPageSetting("use3daily") == true) && getPageSetting("dWindStackingMin") > 0 && game.global.world >= getPageSetting("dWindStackingMin") && getPageSetting("dwindcutoffmap") > 0)
-        mapenoughdamagecutoff = getPageSetting("dwindcutoffmap");
-    if (getPageSetting("mapc2hd") > 0 && game.global.challengeActive == "Mapology")
-        mapenoughdamagecutoff = getPageSetting("mapc2hd");
 
     //Vars
     var customVars = MODULES["maps"];
@@ -287,7 +317,7 @@ function autoMap() {
 
     //Check for Health & Damage
     enoughHealth = calcHealthRatio(false, doVoids, true) > numHits;
-    enoughDamage = ourBaseDamage * mapenoughdamagecutoff > enemyHealth;
+    enoughDamage = ourBaseDamage * getMapCutOff() > enemyHealth;
     updateAutoMapsStatus();
 
     //Farming
