@@ -169,7 +169,7 @@ function getMapHealthCutOff() {
     if (game.global.spireActive) return base * MODULES.maps.spireHitsMult;
 
     //Scryer (only if scrying corrupted)
-    var scryCorrupt = game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') == 0
+    var scryCorrupt = game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
     if (scryCorrupt && getPageSetting('UseScryerStance') == true) return base * MODULES.maps.scryerHitsMult;
 
     return base;
