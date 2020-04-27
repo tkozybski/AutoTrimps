@@ -18,7 +18,7 @@ MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 
 //Psycho
-MODULES.maps.spireLessHealth = 10;
+MODULES.maps.spireLessHealth = 30;
 
 var isFarming = !1;
 var doVoids=!1;
