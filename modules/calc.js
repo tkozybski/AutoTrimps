@@ -677,7 +677,7 @@ function calcHDratio(map, considerVoid) {
 	ratio = calcEnemyHealth(map, true) / ourBaseDamage;
 
     //Voids
-    if (considerVoid && !game.global.spireActive) enemyDamage *= 4.5;
+    if (considerVoid && !game.global.spireActive) ratio *= 4.5;
 
     return ratio;
 }
