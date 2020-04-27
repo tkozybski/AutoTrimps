@@ -68,8 +68,7 @@ function safeBuyBuilding(building) {
 function advancedNurseries() {
     //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C) Has Max Map stacks
     //Also, it requires less health during spire
-    var s = (game.global.spireActive) ? MODULES["buildings"].nurserySpireWall : 1;
-    var a = s * calcHealthRatio(false, doVoids, true) < MODULES.maps.numHitsSurvived;
+    var a = calcHealthRatio(false, doVoids, true) < getMapHealthCutOff();
     var b = calcHDratio() < getPageSetting("DisableFarm");
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit');
     return a && b && c && !preSpireFarming;
