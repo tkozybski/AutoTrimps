@@ -69,7 +69,7 @@ function advancedNurseries() {
     var a = calcHealthRatio(false, doVoids, true) < MODULES.maps.numHitsSurvived
     var b = calcHDratio() < getPageSetting("DisableFarm");
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit');
-    return a && b && c;
+    return a && b && c && !preSpireFarming;
 }
 
 function buyFoodEfficientHousing() {
