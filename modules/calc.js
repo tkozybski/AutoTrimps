@@ -425,15 +425,20 @@ function calcDailyAttackMod(number) {
     return number;
 }
 
-function calcSpire(cell, name, what) {
-    var exitCell = cell;
+function calcSpire(what, cell, name) {
+    //Target Cell
+    var exitCell = (cell) ? cell : 100;
     if (game.global.challengeActive != "Daily" && isActiveSpireAT() && getPageSetting('ExitSpireCell') > 0 && getPageSetting('ExitSpireCell') <= 100)
-        exitCell = (getPageSetting('ExitSpireCell'));
+        exitCell = getPageSetting('ExitSpireCell');
     if (game.global.challengeActive == "Daily" && disActiveSpireAT() && getPageSetting('dExitSpireCell') > 0 && getPageSetting('dExitSpireCell') <= 100)
-        exitCell = (getPageSetting('dExitSpireCell'));
-    var enemy = cell == 100 ? (exitCell == 100 ? game.global.gridArray[100].name : "Snimp") : name;
+        exitCell = getPageSetting('dExitSpireCell');
+
+    //Enemy on that cell
+    var enemy = (name) ? name : game.global.gridArray[exitCell].name;
     var base = (what == "attack") ? game.global.getEnemyAttack(exitCell, enemy, false) : (calcEnemyBaseHealth(game.global.world, exitCell, enemy) * 2);
     var mod = (what == "attack") ? 1.17 : 1.14;
+
+    //Spire Num
     var spireNum = Math.floor((game.global.world-100)/100);
     if (spireNum > 1){
         var modRaiser = 0;
@@ -442,6 +447,8 @@ function calcSpire(cell, name, what) {
         if (what == "health") modRaiser *= 2;
         mod += modRaiser;
     }
+
+    //Math
     base *= Math.pow(mod, exitCell);
     base *= game.badGuys[enemy][what];
 
@@ -521,23 +528,32 @@ function calcCorruptionScale(world, base) {
 }
 
 function calcEnemyBaseHealth(zone, level, name) {
+    //Init
     var health = 0;
     health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2);
     health -= 110;
+
+    //First Two Zones
     if (zone == 1 || zone == 2 && level < 10) {
         health *= 0.6;
         health = (health * 0.25) + ((health * 0.72) * (level / 100));
     }
-    else if (zone < 60)
+
+    //Before Breaking the World
+    else if (zone < 60) {
         health = (health * 0.4) + ((health * 0.4) * (level / 110));
+        health *= 0.75;
+    }
+    
+    //After Breaking the World
     else {
         health = (health * 0.5) + ((health * 0.8) * (level / 100));
         health *= Math.pow(1.1, zone - 59);
     }
-    if (zone < 60) {
-	health *= 0.75;
-        health *= game.badGuys[name].health;
-    }
+    
+    //Specific Imp
+    if (name) health *= game.badGuys[name].health;
+
     return health;
 }
 
