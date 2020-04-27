@@ -454,7 +454,7 @@ function calcSpire(what, cell, name) {
 
     //Compensations
     if (game.global.challengeActive == "Domination" && exitCell != 100) base /= (what == "attack") ? 25 : 75 * 4;
-    if (game.global.usingShriek && exitCell != 100 && what == "attack") number /= game.mapUnlocks.roboTrimp.getShriekValue())
+    if (game.global.usingShriek && exitCell != 100 && what == "attack") base /= game.mapUnlocks.roboTrimp.getShriekValue();
 
     return base;
 }
