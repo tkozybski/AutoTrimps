@@ -64,11 +64,11 @@ function updateAutoMapsStatus(get) {
 	    var stackedMaps = Fluffy.isRewardActive('void') ? countStackedVoidMaps() : 0;
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
-    else if (shouldFarm && !doVoids && !enoughHealth && calcHDratio() >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio().toFixed(4) + 'x';
+    else if (shouldFarm && !doVoids && !enoughHealth && calcHDratio(false, doVoids) >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio(false, doVoids).toFixed(4) + 'x';
     else if (shouldFarm && !doVoids && !enoughHealth) status = 'Farming more Health '  + calcHealthRatio(false, doVoids, true).toFixed(4) + 'x';
-    else if (shouldFarm && !doVoids) status = 'Farming more Damage ' + calcHDratio().toFixed(4) + 'x';
+    else if (shouldFarm && !doVoids) status = 'Farming more Damage ' + calcHDratio(false, doVoids).toFixed(4) + 'x';
     else if (!enoughHealth && !enoughDamage) status = 'Want Health and Damage';
-    else if (!enoughDamage) status = 'Want ' + calcHDratio().toFixed(4) + 'x &nbspmore Damage';
+    else if (!enoughDamage) status = 'Want ' + calcHDratio(false, doVoids).toFixed(4) + 'x &nbspmore Damage';
     else if (!enoughHealth) status = 'Want ' + calcHealthRatio(false, doVoids, true).toFixed(4) + 'x &nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
@@ -298,7 +298,7 @@ function autoMap() {
     shouldFarm = false;
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
         //Farm on Low Damage
-        shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
+        shouldFarm = calcHDratio(false, doVoids) >= getPageSetting("DisableFarm");
 
         //Farm on Low Health
         shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
@@ -328,15 +328,15 @@ function autoMap() {
                 shouldDoMaps = true;
         }
         if (game.global.gridArray[99].nomStacks == customVars.NomFarmStacksCutoff[1]) {
-            shouldFarm = (calcHDratio() > customVars.NomfarmingCutoff);
+            shouldFarm = (calcHDratio(false, doVoids) > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
         }
         if (!game.global.mapsActive && game.global.gridArray[game.global.lastClearedCell + 1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
-            shouldFarm = (calcHDratio() > customVars.NomfarmingCutoff);
+            shouldFarm = (calcHDratio(false, doVoids) > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
         }
         if (game.global.mapsActive && game.global.mapGridArray[game.global.lastClearedMapCell + 1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
-            shouldFarm = (calcHDratio() > customVars.NomfarmingCutoff);
+            shouldFarm = (calcHDratio(false, doVoids) > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
             restartVoidMap = true;
         }
