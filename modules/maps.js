@@ -167,7 +167,7 @@ function getMapHealthCutOff() {
     //Usually less on The Spire, more if scrying
     var base = MODULES.maps.numHitsSurvived;
     if (game.global.spireActive) return base * MODULES.maps.spireHitsMult;
-    if (game.global.world >= getPageSetting('ScryerMinZone')) return base * MODULES.maps.scryerHitsSurvived;
+    if (game.global.world >= getPageSetting('ScryerMinZone')) return base * MODULES.maps.scryerHitsMult;
     return base;
 }
 
