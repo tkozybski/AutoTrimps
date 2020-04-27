@@ -1,5 +1,6 @@
 MODULES["buildings"] = {};
 MODULES["buildings"].nurseryWall = 10;
+MODULES["buildings"].nurserySpireWall = 10;
 MODULES["buildings"].storageMainCutoff = 0.85;
 MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
@@ -66,7 +67,9 @@ function safeBuyBuilding(building) {
 
 function advancedNurseries() {
     //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C) Has Max Map stacks
-    var a = calcHealthRatio(false, doVoids, true) < MODULES.maps.numHitsSurvived
+    //Also, it requires less health during spire
+    var s = (game.global.spireActive) ? MODULES["buildings"].nurserySpireWall : 1;
+    var a = s * calcHealthRatio(false, doVoids, true) < MODULES.maps.numHitsSurvived;
     var b = calcHDratio() < getPageSetting("DisableFarm");
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit');
     return a && b && c && !preSpireFarming;
