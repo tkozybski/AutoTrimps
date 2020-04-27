@@ -162,6 +162,15 @@ function getMapCutOff() {
     return cut;
 }
 
+function getMapHealthCutOff() {
+    //Less on The Spire, more if scrying
+    var numHits = customVars.numHitsSurvived
+    if (game.global.spireActive) numHits /= MODULES.maps.spireLessHealth;
+    else if (game.global.world >= getPageSetting('ScryerMinZone')) numHits *= 2;
+
+   return numHits;
+}
+
 function autoMap() {
     //Failsafes
     if (!game.global.mapsUnlocked || calcOurDmg("avg", false, true) <= 0) {
@@ -310,14 +319,9 @@ function autoMap() {
     var mapbonusmulti = 1 + (0.20 * game.global.mapBonus);
     var ourBaseDamage2 = ourBaseDamage / mapbonusmulti;
 
-    //Number of hits to survive
-    var numHits = customVars.numHitsSurvived
-    if (game.global.spireActive) numHits /= MODULES.maps.spireLessHealth;
-    else if (game.global.world >= getPageSetting('ScryerMinZone')) numHits *= 2;
-
     //Check for Health & Damage
     enoughHealth = calcHealthRatio(false, doVoids, true) > numHits;
-    enoughDamage = ourBaseDamage * getMapCutOff() > enemyHealth;
+    enoughDamage = ourBaseDamage * getMapHealthCutOff() > enemyHealth;
     updateAutoMapsStatus();
 
     //Farming
