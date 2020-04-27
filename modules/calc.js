@@ -454,7 +454,6 @@ function calcSpire(what, cell, name) {
 
     //Compensations
     if (game.global.challengeActive == "Domination" && exitCell != 100) base /= (what == "attack") ? 25 : 75 * 4;
-    if (game.global.usingShriek && exitCell != 100 && what == "attack") base /= game.mapUnlocks.roboTrimp.getShriekValue();
 
     return base;
 }
@@ -503,10 +502,10 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
 
         //Daily
         if (daily) number = calcDailyAttackMod(number);
-    }
 
-    //RoboTrimp
-    if (!enemy && game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
+        //RoboTrimp
+        if (!enemy && game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
+    }
 
     //Fluctuations
     if (!disableFlucts) {
