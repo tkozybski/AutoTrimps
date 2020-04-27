@@ -468,18 +468,6 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     var corrupt = mutations.Corruption.active();
     var healthy = mutations.Healthy.active();
 
-    //Spire
-    if (game.global.spireActive) number = calcSpire("attack");
-
-    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    else if (!enemy && corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
-        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
-        var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
-        number *= corruptionWeight/100;
-    }
-
-    //Challenges
     if (!enemy) {
         //A few challenges
         if      (game.global.challengeActive == "Meditate")   number *= 1.5;
@@ -502,6 +490,17 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
             number *= oblitMult;
 	}
 
+        //Spire
+        if (game.global.spireActive) number = calcSpire("attack");
+
+        //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+        else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
+            //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+            var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
+            var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
+            number *= corruptionWeight/100;
+        }
+
         //Daily
         if (daily) number = calcDailyAttackMod(number);
     }
@@ -518,7 +517,8 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
         var max = Math.ceil(number + (number * maxFluct));
         return maxormin ? max : min;
     }
-    else return number;
+
+    return number;
 }
 
 function calcCorruptionScale(world, base) {
