@@ -434,8 +434,8 @@ function calcSpire(what, cell, name) {
         exitCell = getPageSetting('dExitSpireCell');
 
     //Enemy on the Target Cell
-    var enemy = (name) ? name : game.global.gridArray[exitCell].name;
-    var base = (what == "attack") ? game.global.getEnemyAttack(100, null, true) : (game.global.getEnemyHealth(100, null, true) * 2);
+    var enemy = (name) ? name : game.global.gridArray[exitCell-1].name;
+    var base = (what == "attack") ? game.global.getEnemyAttack(100, null, true) : game.global.getEnemyHealth(100, null, true) * 2;
     var mod = (what == "attack") ? 1.17 : 1.14;
 
     //Spire Num
