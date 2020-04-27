@@ -265,11 +265,14 @@ function autoLevelEquipment() {
     //H:D Calc
     var ourDamage = calcOurDmg("avg", false, true);
     var enemyHp = calcEnemyHealth();
+    
+    //Void Maps
+    if (doVoids) enemyHp *= 4.5;
 
     //Map Bonus Multiplier
     ourDamage *= 1 + (0.20 * game.global.mapBonus);
 
-    //Disconsider Lead Damage (what the fuck for?)
+    //Disconsider Lead Damage
     if (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1 && game.global.world != 179) ourDamage /= 1.5;
 
     //Shield Heirloom Damage
