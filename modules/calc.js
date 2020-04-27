@@ -435,7 +435,7 @@ function calcSpire(what, cell, name) {
 
     //Enemy on the Target Cell
     var enemy = (name) ? name : game.global.gridArray[exitCell].name;
-    var base = (what == "attack") ? game.global.getEnemyAttack(100, null, true) : (calcEnemyBaseHealth(game.global.world, 100, null, true) * 2);
+    var base = (what == "attack") ? game.global.getEnemyAttack(100, null, true) : (game.global.getEnemyHealth(100, null, true) * 2);
     var mod = (what == "attack") ? 1.17 : 1.14;
 
     //Spire Num
@@ -452,8 +452,9 @@ function calcSpire(what, cell, name) {
     base *= Math.pow(mod, exitCell);
     base *= game.badGuys[enemy][what];
 
-    //Challenges Compensation
-    if (game.global.challengeActive == "Domination" && exitCell != 99) base /= (what == "attack") ? 25 : 75 * 4;
+    //Compensations
+    if (game.global.challengeActive == "Domination" && exitCell != 100) base /= (what == "attack") ? 25 : 75 * 4;
+    if (game.global.usingShriek && exitCell != 100 && what == "attack") number /= game.mapUnlocks.roboTrimp.getShriekValue())
 
     return base;
 }
