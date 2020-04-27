@@ -18,8 +18,8 @@ MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 
 //Psycho
-MODULES.maps.spireHitsSurvived = MODULES.maps.numHitsSurvived / 4;
-MODULES.maps.scryerHitsSurvived = MODULES.maps.numHitsSurvived * 2;
+MODULES.maps.spireHitsMult = 0.25;
+MODULES.maps.scryerHitsMult = 2;
 
 var isFarming = !1;
 var doVoids=!1;
@@ -164,11 +164,11 @@ function getMapCutOff() {
 }
 
 function getMapHealthCutOff() {
-    //Less on The Spire, more if scrying
-    if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
-    if (game.global.world >= getPageSetting('ScryerMinZone')) return MODULES.maps.scryerHitsSurvived;
-
-    return MODULES.maps.numHitsSurvived;;
+    //Usually less on The Spire, more if scrying
+    var base = MODULES.maps.numHitsSurvived;
+    if (game.global.spireActive) return base * MODULES.maps.spireHitsMult;
+    if (game.global.world >= getPageSetting('ScryerMinZone')) return base * MODULES.maps.scryerHitsSurvived;
+    return base;
 }
 
 function autoMap() {
