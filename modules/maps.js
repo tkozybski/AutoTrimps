@@ -64,9 +64,9 @@ function updateAutoMapsStatus(get) {
 	    var stackedMaps = Fluffy.isRewardActive('void') ? countStackedVoidMaps() : 0;
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
-    else if (shouldFarm && !doVoids && !enoughHealth && calcHDratio(false, doVoids) >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio(false, doVoids).toFixed(4) + 'x';
-    else if (shouldFarm && !doVoids && !enoughHealth) status = 'Farming more Health '  + calcHealthRatio(false, doVoids, true).toFixed(4) + 'x';
-    else if (shouldFarm && !doVoids) status = 'Farming more Damage ' + calcHDratio(false, doVoids).toFixed(4) + 'x';
+    else if (shouldFarm && !doVoids && !enoughHealth && calcHDratio() >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio().toFixed(4) + 'x';
+    else if (shouldFarm && !doVoids && !enoughHealth) status = 'Farming more Health '  + calcHealthRatio(false, false, true).toFixed(4) + 'x';
+    else if (shouldFarm && !doVoids) status = 'Farming more Damage ' + calcHDratio().toFixed(4) + 'x';
     else if (!enoughHealth && !enoughDamage) status = 'Want Health and Damage';
     else if (!enoughDamage) status = 'Want ' + calcHDratio(false, doVoids).toFixed(4) + 'x &nbspmore Damage';
     else if (!enoughHealth) status = 'Want ' + calcHealthRatio(false, doVoids, true).toFixed(4) + 'x &nbspmore Health';
