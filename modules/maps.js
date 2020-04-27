@@ -157,7 +157,7 @@ function getMapCutOff() {
     }
 
     //Windstack
-    if (wind && && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
+    if (wind && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
 
     return cut;
 }
