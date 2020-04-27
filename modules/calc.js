@@ -119,13 +119,12 @@ function calcHealthRatio(stance, considerVoid) {
     //Lead farms one zone ahead
     if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
 
-    //Enemy Damage and Pierce
-    if (!game.global.spireActive) enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
-    else enemyDamage = calcSpire(99, game.global.gridArray[99].name, 'attack');
+    //Enemy Damage
+    enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
     
     //Pierce & Voids
     var pierceDmg = enemyDamage * ((game.global.brokenPlanet) ? getPierceAmt() : 0);
-    if (considerVoid) enemyDamage *= 4.5;
+    if (considerVoid && !game.global.spireActive) enemyDamage *= 4.5;
 
     //The Resulting Ratio
     var finalDmg = Math.max(enemyDamage - block, pierceDmg);
@@ -427,28 +426,32 @@ function calcDailyAttackMod(number) {
 }
 
 function calcSpire(cell, name, what) {
-	var exitCell = cell;
-	if (game.global.challengeActive != "Daily" && isActiveSpireAT() && getPageSetting('ExitSpireCell') > 0 && getPageSetting('ExitSpireCell') <= 100)
-		exitCell = (getPageSetting('ExitSpireCell') - 1);
-	if (game.global.challengeActive == "Daily" && disActiveSpireAT() && getPageSetting('dExitSpireCell') > 0 && getPageSetting('dExitSpireCell') <= 100)
-		exitCell = (getPageSetting('dExitSpireCell') - 1);
-	var enemy = cell == 99 ? (exitCell == 99 ? game.global.gridArray[99].name : "Snimp") : name;
-	var base = (what == "attack") ? game.global.getEnemyAttack(exitCell, enemy, false) : (calcEnemyBaseHealth(game.global.world, exitCell, enemy) * 2);
-	var mod = (what == "attack") ? 1.17 : 1.14;
-    	var spireNum = Math.floor((game.global.world-100)/100);
-	if (spireNum > 1){
-		var modRaiser = 0;
-		modRaiser += ((spireNum - 1) / 100);
-		if (what == "attack") modRaiser *= 8;
-		if (what == "health") modRaiser *= 2;
-		mod += modRaiser;
-	}
-	base *= Math.pow(mod, exitCell);
-	base *= game.badGuys[enemy][what];
-	return base;
+    var exitCell = cell;
+    if (game.global.challengeActive != "Daily" && isActiveSpireAT() && getPageSetting('ExitSpireCell') > 0 && getPageSetting('ExitSpireCell') <= 100)
+        exitCell = (getPageSetting('ExitSpireCell') - 1);
+    if (game.global.challengeActive == "Daily" && disActiveSpireAT() && getPageSetting('dExitSpireCell') > 0 && getPageSetting('dExitSpireCell') <= 100)
+        exitCell = (getPageSetting('dExitSpireCell') - 1);
+    var enemy = cell == 99 ? (exitCell == 99 ? game.global.gridArray[99].name : "Snimp") : name;
+    var base = (what == "attack") ? game.global.getEnemyAttack(exitCell, enemy, false) : (calcEnemyBaseHealth(game.global.world, exitCell, enemy) * 2);
+    var mod = (what == "attack") ? 1.17 : 1.14;
+    var spireNum = Math.floor((game.global.world-100)/100);
+    if (spireNum > 1){
+        var modRaiser = 0;
+        modRaiser += ((spireNum - 1) / 100);
+        if (what == "attack") modRaiser *= 8;
+        if (what == "health") modRaiser *= 2;
+        mod += modRaiser;
+    }
+    base *= Math.pow(mod, exitCell);
+    base *= game.badGuys[enemy][what];
+
+    //Challenges Compensation
+    if (game.global.challengeActive == "Domination" && exitCell != 99 && what == "health") base /= 75 * 4;    
+
+    return base;
 }
 
-function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
+function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     //Init
     var number = (enemy) ? enemy.attack : attack;
     var fluctuation = .2;
@@ -457,8 +460,11 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     var corrupt = mutations.Corruption.active();
     var healthy = mutations.Healthy.active();
 
+    //Spire
+    if (game.global.spireActive) number = calcSpire(99, game.global.gridArray[99].name, "attack");
+
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    if (!enemy && corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
+    else if (!enemy && corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
         //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
         var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
@@ -546,13 +552,8 @@ function calcEnemyHealthCore(world, map, cell, name) {
     //Maps
     if (map && game.global.universe == 1) health *= 0.5;
 
-    //Obliterated + Eradicated
-    if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated") {
-        var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
-        var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
-        oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
-        health *= oblitMult;
-    }
+    //Spire
+    if (game.global.spireActive) health = calcSpire(99, game.global.gridArray[99].name, 'health');
 
     //Challenges
     if (game.global.challengeActive == 'Balance')    health *= 2;
@@ -562,9 +563,14 @@ function calcEnemyHealthCore(world, map, cell, name) {
     if (game.global.challengeActive == "Domination") health *= 7.5 * 4;
     if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
     if (game.global.challengeActive == 'Lead')       health *= 1 + (0.04 * game.challenges.Lead.stacks);
-    
-    //Spire
-    if (game.global.spireActive) health = calcSpire(99, game.global.gridArray[99].name, 'health');
+
+    //Obliterated + Eradicated
+    if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated") {
+        var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
+        var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
+        oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
+        health *= oblitMult;
+    }
 
     return health;
 }
@@ -580,7 +586,7 @@ function calcEnemyHealth(world, map, full) {
     var healthy = !map && mutations.Healthy.active();
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    if (corrupt && !healthy) {
+    if (corrupt && !healthy && !game.global.spireActive) {
         //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
         var corruptionAmount = ~~((world - mutations.Corruption.start())/3) + 2; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(world, 10);
@@ -588,7 +594,7 @@ function calcEnemyHealth(world, map, full) {
     }
 
     //Healthy
-    if (healthy) {
+    if (healthy && !game.global.spireActive) {
         var scales = Math.floor((world - 150) / 6);
         health *= 14*Math.pow(1.05, scales);
         health *= 1.15;
