@@ -281,7 +281,7 @@ function autoLevelEquipment() {
 
     //Check for H & D
     var numHits = (game.global.formation != 4) ? MODULES["equipment"].numHitsSurvived : MODULES["equipment"].numHitsSurvivedScry;
-    var enoughHealthE = calcHealthRatio(true) > numHits;
+    var enoughHealthE = calcHealthRatio(false, true) > numHits;
     var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
 
     for (var equipName in equipmentList) {
