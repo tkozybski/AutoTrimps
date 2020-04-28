@@ -502,7 +502,7 @@ function calcEnemyBaseHealth(zone, level, name) {
 function calcEnemyHealthCore(world, map, cell, name) {
     //Pre-Init
     if (!world) world = game.global.world;
-    if (game.global.challengeActive == 'Lead' && world%2 == 1) world++;
+    if (!cell) cell = (map) ? getCurrentMapCell() : getCurrentWorldCell();
 
     //Init
     var health = calcEnemyBaseHealth(world, cell, name);
@@ -510,17 +510,15 @@ function calcEnemyHealthCore(world, map, cell, name) {
     //Maps
     if (map && game.global.universe == 1) health *= 0.5;
 
-    //Spire
-    if (game.global.spireActive) health = calcSpire("health");
+    //Spire - Overrides the base health number
+    if (!map && game.global.spireActive) health = calcSpire("health");
 
     //Challenges
     if (game.global.challengeActive == 'Balance')    health *= 2;
     if (game.global.challengeActive == 'Meditate')   health *= 2;
     if (game.global.challengeActive == "Toxicity")   health *= 2;
     if (game.global.challengeActive == 'Life')       health *= 11;
-    if (game.global.challengeActive == "Domination") health *= 7.5 * 4;
     if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
-    if (game.global.challengeActive == 'Lead')       health *= 1 + (0.04 * game.challenges.Lead.stacks);
 
     //Obliterated + Eradicated
     if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated") {
@@ -533,15 +531,19 @@ function calcEnemyHealthCore(world, map, cell, name) {
     return health;
 }
 
-function calcEnemyHealth(world, map, full) {
+function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
     //Pre-Init
     if (!world) world = game.global.world;
     if (game.global.challengeActive == 'Lead' && world%2 == 1) world++;
 
     //Init
-    var health = calcEnemyHealthCore(world, map, 99, "Turtlimp");
+    var health = calcEnemyHealthCore(world, map, cell, name);
     var corrupt = !map && world >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
+
+    //Challenges - worst case for lead, conservative on domination unless it's on a map
+    if (game.global.challengeActive == "Domination")   health *= 7.5 * (map ? 1 : 4);
+    if (game.global.challengeActive == "Lead") health *= game.challenges.Lead.stacks * (!map ? 102 : game.challenges.Lead.stacks);
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy && !game.global.spireActive) {
@@ -551,7 +553,7 @@ function calcEnemyHealth(world, map, full) {
         health *= corruptionWeight/100;
     }
 
-    //Healthy
+    //Healthy -- DEBUG
     if (healthy && !game.global.spireActive) {
         var scales = Math.floor((world - 150) / 6);
         health *= 14*Math.pow(1.05, scales);
@@ -562,6 +564,10 @@ function calcEnemyHealth(world, map, full) {
 }
 
 function calcSpecificEnemyHealth(world, map, cell) {
+    //Pre-Init
+    if (!world) world = game.global.world;
+    if (!cell) cell = (map) ? getCurrentMapCell() : getCurrentWorldCell();
+
     //Init
     var enemy = game.global.gridArray[cell-1];
     var corrupt = enemy.hasOwnProperty("corrupted");
@@ -569,35 +575,32 @@ function calcSpecificEnemyHealth(world, map, cell) {
     var name = (corrupt || healthy) ? "Chimp" : enemy.name;
     var health = calcEnemyHealthCore(world, map, cell, name);
 
+    //Challenges - considers the actual scenario for this enemy
+    if (game.global.challengeActive == "Lead") health *= 1 + (0.04 * game.challenges.Lead.stacks);
+    if (game.global.challengeActive == 'Domination') {
+        if (!map && !game.global.spireActive && cell != 100) health /= 10;
+        if (map && cell != game.global.mapGridArray.length) health /= 10;
+    }
+
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy) {
         health *= calcCorruptionScale(world, 10);
         if (enemy.corrupted == "corruptTough") health *= 5;
     }
 
-    //Healthy
+    //Healthy -- DEBUG
     if (healthy) {
         var scales = Math.floor((world - 150) / 6);
         health *= 14*Math.pow(1.05, scales);
         health *= 1.15;
     }
 
-    //Cancel out the Domination Challenge's Overkills
-    if (game.global.challengeActive == 'Domination') {
-        if (!game.global.mapsActive && game.global.lastClearedCell != 98) health /= 75 * 4;
-        if (game.global.mapsActive && game.global.lastClearedMapCell != game.global.mapGridArray.length-2) health /= 75 * 4;
-    }
-
     return health;
 }
 
-function calcHDratio(map, considerVoid) {
+function calcHDratio(mapZone) {
     var ratio = 0;
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var targetZone = game.global.world;
-
-    //Lead
-    if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
 
     //Shield
     highDamageShield();
@@ -611,129 +614,85 @@ function calcHDratio(map, considerVoid) {
         ourBaseDamage *= trimpAA;
 	ourBaseDamage *= getCritMulti(true);
     }
-    if (!map || map < 1) {
-        ratio = calcEnemyHealth(targetZone) / ourBaseDamage;
-    }
-    if (map || map >= 1)
-	ratio = calcEnemyHealth(map, true) / ourBaseDamage;
 
-    //Voids
-    if (considerVoid && !game.global.spireActive) ratio *= 4.5;
+    //Math, considering maps or not
+    if (!mapZone || mapZone < 1) ratio = calcEnemyHealth() / ourBaseDamage;
+    if (mapZone || mapZone >= 1) ratio = calcEnemyHealth(mapZone, true) / ourBaseDamage;
+
+    //Voids -- DEBUG
+    //if (considerVoid && !game.global.spireActive) ratio *= 4.5;
 
     return ratio;
 }
 
 function calcCurrentStance() {
     if (game.global.uberNature == "Wind" && getEmpowerment() == "Wind" && !game.global.mapsActive &&
-	(
-	 (
-	  (game.global.challengeActive != "Daily" && calcHDratio() < getPageSetting('WindStackingMinHD')) ||
-	  (game.global.challengeActive == "Daily" && calcHDratio() < getPageSetting('dWindStackingMinHD'))
-	 ) &&
-	 (
-	  (game.global.challengeActive != "Daily" && game.global.world >= getPageSetting('WindStackingMin')) ||
-          (game.global.challengeActive == "Daily" && game.global.world >= getPageSetting('dWindStackingMin')))
-         ) ||
-	 (game.global.uberNature == "Wind" && getEmpowerment() == "Wind" && !game.global.mapsActive && checkIfLiquidZone() && getPageSetting('liqstack') == true)
-	)
-	{
-	return 15;
-    }
+        (((game.global.challengeActive != "Daily" && calcHDratio() < getPageSetting('WindStackingMinHD'))
+            || (game.global.challengeActive == "Daily" && calcHDratio() < getPageSetting('dWindStackingMinHD')))
+                && ((game.global.challengeActive != "Daily" && game.global.world >= getPageSetting('WindStackingMin'))
+                    || (game.global.challengeActive == "Daily" && game.global.world >= getPageSetting('dWindStackingMin'))))
+                        || (game.global.uberNature == "Wind" && getEmpowerment() == "Wind" && !game.global.mapsActive && checkIfLiquidZone() && getPageSetting('liqstack') == true))
+                            return 15;
     else {
+        //Base Calc
+        var ehealth = 1;
+        if (game.global.fighting) ehealth = (getCurrentEnemy().maxHealth - getCurrentEnemy().health);
+        var attacklow = calcOurDmg("max", false, true);
+        var attackhigh = calcOurDmg("max", false, true);
 
-    //Base Calc
-    var ehealth = 1;
-    if (game.global.fighting) {
-        ehealth = (getCurrentEnemy().maxHealth - getCurrentEnemy().health);
-    }
-    var attacklow = calcOurDmg("max", false, true);
-    var attackhigh = calcOurDmg("max", false, true);
-
-    //Heirloom Calc
-    highDamageShield();
-    if (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg')) {
-        attackhigh *= trimpAA;
-	attackhigh *= getCritMulti(true);
-    }
-    if (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg')) {
-        attackhigh *= trimpAA;
-	attackhigh *= getCritMulti(true);
-    }
-
-    //Heirloom Switch
-    if (ehealth > 0) {
-        var hitslow = (ehealth / attacklow);
-        var hitshigh = (ehealth / attackhigh);
-        var stacks = 190;
-        var usehigh = false;
-	var stacksleft = 1;
-
-        if (game.global.challengeActive != "Daily" && getPageSetting('WindStackingMax') > 0) {
-            stacks = getPageSetting('WindStackingMax');
-	}
-        if (game.global.challengeActive == "Daily" && getPageSetting('dWindStackingMax') > 0) {
-            stacks = getPageSetting('dWindStackingMax');
-	}
-	if (game.global.uberNature == "Wind") {
-	    stacks += 100;
-	}
-	if (getEmpowerment() == "Wind") {
-	    stacksleft = (stacks - game.empowerments.Wind.currentDebuffPower);
-	}
-
-	//Use High
-        if (
-            (getEmpowerment() != "Wind") ||
-            (game.empowerments.Wind.currentDebuffPower >= stacks) ||
-            (hitshigh >= stacksleft) ||
-            (game.global.mapsActive) ||
-            (game.global.challengeActive != "Daily" && game.global.world < getPageSetting('WindStackingMin')) ||
-            (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin'))
-        ) {
-            usehigh = true;
-	}
-        if (
-                (getPageSetting('wsmax') > 0 && game.global.world >= getPageSetting('wsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive != "Daily" && getPageSetting('wsmaxhd') > 0 && calcHDratio() < getPageSetting('wsmaxhd')) ||
-                (getPageSetting('dwsmax') > 0 && game.global.world >= getPageSetting('dwsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive == "Daily" && getPageSetting('dwsmaxhd') > 0 && calcHDratio() < getPageSetting('dwsmaxhd'))
-        ) {
-	    usehigh = false;
-	}
-
-	//Low
-        if (!usehigh) {
-            if (
-                (game.empowerments.Wind.currentDebuffPower >= stacks) ||
-                ((hitslow * 4) > stacksleft)
-            ) {
-                return 2;
-	    }
-            else if ((hitslow) > stacksleft) {
-                return 0;
-	    }
-            else {
-                return 1;
-	    }
-	
-	//High
-        } else if (usehigh) {
-	    if (
-                (getEmpowerment() != "Wind") ||
-                (game.empowerments.Wind.currentDebuffPower >= stacks) ||
-                ((hitshigh * 4) > stacksleft) ||
-                (game.global.mapsActive) ||
-                (game.global.challengeActive != "Daily" && game.global.world < getPageSetting('WindStackingMin')) ||
-                (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin'))
-            ) {
-                return 12;
-	    }
-            else if ((hitshigh) > stacksleft) {
-                return 10;
-	    }
-            else {
-                return 11;
-	    }
+        //Heirloom Calc
+        highDamageShield();
+        if (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg')) {
+            attackhigh *= trimpAA;
+            attackhigh *= getCritMulti(true);
         }
-    }
+        if (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg')) {
+            attackhigh *= trimpAA;
+            attackhigh *= getCritMulti(true);
+        }
+
+        //Heirloom Switch
+        if (ehealth > 0) {
+            var hitslow = (ehealth / attacklow);
+            var hitshigh = (ehealth / attackhigh);
+            var stacks = 190;
+            var usehigh = false;
+            var stacksleft = 1;
+
+            if (game.global.challengeActive != "Daily" && getPageSetting('WindStackingMax') > 0) stacks = getPageSetting('WindStackingMax');
+            if (game.global.challengeActive == "Daily" && getPageSetting('dWindStackingMax') > 0) stacks = getPageSetting('dWindStackingMax');
+            if (game.global.uberNature == "Wind") stacks += 100;
+            if (getEmpowerment() == "Wind") stacksleft = (stacks - game.empowerments.Wind.currentDebuffPower);
+
+            //Use High
+            if ((getEmpowerment() != "Wind") || (game.empowerments.Wind.currentDebuffPower >= stacks) || (hitshigh >= stacksleft)
+                || (game.global.mapsActive) || (game.global.challengeActive != "Daily" && game.global.world < getPageSetting('WindStackingMin'))
+                    (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin')))
+                        usehigh = true;
+            }
+            if ((getPageSetting('wsmax') > 0 && game.global.world >= getPageSetting('wsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive != "Daily" && getPageSetting('wsmaxhd') > 0 && calcHDratio() < getPageSetting('wsmaxhd'))
+                || (getPageSetting('dwsmax') > 0 && game.global.world >= getPageSetting('dwsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive == "Daily" && getPageSetting('dwsmaxhd') > 0 && calcHDratio() < getPageSetting('dwsmaxhd')))
+                    usehigh = false;
+
+            //Low
+            if (!usehigh) {
+                if ((game.empowerments.Wind.currentDebuffPower >= stacks) || ((hitslow * 4) > stacksleft)) return 2;
+            }
+            else if ((hitslow) > stacksleft) return 0;
+            else return 1;
+
+            //High
+            } else if (usehigh) {
+                if ((getEmpowerment() != "Wind") || (game.empowerments.Wind.currentDebuffPower >= stacks)
+                    || ((hitshigh * 4) > stacksleft) || (game.global.mapsActive)
+                        || (game.global.challengeActive != "Daily" && game.global.world < getPageSetting('WindStackingMin'))
+                            || (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin')))
+                                return 12;
+
+                else if ((hitshigh) > stacksleft) return 10;
+                else return 11;
+            }
+        }
     }
 }
 
