@@ -566,10 +566,10 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
 function calcSpecificEnemyHealth(world, map, cell) {
     //Pre-Init
     if (!world) world = game.global.world;
-    if (!cell) cell = (map) ? getCurrentMapCell() : getCurrentWorldCell();
+    if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
 
     //Init
-    var enemy = game.global.gridArray[cell-1];
+    var enemy = (!map) ? game.global.gridArray[cell-1] : (getCurrentMapCell() ? : game.global.mapGridArray[cell-1] : "Chimp");
     var corrupt = enemy.hasOwnProperty("corrupted");
     var healthy = enemy.hasOwnProperty("healthy");
     var name = (corrupt || healthy) ? "Chimp" : enemy.name;
