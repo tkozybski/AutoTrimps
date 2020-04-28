@@ -239,15 +239,14 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, crit) {
 	if (game.global.roboTrimpLevel > 0) number *= ((0.2 * game.global.roboTrimpLevel) + 1);
 
 	//Heirlooms
-	number = calcHeirloomBonus("Shield", "trimpAttack", number)
-	if (Fluffy.isActive()){
-		number *= Fluffy.getDamageModifier();
-	}
+	number = calcHeirloomBonus("Shield", "trimpAttack", number);
+
+	//Fluffy
+	if (Fluffy.isActive()) number *= Fluffy.getDamageModifier();
 
 	//Gamma Burst
-	if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0))) >= 5)) {
+	if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0))) >= 5))
 	    	number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
-	}
 	
 	//Discipline
 	if (game.global.challengeActive == "Discipline") fluctuation = .995;
@@ -296,7 +295,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, crit) {
 		number *= 4;
 	}
 
-	//Masteries - Herbalist,Legs for Days, Magmamancer, Still Rowing II, Void Mastery, Health Strength, Sugar Rush
+	//Masteries - Herbalist, Legs for Days, Magmamancer, Still Rowing II, Void Mastery, Health Strength, Sugar Rush
 	if (game.talents.herbalist.purchased) number *= game.talents.herbalist.getBonus();
 	if (game.global.challengeActive == "Daily" && game.talents.daily.purchased) number *= 1.5;
 	if (game.talents.magmamancer.purchased) number *= game.jobs.Magmamancer.getBonusPercent();
