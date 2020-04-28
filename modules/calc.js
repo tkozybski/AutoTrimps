@@ -148,8 +148,8 @@ function getCritMulti(high, crit) {
 	var critChance = getPlayerCritChance();
 	var CritD = getPlayerCritDamageMult();
 	
-	if (noCrit == "never") critChance = Math.floor(critChance);
-        else if (noCrit == "force") critChance = Math.ceil(critChance);
+	if (crit == "never") critChance = Math.floor(critChance);
+        else if (crit == "force") critChance = Math.ceil(critChance);
 
 	if (high && (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily") || 
 	      (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily")) {
