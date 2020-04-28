@@ -283,9 +283,6 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, crit) {
 	
 	//Battle Goldens
 	if (game.goldenUpgrades.Battle.currentBonus > 0) number *= game.goldenUpgrades.Battle.currentBonus + 1;
-	
-	//Challenge^2 Rewards
-	if (game.global.totalSquaredReward > 0) number *= ((game.global.totalSquaredReward / 100) + 1);
 
 	//Empowerments
 	if (getPageSetting('fullice') == true && getEmpowerment() == "Ice") number *= (Fluffy.isRewardActive('naturesWrath') ? 3 : 2);
@@ -320,14 +317,11 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, crit) {
 			number *= (1 + (strBonus / 100));
 	}
 
-	//Fluffy
+	//Fluffy + Sharp Trimps + Uber Poison + Challenge²
 	if (Fluffy.isRewardActive('voidSiphon') && game.stats.totalVoidMaps.value) number *= (1 + (game.stats.totalVoidMaps.value * 0.05));
-
- 	//Sharp Trimps
 	if (game.singleRunBonuses.sharpTrimps.owned) number *= 1.5;
-
-	//Uber Poison
 	if (game.global.uberNature == "Poison") number *= 3;
+        if (game.global.totalSquaredReward > 0) number *= ((game.global.totalSquaredReward / 100) + 1);
 
 	//Init Damage Variation
 	var min = number;
@@ -448,12 +442,12 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
             number *= corruptionWeight/100;
         }
 
-        //Daily
-        if (daily) number = calcDailyAttackMod(number);
-
         //RoboTrimp
         if (!enemy && game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
     }
+
+    //Daily
+    if (daily) number = calcDailyAttackMod(number);
 
     //Fluctuations
     if (!disableFlucts) {
