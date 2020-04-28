@@ -1,28 +1,34 @@
-function calcBaseDamageinX(){baseDamage=calcOurDmg("avg",!1,!0),baseBlock=game.global.soldierCurrentBlock,baseHealth=game.global.soldierHealthMax}
-function calcBaseDamageinX2(){baseDamage=calcOurDmg("avg",!1,!0),baseBlock=calcOurBlock(),baseHealth=calcOurHealth()}
+function calcBaseDamageinX() {
+    baseDamage = calcOurDmg("avg",!1,!0);
+    baseBlock = game.global.soldierCurrentBlock;
+    baseHealth = game.global.soldierHealthMax;
+}
+
+function calcBaseDamageinX2() {
+    baseDamage = calcOurDmg("avg", false, true);
+    baseHealth = calcOurHealth();
+    baseBlock  = calcOurBlock();
+}
 
 function autoStanceNew() {
     if (game.global.gridArray.length === 0) return;
     if (game.global.soldierHealth <= 0) return;
     if (!game.upgrades.Formations.done) return;
 	
-    if(game.global.formation == 2 && game.global.soldierHealth <= game.global.soldierHealthMax * 0.25) {
-        setFormation('0');
-    }
-    else if(game.global.formation == 0 && game.global.soldierHealth <= game.global.soldierHealthMax * 0.25) {
-        setFormation('1')
-    }
-    else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax) {
-        setFormation('2');
-    }
+    if (game.global.formation == 2 && game.global.soldierHealth <= game.global.soldierHealthMax * 0.25)     setFormation('0');
+    else if(game.global.formation == 0 && game.global.soldierHealth <= game.global.soldierHealthMax * 0.25) setFormation('1')
+    else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax)        setFormation('2');
 }
 
 function autoStance() {
     calcBaseDamageinX2();
-    if (game.global.gridArray.length === 0) return true;
+
+    //Invalid Map - Dead Soldiers - Auto Stance Disabled - Formations Unavailable - No Enemy
     if (game.global.soldierHealth <= 0) return;
+    if (game.global.gridArray.length === 0) return true;
     if (!getPageSetting('AutoStance')) return true;
     if (!game.upgrades.Formations.done) return true;
+    if (typeof getCurrentEnemy() === 'undefined') return true;
 
     //Keep on D vs the Domination bosses
     if (game.global.challengeActive == "Domination" && game.global.lastClearedCell == 98) {
@@ -30,16 +36,20 @@ function autoStance() {
         return;
     }
 
-    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    //Our Trimps Status
     var dHealth = baseHealth/2;
     var xHealth = baseHealth;
     var bHealth = baseHealth/2;
-    var corrupt = game.global.world >= mutations.Corruption.start();
+    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+
+    //Enemy
     var enemy = getCurrentEnemy();
-    if (typeof enemy === 'undefined') return true;
     var enemyHealth = enemy.health;
     var enemyDamage = calcBadGuyDmg(enemy,null,true,true);
+
+    //Enemy Crits
+    var corrupt = game.global.world >= mutations.Corruption.start();
     var critMulti = 1;
     const ignoreCrits = getPageSetting('IgnoreCrits');
     var isCrushed = false;
@@ -54,16 +64,16 @@ function autoStance() {
             && (critMulti *= dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength));
         enemyDamage *= critMulti;
     }
+
+    //Fast Enemies
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || enemy.corrupted == 'healthyDbl';
     var enemyFast = (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom")) || isDoubleAttack;
-    if (enemy.corrupted == 'corruptStrong')
-        enemyDamage *= 2;
-    if (enemy.corrupted == 'corruptTough')
-        enemyHealth *= 5;
-    if (enemy.corrupted == 'healthyStrong')
-        enemyDamage *= 2.5;
-		if (enemy.corrupted == 'healthyTough')
-        enemyHealth *= 7.5;
+
+    //Corrupted and Healthy Enemies
+    if (enemy.corrupted == 'corruptStrong') enemyDamage *= 2;
+    if (enemy.corrupted == 'corruptTough') enemyHealth *= 5;
+    if (enemy.corrupted == 'healthyStrong') enemyDamage *= 2.5;
+    if (enemy.corrupted == 'healthyTough') enemyHealth *= 7.5;
 
     //Formation Damage
     var xDamage = (enemyDamage - baseBlock);
@@ -84,11 +94,15 @@ function autoStance() {
         if (dDamageNoCrit < atkPierceNoCrit) dDamageNoCrit = atkPierceNoCrit;
         if (xDamageNoCrit < atkPierceNoCrit) xDamageNoCrit = atkPierceNoCrit;
     }
+
+    //Enemy Damage according to our formation
     if (xDamage < 0) xDamage = 0;
     if (dDamage < 0) dDamage = 0;
     if (bDamage < 0) bDamage = 0;
     if (dDamageNoCrit < 0) dDamageNoCrit = 0;
     if (xDamageNoCrit < 0) xDamageNoCrit = 0;
+
+    //Enemy Damage on Double Attack
     var isdba = isDoubleAttack ? 2 : 1;
     xDamage *= isdba;
     dDamage *= isdba;
@@ -97,30 +111,27 @@ function autoStance() {
     xDamageNoCrit *= isdba;
     
     //Active Challenges
+    var leadChallenge = game.global.challengeActive == 'Lead';
     var electricityChallenge = game.global.challengeActive == "Electricity";
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
     var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
-    var leadChallenge = game.global.challengeActive == 'Lead';
+    var dailyMirrored = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.mirrored !== 'undefined');
     var challengeDamage = 0;
 
-    //Electricity
+    //Electricity - Lead - Tox/Nom
     if (electricityChallenge) challengeDamage = game.challenges.Electricity.stacks * 0.1;
-
-    //Lead
     else if (leadChallenge) challengeDamage = game.challenges.Lead.stacks * 0.0003;
-
-    //Drain
     else if (drainChallenge) challengeDamage = 0.20;
 
     //Plague (Daily)
-    else if (dailyPlague) {
+    if (dailyPlague) {
         drainChallenge = true;
         challengeDamage = dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength, 1 + game.global.dailyChallenge.plague.stacks);
     }
 
     //Bogged (Daily)
-    else if (dailyBogged) {
+    if (dailyBogged) {
         drainChallenge = true;
         challengeDamage = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
     }
@@ -134,37 +145,46 @@ function autoStance() {
     xDamage += xHealth * challengeDamage;
     bDamage += bHealth * challengeDamage;
 
+    //Mirrored (Daily)
+    if (dailyMirrored) {
+        var mirrorDamage = 0.1 * calcOurDmg("max", false, true);
+        dDamage += mirrorDamage * 4;
+        xDamage += mirrorDamage;
+        bDamage += mirrorDamage / 2;
+    }
+
     //Explosive Daily
     var xExplosionOK = true;
     var dExplosionOK = true;
     if (typeof game.global.dailyChallenge['explosive'] !== 'undefined') {
         var explosionDmg = 0;
         var explosiveDamage = 1 + game.global.dailyChallenge['explosive'].strength;
-        var playerDCritDmg = calcOurDmg("max",false,true) * 4;
-        var playerXCritDmg = calcOurDmg("max",false,true);
+        var playerDCritDmg = calcOurDmg("max", false, true) * 4;
+        var playerXCritDmg = calcOurDmg("max", false, true);
         explosionDmg = calcBadGuyDmg(enemy,null,true,true) * explosiveDamage;
         xExplosionOK = ((xHealth - missingHealth > explosionDmg) || (enemyHealth > playerXCritDmg));
         dExplosionOK = (newSquadRdy || (dHealth - missingHealth > explosionDmg) || (enemyHealth > playerDCritDmg));
     }
 
     //Flags that tell on which situations your trimps can survive
-    var oneshotFast = enemyFast ? enemyHealth <= baseDamage : false;
-    var surviveD = ((newSquadRdy && dHealth > dDamage) || (dHealth - missingHealth > dDamage));
-    var surviveX = ((newSquadRdy && xHealth > xDamage) || (xHealth - missingHealth > xDamage));
-    var surviveB = ((newSquadRdy && bHealth > bDamage) || (bHealth - missingHealth > bDamage));
-    var drainAttackOK = !drainChallenge || oneshotFast || surviveD;
+    var oneshotFastD = !enemyFast && (calcOurDmg("min", true, true, true) * 4) >= enemyHealth;
+    var oneshotFastX = !enemyFast && calcOurDmg("min", true, true, true) >= enemyHealth;
+    var surviveD = (newSquadRdy && dHealth > dDamage) || (dHealth - missingHealth > dDamage);
+    var surviveX = (newSquadRdy && xHealth > xDamage) || (xHealth - missingHealth > xDamage);
+    var surviveB = (newSquadRdy && bHealth > bDamage) || (bHealth - missingHealth > bDamage);
+    var drainAttackOK = !drainChallenge || oneshotFastD || surviveD;
     var isCritThing = isCritVoidMap || isCritDaily || isCrushed;
-    var voidCritinDok = !isCritThing || oneshotFast || surviveD;
-    var voidCritinXok = !isCritThing || oneshotFast || surviveX;
+    var voidCritinDok = !isCritThing || oneshotFastD || surviveD;
+    var voidCritinXok = !isCritThing || oneshotFastX || surviveX;
 
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
-	//D if it can survive it
+        //D if it can survive it
         if (game.upgrades.Dominance.done && surviveD && drainAttackOK && voidCritinDok && dExplosionOK) setFormation(2);
 
-	//Critical Things
-	else if (isCritThing && !voidCritinDok) {
-	    //B before it takes a hit that won't leave enough health to change formation
+        //Critical Things
+        else if (isCritThing && !voidCritinDok) {
+            //B before it takes a hit that won't leave enough health to change formation
             if (game.global.formation == "0" && game.global.soldierHealth - xDamage < bHealth) {
                 if (game.upgrades.Barrier.done && (newSquadRdy || missingHealth < bHealth)) setFormation(3);
             }
@@ -176,17 +196,17 @@ function autoStance() {
             else if (game.global.formation == "0") {
                 if (game.upgrades.Barrier.done && (newSquadRdy || missingHealth < bHealth)) setFormation(3);
                 else setFormation(1);
-	    }
+            }
             
             //If everything else fails, then B (because, c'mon, these if are messy af)
             else if (game.upgrades.Barrier.done && (game.global.formation == 2 || game.global.formation == 4)) setFormation(3);
         }
 
-	//H If it can't take the explosion on X
-	else if (game.upgrades.Formations.done && !xExplosionOK) setFormation(1);
+        //H If it can't take the explosion on X
+        else if (game.upgrades.Formations.done && !xExplosionOK) setFormation(1);
         
         //X if can survive on it
-	else if (game.upgrades.Formations.done && surviveX) setFormation("0");
+        else if (game.upgrades.Formations.done && surviveX) setFormation("0");
         
         //B if can survive on it (implicitly checks if you change survive the formation switch)
         else if (game.upgrades.Barrier.done && surviveB) {
@@ -199,6 +219,7 @@ function autoStance() {
         //H otherwise
         else if (game.global.formation != 1) setFormation(1);
     }
+
     return true;
 }
 
