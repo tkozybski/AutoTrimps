@@ -67,10 +67,8 @@ var use_scryer  = getPageSetting('UseScryerStance') == true && game.global.mapsA
     }
 
 //Calc Damage
-if (AutoStance==1)
-    calcBaseDamageinX();
-else if (AutoStance>=2)
-    calcBaseDamageinX2();
+if (AutoStance==1) calcBaseDamageinX();
+else if (AutoStance>=2) calcBaseDamageinX2();
 
 //Suicide to Scry
 var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
@@ -91,10 +89,16 @@ var useoverkill = getPageSetting('UseScryerStance') == true && game.portal.Overk
     useoverkill &= !(getPageSetting('ScryerUseinSpire2') == 0 && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()));
 
 //Overkill
-if (useoverkill && getCurrentEnemy(2)) {
+if (useoverkill && getCurrentEnemy()) {
     //Calculates the minimum left "over damage" possible
     var minDamage = 0.5 * calcOurDmg("min", false, true, true);
     var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
+
+    //Considers the scenario where our trimps are at the last cell
+    if (!getCurrentEnemy(2) && minDamage > getCurrentEnemy().Health && oktoswitch) {
+        setFormation(4);
+        return;
+    }
 
     //Calculates the damage that will hit the next enemy, and his health
     var overkillDmg = 0.005 * game.portal.Overkill.level * leftOverDmg;
