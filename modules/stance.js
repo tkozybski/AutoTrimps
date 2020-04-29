@@ -77,7 +77,7 @@ function autoStance() {
     if (enemy.corrupted == 'healthyTough') enemyHealth *= 7.5;
 
     //Block Pierce
-    var pierce == (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
+    var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //Pierce Damage
