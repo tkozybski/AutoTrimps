@@ -70,7 +70,7 @@ function advancedNurseries() {
     //Also, it requires less health during spire
     var a = calcHealthRatio(false, doVoids, true) < getMapHealthCutOff();
     var b = calcHDratio() < getPageSetting("DisableFarm");
-    var c = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit');
+    var c = game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     return a && b && c && !preSpireFarming || !MODULES.buildings.advancedNurseries;
 }
 
