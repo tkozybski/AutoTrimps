@@ -329,7 +329,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, crit) {
 	var avg = number;
 
 	//Crit
-	min *= getCritMulti(false, (crit) ? crit : "ignore");
+	min *= getCritMulti(false, (crit) ? crit : "never");
 	avg *= getCritMulti(false, (crit) ? crit : "maybe");
 	max *= getCritMulti(false, (crit) ? crit : "force");
 
