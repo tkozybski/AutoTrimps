@@ -683,8 +683,8 @@ function calcCurrentStance() {
 
             //High
             else if (usehigh) {
-                if ((getEmpowerment() != "Wind") || (game.empowerments.Wind.currentDebuffPower >= stacks)
-                    || ((hitshigh * 4) > stacksleft) || (game.global.mapsActive)
+                if (game.global.mapsActive || getEmpowerment() != "Wind"
+                    || game.empowerments.Wind.currentDebuffPower >= stacks || (hitshigh * 4) > stacksleft
                         || (game.global.challengeActive != "Daily" && game.global.world < getPageSetting('WindStackingMin'))
                             || (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin')))
                                 return 12;
@@ -697,7 +697,6 @@ function calcCurrentStance() {
 }
 
 //Radon
-
 function RgetCritMulti() {
 
 	var critChance = getPlayerCritChance();
