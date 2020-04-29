@@ -94,18 +94,21 @@ if (useoverkill && getCurrentEnemy()) {
     var minDamage = 0.5 * calcOurDmg("min", false, true, true);
     var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
 
-    //Considers the scenario where our trimps are at the last cell
-    if (!getCurrentEnemy(2) && minDamage > getCurrentEnemy().Health && oktoswitch) {
-        setFormation(4);
-        return;
+    //If our trimps are not on last cell of the map or zone
+    if (getCurrentEnemy(2)) {
+        //Calculates the damage that will hit the next enemy, and his health
+        var overkillDmg = 0.005 * game.portal.Overkill.level * leftOverDmg;
+        var nextEnemyHealth = calcSpecificEnemyHealth(game.global.world, game.global.mapsActive, getCurrentEnemy(2).level);
+
+        //Switches to S if it has enough damage to secure an overkill
+        if (oktoswitch && overkillDmg > nextEnemyHealth) {
+            setFormation(4);
+            return;
+        }
     }
-
-    //Calculates the damage that will hit the next enemy, and his health
-    var overkillDmg = 0.005 * game.portal.Overkill.level * leftOverDmg;
-    var nextEnemyHealth = calcSpecificEnemyHealth(game.global.world, game.global.mapsActive, getCurrentEnemy(2).level);
-
-    //Switches to S if it has enough damage to secure an overkill
-    if (oktoswitch && overkillDmg > nextEnemyHealth) {
+    
+    //Considers a simple one-hit kill if our trimps are on the last cell
+    else if (minDamage > getCurrentEnemy().Health && oktoswitch) {
         setFormation(4);
         return;
     }
