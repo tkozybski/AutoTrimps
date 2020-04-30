@@ -69,7 +69,7 @@ function challengeDamage(health, minDamage, maxDamage, missingHealth, critPower)
     return harm;
 }
 
-function directDamage(formation, minDamage, critPower=2) {
+function directDamage(formation, block, minDamage, critPower=2) {
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
@@ -81,7 +81,7 @@ function directDamage(formation, minDamage, critPower=2) {
 
     //Enemy Damage according to our formation
     var pierceDmg = pierce * enemyDamage;
-    var harm = Math.max(enemyDamage - baseBlock, pierceDmg, 0);
+    var harm = Math.max(enemyDamage - block, pierceDmg, 0);
 
     //Fast Enemies
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || enemy.corrupted == 'healthyDbl';
