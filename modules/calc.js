@@ -468,7 +468,7 @@ function badGuyCritMult(enemy, critPower=2) {
     //Pre-Init
     if (getPageSetting('IgnoreCrits') == 2) return 1;
     if (!enemy) enemy = getCurrentEnemy();
-    if (!enemy || !critPower) return 1;
+    if (!enemy || critPower <= 0) return 1;
 
     //Init   
     var regular=1, challenge=1;
@@ -476,7 +476,7 @@ function badGuyCritMult(enemy, critPower=2) {
     //Non-challenge crits
     if      (enemy.corrupted == 'corruptCrit') regular = 5;
     else if (enemy.corrupted == 'healthyCrit') regular = 7;
-    else if (game.global.voidBuff == 'getCrit' && ignoreCrits != 1) regular = 5;
+    else if (game.global.voidBuff == 'getCrit' && getPageSetting('IgnoreCrits') != 1) regular = 5;
 
     //Challenge crits
     var crushed = game.global.challengeActive == "Crushed";
