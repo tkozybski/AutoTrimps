@@ -26,7 +26,7 @@ function challengeDamage(health, minDamage, maxDamage, missingHealth, critPower)
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
-    var enemyDamage = enemyDamage(critPower);
+    var enemyDamage = calcSpecificBadGuyDmg(enemy, critPower);
 
     //Active Challenges
     var leadChallenge = game.global.challengeActive == 'Lead';
