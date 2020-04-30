@@ -5,6 +5,8 @@ function calcBaseDamageinX() {
 }
 
 function calcBaseDamageinX2() {
+    minDamage  = calcOurDmg("min", false, true);
+    maxDamage  = calcOurDmg("max", false, true);
     baseDamage = calcOurDmg("avg", false, true);
     baseHealth = calcOurHealth();
     baseBlock  = calcOurBlock();
@@ -18,6 +20,108 @@ function autoStanceNew() {
     if (game.global.formation == 2 && game.global.soldierHealth <= game.global.soldierHealthMax * 0.25)     setFormation('0');
     else if(game.global.formation == 0 && game.global.soldierHealth <= game.global.soldierHealthMax * 0.25) setFormation('1')
     else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax)        setFormation('2');
+}
+
+function challengeDamage(health, minDamage, maxDamage, missingHealth, critPower) {
+    //Enemy
+    var enemy = getCurrentEnemy();
+    var enemyHealth = enemy.health;
+    var enemyDamage = enemyDamage(critPower);
+
+    //Active Challenges
+    var leadChallenge = game.global.challengeActive == 'Lead';
+    var electricityChallenge = game.global.challengeActive == "Electricity";
+    var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
+    var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
+    var dailyMirrored = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.mirrored !== 'undefined');
+    var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity" || dailyPlague || dailyBogged;
+    var challengeDamage = 0, harm = 0;
+
+    //Electricity Lead - Tox/Nom
+    if (electricityChallenge) challengeDamage = game.challenges.Electricity.stacks * 0.1;
+    else if (drainChallenge) challengeDamage = 0.20;
+
+    //Plague & Bogged (Daily)
+    if (dailyPlague) challengeDamage = dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength, 1 + game.global.dailyChallenge.plague.stacks);
+    if (dailyBogged) challengeDamage = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
+
+    //Lead - Only takes damage if the enemy doesn't die
+    if (leadChallenge && minDamage < enemyHealth) harm += health * game.challenges.Lead.stacks * 0.0003;
+
+    //Adds Drain Damage -- % of max health
+    harm += health * challengeDamage;
+
+    //Adds Bleed Damage -- % of current health
+    if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed') {
+        challengeDamage = (enemy.corrupted == 'healthyBleed') ? 0.30 : 0.20;
+        harm += (health - missingHealth) * challengeDamage;
+    }
+
+    //Explosive Daily (or Magma Omnipotrimp --TODO) -- Blockable
+    if (typeof game.global.dailyChallenge['explosive'] !== 'undefined' && critPower >= 0) {
+        var explosionDmg = enemyDamage * (1 + game.global.dailyChallenge['explosive'].strength);
+        if (maxDamage > enemyHealth) harm += Math.max(explosionDmg - baseBlock,   explosionDmg * pierce);
+    }
+
+    //Mirrored (Daily) -- Unblockable, unpredictable
+    if (dailyMirrored && critPower >= -1) harm += 0.1 * maxDamage;
+
+    return harm;
+}
+
+function directDamage(formation, minDamage, critPower=2) {
+    //Enemy
+    var enemy = getCurrentEnemy();
+    var enemyHealth = enemy.health;
+    var enemyDamage = calcSpecificBadGuyDmg(enemy, critPower);
+
+    //Calculates block and pierce
+    var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
+    if (formation != "S" && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+
+    //Enemy Damage according to our formation
+    var pierceDmg = pierce * enemyDamage;
+    var harm = Math.max(enemyDamage - baseBlock, pierceDmg, 0);
+
+    //Fast Enemies
+    var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || enemy.corrupted == 'healthyDbl';
+    var enemyFast = isDoubleAttack || (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom"));
+
+    //Double Attack and One Shot situations
+    if (isDoubleAttack && minDamage < enemyHealth) harm *= 2;
+    if (!enemyFast && minDamage > enemyHealth) harm = 0;
+
+    return harm;
+}
+
+function survive(formation = "S", critPower) {
+    //Check if the formation is valid
+    if (formation == "D" && !game.upgrades.Dominance.done) return false;
+    if (formation == "H" && !game.upgrades.Formations.done) return false;
+    if (formation == "B" && !game.upgrades.Barrier.done) return false;
+    if (formation == "S" && !game.global.world >= 60 || game.global.highestLevelCleared < 180) return false;
+
+    //Base stats
+    var damage = baseDamage;
+    var health = baseHealth;
+    var block  = baseBlock;
+    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
+
+    //More stats
+    var minDamage = minDamage;
+    var maxDamage = maxDamage;
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+
+    //Applies the formation modifiers
+    if      (formation == "XB") health /= 2;
+    else if (formation == "D") {damage *= 4; minDamage *= 4; maxDamage *= 4; health /= 2; block  /= 2;}
+    else if (formation == "B") {damage /= 2; minDamage /= 2; maxDamage /= 2; health /= 2; block  *= 4;}
+    else if (formation == "H") {damage /= 2; minDamage /= 2; maxDamage /= 2; health *= 4; block  /= 2;}
+    else if (formation == "S") {damage /= 2; minDamage /= 2; maxDamage /= 2; health /= 2; block  /= 2;}
+
+    //Decides if the trimps can survive in this formation
+    var harm = directDamage(formation, minDamage, critPower) + challengeDamage(health, minDamage, maxDamage, missingHealth, critPower);
+    return (newSquadRdy && health > harm) || (health - missingHealth > harm);
 }
 
 function autoStance() {
@@ -36,204 +140,24 @@ function autoStance() {
         return;
     }
 
-    //Our Trimps Status
-    var xHealth = baseHealth;
-    var dHealth = baseHealth/2;
-    var bHealth = baseHealth/2;
-    var hHealth = baseHealth*4;
-    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-
-    //Enemy
-    var enemy = getCurrentEnemy();
-    var enemyHealth = enemy.health;
-    var enemyDamage = calcBadGuyDmg(enemy,null,true,true);
-
-    //Enemy Crits
-    var corrupt = game.global.world >= mutations.Corruption.start();
-    var critMulti = 1;
-    const ignoreCrits = getPageSetting('IgnoreCrits');
-    var isCrushed = false;
-    var isCritVoidMap = false;
-    var isCritDaily = false;
-    if (ignoreCrits != 2) {
-        (isCrushed = (game.global.challengeActive == "Crushed") && game.global.soldierHealth > game.global.soldierCurrentBlock)
-            && (critMulti *= 5);
-        (isCritVoidMap = (!ignoreCrits && game.global.voidBuff == 'getCrit') || (enemy.corrupted == 'corruptCrit') || (enemy.corrupted == 'healthyCrit'))
-            && (critMulti *= (enemy.corrupted == 'healthyCrit' ? 7 : 5));
-        (isCritDaily = (game.global.challengeActive == "Daily") && (typeof game.global.dailyChallenge.crits !== 'undefined'))
-            && (critMulti *= dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength));
-        enemyDamage *= critMulti;
-    }
-
-    //Fast Enemies
-    var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || enemy.corrupted == 'healthyDbl';
-    var enemyFast = (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom")) || isDoubleAttack;
-
-    //Corrupted and Healthy Enemies
-    if (enemy.corrupted == 'corruptStrong') enemyDamage *= 2;
-    if (enemy.corrupted == 'corruptTough') enemyHealth *= 5;
-    if (enemy.corrupted == 'healthyStrong') enemyDamage *= 2.5;
-    if (enemy.corrupted == 'healthyTough') enemyHealth *= 7.5;
-
-    //Block Pierce
-    var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
-
-    //Pierce Damage
-    var pierceDmg = pierce * enemyDamage;
-    var pierceDmgNoCrit = pierce * (enemyDamage/critMulti);
-
-    //Formation Damage
-    var xDamage = Math.max(enemyDamage - baseBlock,   pierceDmg);
-    var dDamage = Math.max(enemyDamage - baseBlock/2, pierceDmg);
-    var bDamage = Math.max(enemyDamage - baseBlock*4, pierceDmg/2);
-    var xDamageNoCrit = Math.max(enemyDamage/critMulti - baseBlock,   pierceDmgNoCrit);
-    var dDamageNoCrit = Math.max(enemyDamage/critMulti - baseBlock/2, pierceDmgNoCrit);
-    var bDamageNoCrit = Math.max(enemyDamage/critMulti - baseBlock*4, pierceDmgNoCrit/2);
-
-    //Enemy Damage according to our formation
-    xDamage = Math.max(xDamage, 0);
-    dDamage = Math.max(dDamage, 0);
-    bDamage = Math.max(bDamage, 0);
-    dDamageNoCrit = Math.max(dDamageNoCrit, 0);
-    xDamageNoCrit = Math.max(xDamageNoCrit, 0);
-    bDamageNoCrit = Math.max(bDamageNoCrit, 0);
-
-    //Enemy Damage on Double Attack
-    if (isDoubleAttack) {
-        xDamage *= 2;
-        dDamage *= 2;
-        bDamage *= 2;
-        xDamageNoCrit *= 2;
-        dDamageNoCrit *= 2;
-        bDamageNoCrit *= 2;
-    }
-
-    //Introduces H Formation
-    var hDamage = dDamage;
-    var hDamageNoCrit = dDamage;
-
-    //Oneshoting non-fast enemies
-    if (!enemyFast && calcOurDmg("min", false, true)   > enemyHealth) {xDamage = 0; xDamageNoCrit=0;}
-    if (!enemyFast && calcOurDmg("min", false, true)*4 > enemyHealth) {dDamage = 0; dDamageNoCrit=0;}
-    if (!enemyFast && calcOurDmg("min", false, true)/2 > enemyHealth) {hDamage = 0; hDamageNoCrit=0;}
-    if (!enemyFast && calcOurDmg("min", false, true)/2 > enemyHealth) {bDamage = 0; bDamageNoCrit=0;}
-    
-    //Active Challenges
-    var leadChallenge = game.global.challengeActive == 'Lead';
-    var electricityChallenge = game.global.challengeActive == "Electricity";
-    var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
-    var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
-    var dailyMirrored = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.mirrored !== 'undefined');
-    var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity" || dailyPlague || dailyBogged;
-    var challengeDamage = 0;
-
-    //Electricity Lead - Tox/Nom
-    if (electricityChallenge) challengeDamage = game.challenges.Electricity.stacks * 0.1;
-    else if (drainChallenge) challengeDamage = 0.20;
-
-    //Plague & Bogged (Daily)
-    if (dailyPlague) challengeDamage = dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength, 1 + game.global.dailyChallenge.plague.stacks);
-    if (dailyBogged) challengeDamage = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
-
-    //Adds challenge damage
-    xDamage += xHealth * challengeDamage;
-    dDamage += dHealth * challengeDamage;
-    hDamage += hHealth * challengeDamage;
-    bDamage += bHealth * challengeDamage;
-    xDamageNoCrit += xHealth * challengeDamage;
-    dDamageNoCrit += dHealth * challengeDamage;
-    hDamageNoCrit += hHealth * challengeDamage;
-    bDamageNoCrit += bHealth * challengeDamage;
-
-    //Lead - Only takes damage if the enemy doesn't die
-    if (leadChallenge) {
-        var leadDmg = game.challenges.Lead.stacks * 0.0003;
-        if (calcOurDmg("min", false, true)   < enemyHealth) {xDamage += xHealth * leadDmg; xDamageNoCrit += xHealth * leadDmg;}
-        if (calcOurDmg("min", false, true)*4 < enemyHealth) {dDamage += dHealth * leadDmg; dDamageNoCrit += dHealth * leadDmg;}
-        if (calcOurDmg("min", false, true)/2 < enemyHealth) {hDamage += hHealth * leadDmg; hDamageNoCrit += hHealth * leadDmg;}
-        if (calcOurDmg("min", false, true)/2 < enemyHealth) {bDamage += bHealth * leadDmg; bDamageNoCrit += bHealth * leadDmg;}
-    }
-
-    //Bleed (from Void or Corruption) -- % of current life, not max
-    if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed') {
-        challengeDamage = (enemy.corrupted == 'healthyBleed') ? 0.30 : 0.20;
-        xDamage += (xHealth - missingHealth) * challengeDamage;
-        dDamage += (dHealth - missingHealth) * challengeDamage;
-        hDamage += (hHealth - missingHealth) * challengeDamage;
-        bDamage += (bHealth - missingHealth) * challengeDamage;
-        xDamageNoCrit += (xHealth - missingHealth) * challengeDamage;
-        dDamageNoCrit += (dHealth - missingHealth) * challengeDamage;
-        hDamageNoCrit += (hHealth - missingHealth) * challengeDamage;
-        bDamageNoCrit += (bHealth - missingHealth) * challengeDamage;
-    }
-
-    //Mirrored (Daily) -- Unblockable
-    if (dailyMirrored) {
-        var mirrorDamage = 0.1 * calcOurDmg("max", false, true);
-        xDamage += mirrorDamage;
-        dDamage += mirrorDamage * 4;
-        hDamage += mirrorDamage / 2;
-        bDamage += mirrorDamage / 2;
-        xDamageNoCrit += mirrorDamage;
-        dDamageNoCrit += mirrorDamage * 4;
-        hDamageNoCrit += mirrorDamage / 2;
-        bDamageNoCrit += mirrorDamage / 2;
-    }
-
-    //Explosive Daily (or Magma Omnipotrimp --TODO) -- Blockable
-    if (typeof game.global.dailyChallenge['explosive'] !== 'undefined') {
-        var explosionDmg = calcBadGuyDmg(enemy,null,true,true) * (1 + game.global.dailyChallenge['explosive'].strength);
-        var explosionDmgNoCrit = explosionDmg / critMulti;
-
-        //The Explosion can actually be blocked
-        if (calcOurDmg("max", false, true)   > enemyHealth) xDamage += Math.max(explosionDmg - baseBlock,   explosionDmg * pierce);
-        if (calcOurDmg("max", false, true)*4 > enemyHealth) dDamage += Math.max(explosionDmg - baseBlock/2, explosionDmg * pierce);
-        if (calcOurDmg("max", false, true)/2 > enemyHealth) hDamage += Math.max(explosionDmg - baseBlock/2, explosionDmg * pierce);
-        if (calcOurDmg("max", false, true)/2 > enemyHealth) bDamage += Math.max(explosionDmg - baseBlock*4, explosionDmg * pierce/2);
-        if (calcOurDmg("max", false, true)   > enemyHealth) xDamageNoCrit += Math.max(explosionDmgNoCrit - baseBlock,   explosionDmgNoCrit * pierce);
-        if (calcOurDmg("max", false, true)*4 > enemyHealth) dDamageNoCrit += Math.max(explosionDmgNoCrit - baseBlock/2, explosionDmgNoCrit * pierce);
-        if (calcOurDmg("max", false, true)/2 > enemyHealth) hDamageNoCrit += Math.max(explosionDmgNoCrit - baseBlock/2, explosionDmgNoCrit * pierce);
-        if (calcOurDmg("max", false, true)/2 > enemyHealth) bDamageNoCrit += Math.max(explosionDmgNoCrit - baseBlock*4, explosionDmgNoCrit * pierce/2);
-    }
-
-    //Flags that tell on which situations your trimps can survive
-    var surviveD  = (newSquadRdy && dHealth > dDamage) || (dHealth - missingHealth > dDamage);
-    var surviveX1 = (newSquadRdy && bHealth > xDamage) || (bHealth - missingHealth > xDamage);
-    var surviveX2 = (newSquadRdy && xHealth > xDamage) || (xHealth - missingHealth > xDamage);
-    var surviveH  = (newSquadRdy && hHealth > hDamage) || (hHealth - missingHealth > hDamage);
-    var surviveB  = (newSquadRdy && bHealth > bDamage) || (bHealth - missingHealth > bDamage);
-    var surviveNoCritD  = (newSquadRdy && dHealth > dDamageNoCrit) || (dHealth - missingHealth > dDamageNoCrit);
-    var surviveNoCritX1 = (newSquadRdy && bHealth > xDamageNoCrit) || (bHealth - missingHealth > xDamageNoCrit);
-    var surviveNoCritX1 = (newSquadRdy && xHealth > xDamageNoCrit) || (xHealth - missingHealth > xDamageNoCrit);
-    var surviveNoCritH  = (newSquadRdy && hHealth > hDamageNoCrit) || (hHealth - missingHealth > hDamageNoCrit);
-    var surviveNoCritB  = (newSquadRdy && bHealth > bDamageNoCrit) || (bHealth - missingHealth > bDamageNoCrit);
-
-    //Check formation availability
-    surviveD &= game.upgrades.Dominance.done;
-    surviveH &= game.upgrades.Formations.done;
-    surviveB &= game.upgrades.Barrier.done;
-
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
-        //Chooses the formation that allows it to survive even against crits (if there is any)
-        if (surviveD) setFormation(2);
-        else if (surviveX1) setFormation("0");
-        else if (surviveB) setFormation(3);
-        else if (surviveX2) setFormation("0");
-        else if (surviveH) setFormation(1);
+        //If no formation can survive a mega crit, it ignores it, and recalculates for a regular crit, then no crit
+        //If even that is not enough, then it ignore Explosive Daily, and finally it ignores Reflect Daily
+        var critPower;
+        for (critPower=2; critPower >= -2; critPower--) {
+            if      (survive("D", critPower))  {setFormation(2);   break;}
+            else if (survive("XB", critPower)) {setFormation("0"); break;}
+            else if (survive("B", critPower))  {setFormation(3);   break;}
+            else if (survive("X", critPower))  {setFormation("0"); break;}
+            else if (survive("H", critPower))  {setFormation(1);   break;}
+	}
 
-        //If there is no hope of surviving a crit, chooses the best formation to attempt it's luck
-        else if (surviveD) setFormation(2);
-        else if (surviveX1) setFormation("0");
-        else if (surviveB) setFormation(3);
-        else if (surviveX2) setFormation("0");
-        else if (surviveH) setFormation(1);
-        
-        //If it cannot survive the worst case scenario on any formatio, attempt it's luck on H, if available, or X
-        else if (game.upgrades.Formations.done) setFormation(1);
-        else setFormation("0");
+        //If it cannot survive the worst case scenario on any formation, attempt it's luck on H, if available, or X
+        if (critPower < -2) {
+            if (game.upgrades.Formations.done) setFormation(1);
+            else setFormation("0");
+	}
     }
 
     return true;
