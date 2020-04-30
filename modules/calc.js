@@ -369,15 +369,17 @@ function calcDailyAttackMod(number) {
 
 function calcSpire(what, cell, name) {
     //Target Cell
-    var exitCell = (cell) ? cell : 100;
-    if (game.global.challengeActive != "Daily" && isActiveSpireAT() && getPageSetting('ExitSpireCell') > 0 && getPageSetting('ExitSpireCell') <= 100)
-        exitCell = getPageSetting('ExitSpireCell');
-    if (game.global.challengeActive == "Daily" && disActiveSpireAT() && getPageSetting('dExitSpireCell') > 0 && getPageSetting('dExitSpireCell') <= 100)
-        exitCell = getPageSetting('dExitSpireCell');
+    if (!cell) {
+        if (game.global.challengeActive != "Daily" && isActiveSpireAT() && getPageSetting('ExitSpireCell') > 0 && getPageSetting('ExitSpireCell') <= 100)
+            cell = getPageSetting('ExitSpireCell');
+        else if (game.global.challengeActive == "Daily" && disActiveSpireAT() && getPageSetting('dExitSpireCell') > 0 && getPageSetting('dExitSpireCell') <= 100)
+            cell = getPageSetting('dExitSpireCell');
+        else cell = 100;
+    }
 
     //Enemy on the Target Cell
-    var enemy = (name) ? name : game.global.gridArray[exitCell-1].name;
-    var base = (what == "attack") ? getEnemyMaxAttack(game.global.world, exitCell, 'Chimp') : calcEnemyBaseHealth(game.global.world, exitCell) * 2;
+    var enemy = (name) ? name : game.global.gridArray[cell-1].name;
+    var base = (what == "attack") ? getEnemyMaxAttack(game.global.world, cell, 'Chimp') : calcEnemyBaseHealth(game.global.world, cell) * 2;
     var mod = (what == "attack") ? 1.17 : 1.14;
 
     //Spire Num
@@ -395,7 +397,7 @@ function calcSpire(what, cell, name) {
     base *= game.badGuys[enemy][what];
 
     //Compensations
-    if (game.global.challengeActive == "Domination" && exitCell != 100) base /= (what == "attack") ? 10 : 75 * 4;
+    if (game.global.challengeActive == "Domination" && cell != 100) base /= (what == "attack") ? 10 : 75 * 4;
 
     return base;
 }
