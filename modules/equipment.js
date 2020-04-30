@@ -1,7 +1,7 @@
 //Helium
 
 MODULES["equipment"] = {};
-MODULES["equipment"].numHitsSurvived = MODULES["equipment"].numHitsSurvived * 2;
+MODULES["equipment"].numHitsSurvived = 2 * MODULES["equipment"].numHitsSurvived ;
 MODULES["equipment"].numHitsSurvivedScry = 2 * MODULES["equipment"].numHitsSurvived;
 MODULES["equipment"].capDivisor = 10;
 MODULES["equipment"].alwaysLvl2 = getPageSetting('always2');
