@@ -205,7 +205,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode) {
     var fluctuation = .2;
     var maxFluct = -1;
     var minFluct = -1;
-	
+
     //Amalgamator
     if (game.jobs.Amalgamator.owned > 0) {
         number *= game.jobs.Amalgamator.getDamageMult();
@@ -408,6 +408,8 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     var minFluct = -1;
     var corrupt = mutations.Corruption.active();
     var healthy = mutations.Healthy.active();
+
+    if (enemy) return calcSpecificBadGuyDmg(enemy); //DEBUG
 
     if (!enemy) {
         //A few challenges
