@@ -495,7 +495,7 @@ function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts) {
     if (!enemy) return 1;
 
     //Crit
-    var number = badGuyCritMulti(enemy, critPower);
+    var number = badGuyCritMult(enemy, critPower);
 
     //Fluctuations
     if (disableFlucts) return number;
