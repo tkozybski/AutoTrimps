@@ -79,9 +79,8 @@ function directDamage(formation, block, minDamage, critPower=2) {
     var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (formation != "S" && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
-    //Enemy Damage according to our formation
-    var pierceDmg = pierce * enemyDamage;
-    var harm = Math.max(enemyDamage - block, pierceDmg, 0);
+    //Applies pierce
+    var harm = Math.max(enemyDamage - block, pierce * enemyDamage, 0);
 
     //Fast Enemies
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || enemy.corrupted == 'healthyDbl';
@@ -120,7 +119,7 @@ function survive(formation = "S", critPower) {
     else if (formation == "S") {damage /= 2; minDamage /= 2; maxDamage /= 2; health /= 2; block  /= 2;}
 
     //Decides if the trimps can survive in this formation
-    var harm = directDamage(formation, minDamage, critPower) + challengeDamage(health, minDamage, maxDamage, missingHealth, critPower);
+    var harm = directDamage(formation, block, minDamage, critPower) + challengeDamage(health, minDamage, maxDamage, missingHealth, critPower);
     return (newSquadRdy && health > harm) || (health - missingHealth > harm);
 }
 
