@@ -462,7 +462,7 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     return number;
 }
 
-function badGuyCritMult(enemy, critPower) {
+function badGuyCritMult(enemy, critPower=2) {
     //Pre-Init
     if (getPageSetting('IgnoreCrits') == 2) return 1;
     if (!enemy) enemy = getCurrentEnemy();
@@ -489,7 +489,7 @@ function badGuyCritMult(enemy, critPower) {
     else return Math.max(regular, challenge);
 }
 
-function calcSpecificBadGuyDmg(enemy, minormax, critPower=2, disableFlucts) {
+function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts) {
     //Pre-Init
     if (!enemy) enemy = getCurrentEnemy();
     if (!enemy) return 1;
