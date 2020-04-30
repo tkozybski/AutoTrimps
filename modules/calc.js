@@ -393,7 +393,7 @@ function calcSpire(what, cell, name) {
     }
 
     //Math
-    base *= Math.pow(mod, exitCell);
+    base *= Math.pow(mod, cell);
     base *= game.badGuys[enemy][what];
 
     //Compensations
