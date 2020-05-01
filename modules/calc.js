@@ -540,7 +540,7 @@ function calcEnemyBaseHealth(zone, level, name, map) {
     }
     
     //Maps
-    if (world > 5 && map) health *= 1.1;
+    if (zone > 5 && map) health *= 1.1;
     
     //Specific Imp
     if (name) health *= game.badGuys[name].health;
