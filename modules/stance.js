@@ -9,7 +9,7 @@ function calcBaseDamageinX2() {
     maxDamage  = calcOurDmg("max", false, true);
     baseDamage = calcOurDmg("avg", false, true);
     baseHealth = calcOurHealth();
-    baseBlock  = calcOurBlock();
+    baseBlock  = calcOurBlock(false, true);
 }
 
 function autoStanceNew() {
