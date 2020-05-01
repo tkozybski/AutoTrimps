@@ -168,7 +168,13 @@ function getMapHealthCutOff() {
     var base = MODULES.maps.numHitsSurvived;
     if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
 
-    //Scryer (only if scrying corrupted)
+    //Ignore scryer when doing void maps, unless you're actually scrying on them too
+    if (game.global.mapsActive && getCurrentMapObject().location == "Void") {
+        //TODO
+        return base;
+    }
+
+    //Scryer (only if scrying)
     var scryCorrupt = game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
     if (scryCorrupt && getPageSetting('UseScryerStance') == true) return base * MODULES.maps.scryerHitsMult;
 
