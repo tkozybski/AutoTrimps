@@ -126,7 +126,7 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     if (considerVoid) {
         voidDamage = 9 * enemyDamage;
         if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(game.global.world, 3);
-        else if (mutations.Corruption.active()) health *= calcCorruptionScale(game.global.world, 3)/2;
+        else if (mutations.Corruption.active()) voidDamage *= calcCorruptionScale(game.global.world, 3)/2;
     }    
 
     //Pierce & Voids
@@ -134,7 +134,7 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //The Resulting Ratio
-    var finalDmg = Math.max(enemyDamage - block, voidDamage, enemyDamage * pierce, 0);
+    var finalDmg = Math.max(enemyDamage - block, voidDamage - block, enemyDamage * pierce, 0);
     return health / finalDmg;
 }
 
