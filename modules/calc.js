@@ -108,7 +108,7 @@ function calcOurHealth(stance, fullGeneticist) {
 
 function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     //Init
-    var enemyDamage;
+    var enemyDamage, voidDamage;
     var targetZone = game.global.world;
     const formationMod = (game.upgrades.Dominance.done && !stance) ? 2 : 1;
 
@@ -121,12 +121,17 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
 
     //Enemy Damage
     enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true);
-    
+
+    //Enemy Damage on Void Maps (x9 damage because it's 450% difficulty * 2x attack on some maps)
+    if (considerVoid) {
+        voidDamage = 9 *enemyDamage;
+        if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(world, 3);
+        else if (mutations.Corruption.active()) health *= calcCorruptionScale(world, 3)/2;
+    }    
+
     //Pierce & Voids
     var pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
     if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
-
-    if (considerVoid && !game.global.spireActive) enemyDamage *= 4.5;
 
     //The Resulting Ratio
     var finalDmg = Math.max(enemyDamage - block, enemyDamage * pierce, 0);
