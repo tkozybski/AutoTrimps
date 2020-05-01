@@ -173,8 +173,16 @@ function getCritMulti(high, crit) {
     return CritDHModifier;
 }
 
-function calcOurBlock(stance) {
+function calcOurBlock(stance, realBlock) {
     var block = 0;
+
+    //Ignores block gyms/shield that have been brought, but not yet deployed
+    if (realBlock) {
+        block = game.global.soldierCurrentBlock;
+        if (stance || game.global.formation == 0) return block;
+        if (game.global.formation == 3) return block/4;
+        return block * 2;
+    }
     
     //Gyms
     var gym = game.buildings.Gym;
