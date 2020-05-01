@@ -440,6 +440,8 @@ function badGuyChallengeMult() {
         oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
         number *= oblitMult
     }
+
+    return number;
 }
 
 function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
