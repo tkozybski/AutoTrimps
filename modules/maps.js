@@ -20,6 +20,7 @@ MODULES.maps.UnearnedPrestigesRequired=2;
 //Psycho
 MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.scryerHitsMult = 2; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
+MODULES.maps.voidHitsMult = 1/3; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 
 var isFarming = !1;
 var doVoids=!1;
@@ -168,10 +169,10 @@ function getMapHealthCutOff() {
     var base = MODULES.maps.numHitsSurvived;
     if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
 
-    //Ignore scryer when doing void maps, unless you're actually scrying on them too
+    //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
     if (game.global.mapsActive && getCurrentMapObject().location == "Void") {
         //TODO
-        return base;
+        return base * MODULES.maps.voidHitsMult;
     }
 
     //Scryer (only if scrying)
