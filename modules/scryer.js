@@ -90,8 +90,11 @@ var useoverkill = getPageSetting('UseScryerStance') == true && game.portal.Overk
 
 //Overkill
 if (useoverkill && getCurrentEnemy()) {
-    //Calculates the minimum left "over damage" possible
-    var minDamage = 0.5 * calcOurDmg("min", false, true, true);
+    //Calculates our minimum damage
+    var minDamage = 0.5 * calcOurDmg("min", false, true);
+    if (game.global.mapsActive) minDamage /= 1 + (0.20 * game.global.mapBonus);
+
+    //Calculates our minimum "left over" damage, which will be used by the Overkill
     var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
 
     //If our trimps are not on last cell of the map or zone
