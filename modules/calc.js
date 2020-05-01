@@ -125,8 +125,8 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     //Enemy Damage on Void Maps (x9 damage because it's 450% difficulty * 2x attack on some maps)
     if (considerVoid) {
         voidDamage = 9 * enemyDamage;
-        if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(world, 3);
-        else if (mutations.Corruption.active()) health *= calcCorruptionScale(world, 3)/2;
+        if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(game.global.world, 3);
+        else if (mutations.Corruption.active()) health *= calcCorruptionScale(game.global.world, 3)/2;
     }    
 
     //Pierce & Voids
