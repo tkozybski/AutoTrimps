@@ -77,14 +77,14 @@ function directDamage(formation, block, minDamage, critPower=2) {
 
     //Calculates block and pierce
     var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    if (formation != "S" && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+    if (formation != "B" && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //Applies pierce
     var harm = Math.max(enemyDamage - block, pierce * enemyDamage, 0);
 
     //Fast Enemies
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || enemy.corrupted == 'healthyDbl';
-    var enemyFast = isDoubleAttack || (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom"));
+    var enemyFast = isDoubleAttack || game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom");
 
     //Double Attack and One Shot situations
     if (isDoubleAttack && minDamage < enemyHealth) harm *= 2;
