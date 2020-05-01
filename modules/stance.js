@@ -5,9 +5,9 @@ function calcBaseDamageinX() {
 }
 
 function calcBaseDamageinX2() {
-    minDamage  = calcOurDmg("min", false, true);
-    maxDamage  = calcOurDmg("max", false, true);
-    baseDamage = calcOurDmg("avg", false, true);
+    baseMinDamage  = calcOurDmg("min", false, true) * (game.global.titimpLeft ? 2 : 1);
+    baseMaxDamage  = calcOurDmg("max", false, true) * (game.global.titimpLeft ? 2 : 1);
+    baseDamage = calcOurDmg("avg", false, true) * (game.global.titimpLeft ? 2 : 1);
     baseHealth = calcOurHealth();
     baseBlock  = calcOurBlock(false, true);
 }
@@ -107,8 +107,8 @@ function survive(formation = "S", critPower) {
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
 
     //More stats
-    var minDamage = minDamage;
-    var maxDamage = maxDamage;
+    var minDamage = baseMinDamage;
+    var maxDamage = baseMaxDamage;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
 
     //Applies the formation modifiers
