@@ -451,13 +451,10 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     var corrupt = mutations.Corruption.active();
     var healthy = mutations.Healthy.active();
 
-    if (enemy) return calcSpecificBadGuyDmg(enemy); //DEBUG
+    if (enemy) return calcSpecificBadGuyDmg(enemy);
 
     //Spire
     if (game.global.spireActive) number = calcSpire("attack");
-
-    //Challenge buffs & nerfs
-    number *= bagGuyChallengeMult();
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
@@ -467,8 +464,11 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
         number *= corruptionWeight/100;
     }
 
+    //Challenge buffs & nerfs
+    number *= bagGuyChallengeMult();
+
     //RoboTrimp
-    if (!enemy && game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
+    if (game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
 
     //Daily
     if (daily) number = calcDailyAttackMod(number);
