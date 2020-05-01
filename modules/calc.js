@@ -553,6 +553,7 @@ function calcEnemyBaseHealth(zone, level, name, map) {
 
 function calcEnemyHealthCore(world, map, cell, name) {
     //Pre-Init
+    if (!map) map = game.global.mapsActive;
     if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
 
@@ -624,6 +625,9 @@ function calcSpecificEnemyHealth(world, map, cell) {
     var healthy = enemy.hasOwnProperty("healthy");
     var name = (corrupt || healthy) ? "Chimp" : enemy.name;
     var health = calcEnemyHealthCore(world, map, cell, name);
+
+    //Map Corruption
+    if (map && mutations.Magma.active()) health *= calcCorruptionScale(world, 10) / 2;
 
     //Challenges - considers the actual scenario for this enemy
     if (game.global.challengeActive == "Lead") health *= 1 + (0.04 * game.challenges.Lead.stacks);
