@@ -515,7 +515,7 @@ function calcCorruptionScale(world, base) {
     return base;
 }
 
-function calcEnemyBaseHealth(zone, level, name) {
+function calcEnemyBaseHealth(zone, level, name, map) {
     //Init
     var health = 0;
     health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2);
@@ -539,22 +539,22 @@ function calcEnemyBaseHealth(zone, level, name) {
         health *= Math.pow(1.1, zone - 59);
     }
     
+    //Maps
+    if (world > 5 && map) health *= 1.1;
+    
     //Specific Imp
     if (name) health *= game.badGuys[name].health;
 
-    return health;
+    return Math.floor(health);
 }
 
 function calcEnemyHealthCore(world, map, cell, name) {
     //Pre-Init
-    if (!world) world = game.global.world;
-    if (!cell) cell = (map) ? getCurrentMapCell() : getCurrentWorldCell();
+    if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
+    if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
 
     //Init
-    var health = calcEnemyBaseHealth(world, cell, name);
-
-    //Maps
-    if (map && game.global.universe == 1) health *= 0.5;
+    var health = calcEnemyBaseHealth(world, cell, name, map);
 
     //Spire - Overrides the base health number
     if (!map && game.global.spireActive) health = calcSpire("health");
@@ -583,7 +583,7 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
     if (game.global.challengeActive == 'Lead' && world%2 == 1) world++;
 
     //Init
-    var health = calcEnemyHealthCore(world, map, cell, name);
+    var health = calcEnemyHealthCore(world, map, cell, name, map);
     var corrupt = !map && world >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
 
@@ -611,7 +611,7 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
 
 function calcSpecificEnemyHealth(world, map, cell) {
     //Pre-Init
-    if (!world) world = game.global.world;
+    if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
 
     //Init
