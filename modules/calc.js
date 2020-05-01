@@ -613,11 +613,12 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
     return health;
 }
 
-function calcSpecificEnemyHealth(world, map, cell) {
+function calcSpecificEnemyHealth(world, map, cell, isVoid) {
     //Pre-Init
     if (!map) map = game.global.mapsActive;
     if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
+    if (!isVoid && map) isVoid = getCurrentMapObject().location == "Void";
 
     //Init
     var enemy = (!map) ? game.global.gridArray[cell-1] : game.global.mapGridArray[cell-1];
@@ -627,7 +628,9 @@ function calcSpecificEnemyHealth(world, map, cell) {
     var health = calcEnemyHealthCore(world, map, cell, name);
 
     //Map Corruption
-    if (map && mutations.Magma.active()) health *= calcCorruptionScale(world, 10) / 2;
+    var corruptionScale = calcCorruptionScale(world, 10);
+    if (map && mutations.Magma.active()) health *= corruptionScale / (isVoid ? 1 : 2);
+    else if (map && mutations.Corruption.active()) health *= corruptionScale / 2;
 
     //Challenges - considers the actual scenario for this enemy
     if (game.global.challengeActive == "Lead") health *= 1 + (0.04 * game.challenges.Lead.stacks);
@@ -672,9 +675,6 @@ function calcHDratio(mapZone) {
     //Math, considering maps or not
     if (!mapZone || mapZone < 1) ratio = calcEnemyHealth() / ourBaseDamage;
     if (mapZone || mapZone >= 1) ratio = calcEnemyHealth(mapZone, true) / ourBaseDamage;
-
-    //Voids -- DEBUG
-    //if (considerVoid && !game.global.spireActive) ratio *= 4.5;
 
     return ratio;
 }
