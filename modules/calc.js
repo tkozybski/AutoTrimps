@@ -110,7 +110,7 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     //Init
     var enemyDamage;
     var targetZone = game.global.world;
-    const formationMod = game.upgrades.Dominance.done ? 2 : 1;
+    const formationMod = (game.upgrades.Dominance.done && !stance) ? 2 : 1;
 
     //Our Health and Block
     var health = calcOurHealth(stance, fullGeneticist) / formationMod;
@@ -120,14 +120,16 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
 
     //Enemy Damage
-    enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone+1, 50, 'Snimp', 1.0), true, true);
+    enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true);
     
     //Pierce & Voids
-    var pierceDmg = enemyDamage * ((game.global.brokenPlanet) ? getPierceAmt() : 0);
+    var pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
+    if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+
     if (considerVoid && !game.global.spireActive) enemyDamage *= 4.5;
 
     //The Resulting Ratio
-    var finalDmg = Math.max(enemyDamage - block, pierceDmg);
+    var finalDmg = Math.max(enemyDamage - block, enemyDamage * pierce, 0);
     return health / finalDmg;
 }
 
