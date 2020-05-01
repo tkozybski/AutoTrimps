@@ -465,7 +465,7 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     }
 
     //Challenge buffs & nerfs
-    number *= bagGuyChallengeMult();
+    number *= badGuyChallengeMult();
 
     //RoboTrimp
     if (game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
