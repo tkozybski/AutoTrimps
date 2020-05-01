@@ -417,6 +417,31 @@ function calcSpire(what, cell, name) {
     return base;
 }
 
+function badGuyChallengeMult() {
+    var number=1;
+
+    //A few challenges
+    if      (game.global.challengeActive == "Meditate")   number *= 1.5;
+    else if (game.global.challengeActive == "Watch")      number *= 1.25;
+    else if (game.global.challengeActive == 'Life')       number *= 6;
+    else if (game.global.challengeActive == "Corrupted")  number *= 3;
+    else if (game.global.challengeActive == "Domination") number *= 2.5;
+    else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
+    else if (game.global.challengeActive == "Lead")       number *= (1 + (game.challenges.Lead.stacks * 0.04));
+
+    //Scientists and Nom
+    else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
+    else if (game.global.challengeActive == "Nom" && enemy && typeof enemy.nomStacks !== 'undefined') number *= Math.pow(1.25, enemy.nomStacks);
+
+    //Obliterated and Eradicated
+    else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
+        var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
+        var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
+        oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
+        number *= oblitMult
+    }
+}
+
 function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     //Init
     var number = (enemy) ? enemy.attack : attack;
@@ -428,42 +453,22 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
 
     if (enemy) return calcSpecificBadGuyDmg(enemy); //DEBUG
 
-    if (!enemy) {
-        //A few challenges
-        if      (game.global.challengeActive == "Meditate")   number *= 1.5;
-        else if (game.global.challengeActive == "Watch")      number *= 1.25;
-        else if (game.global.challengeActive == 'Life')       number *= 6;
-        else if (game.global.challengeActive == "Corrupted")  number *= 3;
-        else if (game.global.challengeActive == "Domination") number *= 2.5;
-        else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
-        else if (game.global.challengeActive == "Lead")       number *= (1 + (game.challenges.Lead.stacks * 0.04));
+    //Spire
+    if (game.global.spireActive) number = calcSpire("attack");
 
-        //Scientists and Nom
-        else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
-        else if (game.global.challengeActive == "Nom" && enemy && typeof enemy.nomStacks !== 'undefined') number *= Math.pow(1.25, enemy.nomStacks);
+    //Challenge buffs & nerfs
+    number *= bagGuyChallengeMult();
 
-        //Obliterated and Eradicated
-        else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
-            var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
-            var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
-            oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
-            number *= oblitMult;
-	}
-
-        //Spire
-        if (game.global.spireActive) number = calcSpire("attack");
-
-        //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-        else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
-            //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
-            var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
-            var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
-            number *= corruptionWeight/100;
-        }
-
-        //RoboTrimp
-        if (!enemy && game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
+    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+    else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
+        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+        var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
+        number *= corruptionWeight/100;
     }
+
+    //RoboTrimp
+    if (!enemy && game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
 
     //Daily
     if (daily) number = calcDailyAttackMod(number);
@@ -514,7 +519,7 @@ function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts) {
     if (!enemy) return 1;
 
     //Crit
-    var number = enemy.attack * badGuyCritMult(enemy, critPower);
+    var number = enemy.attack * badGuyCritMult(enemy, critPower) * badGuyChallengeMult();
 
     //Fluctuations
     if (disableFlucts) return number;
