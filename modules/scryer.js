@@ -98,7 +98,7 @@ if (useoverkill && getCurrentEnemy()) {
     if (getCurrentEnemy(2)) {
         //Calculates the damage that will hit the next enemy, and his health
         var overkillDmg = 0.005 * game.portal.Overkill.level * leftOverDmg;
-        var nextEnemyHealth = calcSpecificEnemyHealth(game.global.world, game.global.mapsActive, getCurrentEnemy(2).level);
+        var nextEnemyHealth = calcSpecificEnemyHealth(null, game.global.mapsActive, getCurrentEnemy(2).level);
 
         //Switches to S if it has enough damage to secure an overkill
         if (oktoswitch && overkillDmg > nextEnemyHealth) {
