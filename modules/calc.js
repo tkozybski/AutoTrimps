@@ -427,11 +427,7 @@ function badGuyChallengeMult() {
     else if (game.global.challengeActive == "Corrupted")  number *= 3;
     else if (game.global.challengeActive == "Domination") number *= 2.5;
     else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
-    else if (game.global.challengeActive == "Lead")       number *= (1 + (game.challenges.Lead.stacks * 0.04));
-
-    //Scientists and Nom
     else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
-    else if (game.global.challengeActive == "Nom" && enemy && typeof enemy.nomStacks !== 'undefined') number *= Math.pow(1.25, enemy.nomStacks);
 
     //Obliterated and Eradicated
     else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
@@ -468,6 +464,7 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
 
     //Challenge buffs & nerfs
     number *= badGuyChallengeMult();
+    if (game.global.challengeActive == "Lead") number *= 9; //Assume max stacks
 
     //RoboTrimp
     if (game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
