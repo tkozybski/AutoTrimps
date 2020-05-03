@@ -570,7 +570,6 @@ function calcEnemyBaseHealth(zone, level, name, map) {
 
 function calcEnemyHealthCore(world, map, cell, name) {
     //Pre-Init
-    if (!map) map = game.global.mapsActive;
     if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
 
