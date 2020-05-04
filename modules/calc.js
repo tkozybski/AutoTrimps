@@ -646,7 +646,7 @@ function calcSpecificEnemyHealth(world, map, cell, isVoid) {
     //Map Corruption
     var corruptionScale = calcCorruptionScale(world, 10);
     if (map && mutations.Magma.active()) health *= corruptionScale / (isVoid ? 1 : 2);
-    else if (map && mutations.Corruption.active()) health *= corruptionScale / 2;
+    else if (map && isVoid && mutations.Corruption.active()) health *= corruptionScale / 2;
 
     //Challenges - considers the actual scenario for this enemy
     if (game.global.challengeActive == "Lead") health *= 1 + (0.04 * game.challenges.Lead.stacks);
