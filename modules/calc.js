@@ -519,6 +519,9 @@ function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts) {
 
     //Crit
     var number = enemy.attack * badGuyCritMult(enemy, critPower) * badGuyChallengeMult();
+	
+    //Ice
+    if (getEmpowerment() == "Ice") number *= game.empowerments.Ice.getCombatModifier();
 
     //Fluctuations
     if (disableFlucts) return number;
