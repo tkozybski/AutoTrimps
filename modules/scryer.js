@@ -98,7 +98,7 @@ if (useoverkill && getCurrentEnemy()) {
     var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
 
     //If our trimps are not on last cell of the map or zone
-    if (getCurrentEnemy(2)) {
+    if (typeof getCurrentEnemy(2) != undefined) {
         //Calculates the damage that will hit the next enemy, and his health
         var overkillDmg = 0.005 * game.portal.Overkill.level * leftOverDmg;
         var nextEnemyHealth = calcSpecificEnemyHealth(null, game.global.mapsActive, getCurrentEnemy(2).level);
