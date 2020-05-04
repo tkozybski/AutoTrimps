@@ -177,8 +177,8 @@ function getMapHealthCutOff() {
 
     //Scryer (only if scrying)
     var scryCorrupt = game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
-    var noEssenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() < 1;
-    if (scryCorrupt && noEssenceLeft && getPageSetting('UseScryerStance') == true) return base * MODULES.maps.scryerHitsMult;
+    var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
+    if (scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true) return base * MODULES.maps.scryerHitsMult;
 
     return base;
 }
