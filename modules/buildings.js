@@ -71,7 +71,7 @@ function advancedNurseries() {
     var a = calcHealthRatio(false, doVoids, true) < getMapHealthCutOff();
     var b = calcHDratio() < getPageSetting("DisableFarm");
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
-    var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit');
+    var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDratio() < getPageSetting("mapcuntoff");
     var e = !preSpireFarming || !MODULES.buildings.advancedNurseries;
     return a && b && c && d && e;
 }
