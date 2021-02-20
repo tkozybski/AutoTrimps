@@ -196,7 +196,7 @@ function buyBuildings() {
 	
 	//Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
-	    var nextGym = game.upgrades.Gymystic.modifier + game.upgrades.Gymystic.done - 1;
+	    var nextGym = Math.min(1, game.upgrades.Gymystic.modifier + game.upgrades.Gymystic.done - 1);
             if (!game.global.preMapsActive && !game.global.spireActive && calcOurBlock(true) > nextGym * calcBadGuyDmg(getCurrentEnemy(), null, true,true))
                 skipGym = true;
 	}
