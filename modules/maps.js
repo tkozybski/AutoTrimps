@@ -74,7 +74,7 @@ function updateAutoMapsStatus(get) {
     else if (shouldFarm && !doVoids) status = 'Farming more Damage ' + calcHDratio().toFixed(4) + 'x';
     else if (!enoughHealth && !enoughDamage) status = 'Want Health and Damage';
     else if (!enoughDamage) status = 'Want ' + calcHDratio().toFixed(4) + 'x &nbspmore Damage';
-    else if (!enoughHealth) status = 'Want ' + getMapHealthCutOff()/calcHealthRatio(false, doVoids, true).toFixed(4) + 'x &nbspmore Health';
+    else if (!enoughHealth) status = 'Want ' + (getMapHealthCutOff()/calcHealthRatio(false, doVoids, true)).toFixed(4) + 'x &nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
     if (skippedPrestige)
