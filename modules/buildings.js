@@ -12,6 +12,7 @@ MODULES["buildings"].advancedNurseries = true; //Use on Magma. HIGHLY EXPERIMENT
 //Helium
 
 var housingList = ['Hut', 'House', 'Mansion', 'Hotel', 'Resort', 'Gateway', 'Collector', 'Warpstation'];
+var skipGym = false;
 
 function safeBuyBuilding(building) {
     if (isBuildingInQueue(building))
@@ -192,7 +193,7 @@ function buyBuildings() {
 
     //Gyms:
     if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
-        var skipGym = false;
+        skipGym = false;
 	
 	//Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
