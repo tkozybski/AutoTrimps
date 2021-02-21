@@ -24,8 +24,6 @@ function manualLabor2() {
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 	var trapBuffering = false;
 	
-	var di = 0;
-	debug(di++);
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
 		//If not building and not trapping 
@@ -36,7 +34,6 @@ function manualLabor2() {
 		}
 	}
 	
-	debug(di++);
 	//High Priority Trapping (doing Trapper or without breeding trimps)
 	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull)) {
 		//Bait trimps if we have traps
@@ -46,47 +43,39 @@ function manualLabor2() {
 		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {setGather('buildings'); return;}
 	}
 	
-	debug(di++);
 	//Highest Priority Science gathering if we have less science than minScience
 	if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
 		setGather('science');
 		return;
 	}
 	
-	debug(di++);
     //Build if we don't have foremany, there are 2+ buildings in the queue, or if we can speed up something other than a trap
 	if (!bwRewardUnlocked("Foremany") && (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1'))) {
 		setGather('buildings');
 		return;
 	}
 	
-	debug(di++);
 	//Also Build if we have storage buildings on top of the queue
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1') {
 		setGather('buildings');
 		return;
 	}
 	
-	debug(di++);
 	//High Priority Research - When manual research still has more impact than scientists
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() < getPerSecBeforeManual('Scientist')) {
 		setGather('Science');
 		return;
 	}
 	
-	debug(di++);
 	//Metal if Turkimp is active
 	if (hasTurkimp) {setGather('metal'); return;}
 	
-	debug(di++);
 	//Mid Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('Science'); return;}
 	
-	debug(di++);
 	//Low Priority Trapping. But only if not full of Trimps
 	if (trapTrimpsOK && notFullPop && !lowOnTraps) {setGather('trimps'); return;}
 	
-	debug(di++);
 	//Low Priority Trap Building
 	if (canAffordBuilding('Trap') && !fullOfTraps) {
 		safeBuyBuilding('Trap');
@@ -94,11 +83,9 @@ function manualLabor2() {
 		return;
 	}
 	
-	debug(di++);
 	//Low Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable) {setGather('Science'); return;}
 	
-	debug(di++);
 	//Untouched mess
 	var manualResourceList = {
 		'food': 'Farmer',
@@ -132,11 +119,9 @@ function manualLabor2() {
 		}
 	}
 	
-	debug(di++);
 	//High Priority Gathering - No workers for this resource
 	if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {setGather(lowestResource); return;}
 	
-	debug(di++);
 	//Low Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && haveWorkers) {
 		if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds) {
@@ -145,10 +130,8 @@ function manualLabor2() {
 		}
 	}
 	
-	debug(di++);
 	//Just gather whatever has lowest rate
 	setGather(lowestResource);
-	debug(di++);
 }
 
 function autogather3() {
