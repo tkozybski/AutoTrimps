@@ -1,8 +1,6 @@
 //Helium
 
 MODULES.maps={};
-MODULES.maps.numHitsSurvived=20;
-MODULES.maps.farmOnLowHealth=true;
 MODULES.maps.LeadfarmingCutoff=10;
 MODULES.maps.NomfarmingCutoff=10;
 MODULES.maps.NomFarmStacksCutoff=[7,30,100];
@@ -18,6 +16,8 @@ MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 
 //Psycho
+MODULES.maps.numHitsSurvived = 1.5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
+MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
 MODULES.maps.voidHitsMult = 1/4; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
