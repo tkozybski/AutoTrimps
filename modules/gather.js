@@ -43,7 +43,7 @@ function manualLabor2() {
 		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {setGather('buildings'); return;}
 	}
 	
-	//High Priority Science gathering if we have less science than minScience
+	//Highest Priority Science gathering if we have less science than minScience
 	if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
 		setGather('science');
 		return;
@@ -61,20 +61,20 @@ function manualLabor2() {
 		return;
 	}
 	
-	//Mid Priority Research - When manual research still has more impact than scientists
-	if (getPageSetting('ManualGather2') != 2 && needScience && researchAvailable && getPlayerModifier() < getPerSecBeforeManual('Scientist')) {
+	//High Priority Research - When manual research still has more impact than scientists
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() < getPerSecBeforeManual('Scientist')) {
 		setGather('Science');
 		return;
 	}
 	
 	//Metal if Turkimp is active
 	if (hasTurkimp) {setGather('metal'); return;}
+	
+	//Mid Priority Research
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('Science'); return;}
 
 	//Low Priority Trapping. But only if not full of Trimps
 	if (trapTrimpsOK && notFullPop && !lowOnTraps) {setGather('trimps'); return;}
-	
-	//Low Priority Research
-	if (getPageSetting('ManualGather2') != 2 && needScience && researchAvailable) {setGather('Science'); return;}
 
 	//Low Priority Trap Building
 	if (canAffordBuilding('Trap') && !trapsReady) {
@@ -82,6 +82,9 @@ function manualLabor2() {
 		setGather('buildings');
 		return;
 	}
+	
+	//Low Priority Research
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable) {setGather('Science'); return;}
 	
 	//Untouched mess
 	var manualResourceList = {
@@ -115,28 +118,20 @@ function manualLabor2() {
 			}
 		}
 	}
-
-	if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
-		if (hasTurkimp)
-			setGather('metal');
-		else
-			setGather(lowestResource);
+	
+	//High Priority Gathering - No workers for this resource
+	if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {setGather(lowestResource); return;}
+	
+	//Low Priority Research
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && haveWorkers) {
+		if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds) {
+			setGather('Science');
+			return;
+		}
 	}
 	
-	else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
-            if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds && game.global.turkimpTimer < 1 && haveWorkers)
-                setGather('science');
-            else if (hasTurkimp)
-                setGather('metal');
-            else
-                setGather(lowestResource);
-        }
-        //Build more traps if we have TrapTrimps on, and we own less than (100) traps.
-        else if(trapTrimpsOK && game.global.trapBuildToggled == true && !trapsReady)
-            setGather('buildings');
-        else
-            setGather(lowestResource);
-    }
+	//Just gather whatever has lowest rate
+	setGather(lowestResource);
 }
 
 function autogather3() {
