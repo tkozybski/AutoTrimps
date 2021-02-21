@@ -1,10 +1,12 @@
 MODULES["equipment"] = {};
-MODULES["equipment"].numHitsSurvived = 30;
-MODULES["equipment"].numHitsSurvivedScry = 120;
 MODULES["equipment"].capDivisor = 10;
 MODULES["equipment"].alwaysLvl2 = getPageSetting('always2');
 MODULES["equipment"].waitTill60 = true;
 MODULES["equipment"].equipHealthDebugMessage = false;
+
+//Psycho
+MODULES["equipment"].numHitsSurvived = MODULES["maps"].numHitsSurvived ? 2*MODULES["maps"].numHitsSurvived : 30;
+MODULES["equipment"].numHitsSurvivedScry = MODULES["equipment"].numHitsSurvived * 4;
 
 var equipmentList = {
     'Dagger': {
