@@ -5,8 +5,8 @@ MODULES["equipment"].waitTill60 = true;
 MODULES["equipment"].equipHealthDebugMessage = false;
 
 //Psycho
-MODULES["equipment"].numHitsSurvived = MODULES["maps"].numHitsSurvived ? 2*MODULES["maps"].numHitsSurvived : 30;
-MODULES["equipment"].numHitsSurvivedScry = MODULES["equipment"].numHitsSurvived * 4;
+MODULES["equipment"].numHitsMult = 2;
+MODULES["equipment"].scryMult = 4;
 
 var equipmentList = {
     'Dagger': {
@@ -284,7 +284,7 @@ function autoLevelEquipment() {
 	ourDamage *= trimpAA;
 
     //Check for H & D
-    var numHits = (game.global.formation != 4) ? MODULES["equipment"].numHitsSurvived : MODULES["equipment"].numHitsSurvivedScry;
+    var numHits = (game.global.formation != 4) ? MODULES["maps"].numHitsSurvived * MODULES["equipment"].numHitsMult : MODULES["maps"].numHitsSurvived * MODULES["equipment"].scryMult;
     var enoughHealthE = calcHealthRatio(false, doVoids) > numHits;
     var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
 
