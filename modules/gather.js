@@ -77,7 +77,7 @@ function manualLabor2() {
 	if (trapTrimpsOK && notFullPop && !lowOnTraps) {setGather('trimps'); return;}
 
 	//Low Priority Trap Building
-	if (canAffordBuilding('Trap') && !trapsReady) {
+	if (canAffordBuilding('Trap') && !fullOfTraps) {
 		safeBuyBuilding('Trap');
 		setGather('buildings');
 		return;
