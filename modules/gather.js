@@ -35,7 +35,7 @@ function manualLabor2() {
 	}
     
 	//High Priority Trapping (doing Trapper or without breeding trimps)
-	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) {
+	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull)) {
 		//Bait trimps if we have traps
 		if (!lowOnTraps) {setGather('trimps'); return;}
 		
