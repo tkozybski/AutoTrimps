@@ -62,8 +62,8 @@ function manualLabor2() {
 	}
 	
 	//High Priority Research - When manual research still has more impact than scientists
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() < getPerSecBeforeManual('Scientist')) {
-		setGather('Science');
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() > getPerSecBeforeManual('Scientist')) {
+		setGather('science');
 		return;
 	}
 	
@@ -71,7 +71,7 @@ function manualLabor2() {
 	if (hasTurkimp) {setGather('metal'); return;}
 	
 	//Mid Priority Research
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('Science'); return;}
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
 	
 	//Low Priority Trapping. But only if not full of Trimps
 	if (trapTrimpsOK && notFullPop && !lowOnTraps) {setGather('trimps'); return;}
@@ -82,9 +82,6 @@ function manualLabor2() {
 		setGather('buildings');
 		return;
 	}
-	
-	//Low Priority Research
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable) {setGather('Science'); return;}
 	
 	//Untouched mess
 	var manualResourceList = {
@@ -125,7 +122,7 @@ function manualLabor2() {
 	//Low Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && haveWorkers) {
 		if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds) {
-			setGather('Science');
+			setGather('science');
 			return;
 		}
 	}
