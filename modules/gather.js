@@ -10,7 +10,7 @@ var maxZoneDuration = 0;
 
 //Traps per second
 fuction calcTPS() {
-	Math.min(10, game.global.playerModifier / 5);
+	return Math.min(10, game.global.playerModifier / 5);
 }
 
 function calcMaxTraps() {
