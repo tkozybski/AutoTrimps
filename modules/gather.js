@@ -82,9 +82,6 @@ function manualLabor2() {
 		return;
 	}
 	
-	//Mid Priority Trapping
-	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
-	
 	//Build if we don't have foremany, there are 2+ buildings in the queue, or if we can speed up something other than a trap
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1'))) {
 		setGather('buildings');
@@ -97,14 +94,28 @@ function manualLabor2() {
 		return;
 	}
 	
+	//Mid Priority Trapping
+	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
+	
 	//High Priority Research - When manual research still has more impact than scientists
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() > getPerSecBeforeManual('Scientist')) {
 		setGather('science');
 		return;
 	}
 	
+	//High Priority Trap Building
+	if (trapTrimpsOK && canAffordBuilding('Trap') && (lowOnTraps || trapBuffering)) {
+		trapBuffering = true;
+		safeBuyBuilding('Trap');
+		setGather('buildings');
+		return;
+	}
+	
 	//Metal if Turkimp is active
 	if (hasTurkimp) {setGather('metal'); return;}
+	
+	//Mid Priority Research
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
 	
 	//Low Priority Trap Building
 	if (trapTrimpsOK && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {
@@ -114,9 +125,6 @@ function manualLabor2() {
 		setGather('buildings');
 		return;
 	}
-	
-	//Mid Priority Research
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
 	
 	//Untouched mess
 	var manualResourceList = {
