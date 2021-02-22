@@ -66,7 +66,7 @@ function manualLabor2() {
 	//High Priority Trapping (doing Trapper or without breeding trimps)
 	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull)) {
 		//Bait trimps if we have traps
-		if (!lowOnTrap && !trapBuffering) {setGather('trimps'); return;}
+		if (!lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
 		
 		//Or build them, if they are on the queue
 		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {
