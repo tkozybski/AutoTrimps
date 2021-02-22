@@ -100,14 +100,14 @@ function manualLabor2() {
 		return;
 	}
 	
-	//Metal if Turkimp is active
-	if (hasTurkimp) {setGather('metal'); return;}
+	//Low Priority Trapping
+	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
 	
 	//Mid Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
 	
-	//Low Priority Trapping
-	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
+	//Metal if Turkimp is active
+	if (hasTurkimp) {setGather('metal'); return;}
 	
 	//Low Priority Trap Building
 	if (trapTrimpsOK && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {
