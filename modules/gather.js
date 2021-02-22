@@ -46,7 +46,7 @@ function manualLabor2() {
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 	if (trapsReady) trapBuffering = false;
-	if (fullOfTraps) trapBuffering = false;
+	if (fullOfTraps) maxTrapBuffering = false;
 	
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
