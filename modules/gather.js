@@ -1,10 +1,14 @@
 //updated
 MODULES["gather"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["gather"].minTraps = 2;
-MODULES["gather"].maxTraps = 100;
 MODULES["gather"].minScienceAmount = 100;
 MODULES["gather"].minScienceSeconds = 60;
+
+//Psycho
+var trapBuffering = false;
+MODULES["gather"].minTraps = 5;
+MODULES["gather"].trapsBuffer = 10;
+MODULES["gather"].maxTraps = 10000;
 
 //OLD: "Auto Gather/Build"
 function manualLabor2() {
@@ -14,6 +18,7 @@ function manualLabor2() {
 	//Init
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var lowOnTraps = game.buildings.Trap.owned < MODULES["gather"].minTraps;
+	var trapsReady = game.buildings.Trap.owned >= MODULES["gather"].trapsBuffer;
 	var fullOfTraps = game.buildings.Trap.owned >= MODULES["gather"].maxTraps;
 	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
 	var trapTrimpsOK = getPageSetting('TrapTrimps');
@@ -22,7 +27,7 @@ function manualLabor2() {
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
-	var trapBuffering = false;
+	if (trapsReady) trapBuffering = false;
 	
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
@@ -37,10 +42,14 @@ function manualLabor2() {
 	//High Priority Trapping (doing Trapper or without breeding trimps)
 	if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull)) {
 		//Bait trimps if we have traps
-		if (!lowOnTraps) {setGather('trimps'); return;}
+		if (!lowOnTrap && !trapBuffering) {setGather('trimps'); return;}
 		
 		//Or build them, if they are on the queue
-		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {setGather('buildings'); return;}
+		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {
+			trapBuffering = true;
+			setGather('buildings');
+			return;
+		}
 	}
 	
 	//Highest Priority Science gathering if we have less science than minScience
@@ -73,11 +82,12 @@ function manualLabor2() {
 	//Mid Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
 	
-	//Low Priority Trapping. But only if not full of Trimps
-	if (trapTrimpsOK && notFullPop && !lowOnTraps) {setGather('trimps'); return;}
+	//Low Priority Trapping
+	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
 	
 	//Low Priority Trap Building
-	if (canAffordBuilding('Trap') && !fullOfTraps) {
+	if (trapTrimpsOK && canAffordBuilding('Trap') && !fullOfTraps) {
+		trapBuffering = true;
 		safeBuyBuilding('Trap');
 		setGather('buildings');
 		return;
