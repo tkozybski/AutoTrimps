@@ -5,8 +5,13 @@ MODULES["gather"].minScienceAmount = 100;
 MODULES["gather"].minScienceSeconds = 60;
 
 //Global flags
-var trapBuffering = false;
+var trapBuffering = false, maxTrapBuffering = false;
 var maxZoneDuration = 0;
+
+//Traps per second
+fuction calcTPS() {
+	Math.min(10, game.global.playerModifier / 5);
+}
 
 function calcMaxTraps() {
 	//TODO consider minZone > 1
@@ -16,8 +21,7 @@ function calcMaxTraps() {
 	if (time > maxZoneDuration) maxZoneDuration = time;
 	
 	//Return enough traps to last 1/4 of the longest duration zone we've seen so far
-	var trapsPS = Math.min(10, game.global.playerModifier / 5);
-	return Math.ceil(trapsPS * time/4);
+	return Math.ceil(calcTPS() * time/4);
 }
 
 //OLD: "Auto Gather/Build"
@@ -26,12 +30,13 @@ function manualLabor2() {
 	if (getPageSetting('ManualGather2') == 0) return;
 	
 	//Init
-	var minTraps = Math.min(10, Math.ceil(game.global.playerModifier/5));
-	var trapsBufferSize = Math.min(50, game.global.playerModifier);
+	var trapsPS
+	var minTraps = Math.ceil(calcTPS());
+	var trapsBufferSize = Math.ceil(5 * calcTPS());
 	var maxTraps = calcMaxTraps();
 	var lowOnTraps = game.buildings.Trap.owned < minTraps;
 	var trapsReady = game.buildings.Trap.owned >= minTraps + trapsBufferSize;
-	var fullOfTraps = game.buildings.Trap.owned >= maxTraps;
+	var fullOfTraps = game.buildings.Trap.owned >= maxTraps + maxTrapBuffering ? trapsBufferSize : 0;
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
 	var trapTrimpsOK = getPageSetting('TrapTrimps');
@@ -41,6 +46,7 @@ function manualLabor2() {
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 	if (trapsReady) trapBuffering = false;
+	if (fullOfTraps) trapBuffering = false;
 	
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
@@ -101,6 +107,7 @@ function manualLabor2() {
 	//Low Priority Trap Building
 	if (trapTrimpsOK && canAffordBuilding('Trap') && !fullOfTraps) {
 		trapBuffering = true;
+		maxTrapBuffering = true;
 		safeBuyBuilding('Trap');
 		setGather('buildings');
 		return;
