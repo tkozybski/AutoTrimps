@@ -4,11 +4,21 @@ MODULES["gather"] = {};
 MODULES["gather"].minScienceAmount = 100;
 MODULES["gather"].minScienceSeconds = 60;
 
-//Psycho
+//Global flags
 var trapBuffering = false;
-MODULES["gather"].minTraps = 5;
-MODULES["gather"].trapsBuffer = 10;
-MODULES["gather"].maxTraps = 10000;
+var maxZoneDuration = 0;
+
+function calcMaxTraps() {
+	//TODO consider minZone > 1
+	//Tries to keep in mind the longest duration any zone has lasted in this portal
+	var time = getZoneSeconds();
+	if (game.global.world == 1) maxZoneDuration = time;
+	if (time > maxZoneDuration) maxZoneDuration = time;
+	
+	//Return enough traps to last 1/4 of the longest duration zone we've seen so far
+	var trapsPS = Math.min(10, game.playerModifier / 5);
+	return Math.ceil(trapsPS * time/4);
+}
 
 //OLD: "Auto Gather/Build"
 function manualLabor2() {
@@ -16,10 +26,13 @@ function manualLabor2() {
 	if (getPageSetting('ManualGather2') == 0) return;
 	
 	//Init
+	var minTraps = Math.min(10, Math.ceil(game.global.playerModifier/5));
+	var trapsBufferSize = Math.min(50, game.global.playerModifier);
+	var maxTraps = calcMaxTraps();
+	var lowOnTraps = game.buildings.Trap.owned < minTraps;
+	var trapsReady = game.buildings.Trap.owned >= minTraps + trapsBufferSize;
+	var fullOfTraps = game.buildings.Trap.owned >= maxTraps;
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
-	var lowOnTraps = game.buildings.Trap.owned < MODULES["gather"].minTraps;
-	var trapsReady = game.buildings.Trap.owned >= MODULES["gather"].trapsBuffer;
-	var fullOfTraps = game.buildings.Trap.owned >= MODULES["gather"].maxTraps;
 	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
 	var trapTrimpsOK = getPageSetting('TrapTrimps');
 	var targetBreed = getPageSetting('GeneticistTimer');
