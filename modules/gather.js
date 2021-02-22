@@ -16,7 +16,7 @@ function calcMaxTraps() {
 	if (time > maxZoneDuration) maxZoneDuration = time;
 	
 	//Return enough traps to last 1/4 of the longest duration zone we've seen so far
-	var trapsPS = Math.min(10, game.playerModifier / 5);
+	var trapsPS = Math.min(10, game.global.playerModifier / 5);
 	return Math.ceil(trapsPS * time/4);
 }
 
