@@ -9,7 +9,7 @@ var trapBuffering = false, maxTrapBuffering = false;
 var maxZoneDuration = 0;
 
 //Traps per second
-fuction calcTPS() {
+function calcTPS() {
 	return Math.min(10, game.global.playerModifier / 5);
 }
 
