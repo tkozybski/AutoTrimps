@@ -36,7 +36,7 @@ function manualLabor2() {
 	var maxTraps = calcMaxTraps();
 	var lowOnTraps = game.buildings.Trap.owned < minTraps;
 	var trapsReady = game.buildings.Trap.owned >= minTraps + trapsBufferSize;
-	var fullOfTraps = game.buildings.Trap.owned >= maxTraps + maxTrapBuffering ? trapsBufferSize : 0;
+	var fullOfTraps = game.buildings.Trap.owned >= maxTraps + (maxTrapBuffering ? trapsBufferSize : 0);
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
 	var trapTrimpsOK = getPageSetting('TrapTrimps');
