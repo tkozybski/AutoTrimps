@@ -111,6 +111,7 @@ function manualLabor2() {
 	
 	//Low Priority Trap Building
 	if (trapTrimpsOK && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {
+		trapBuffering = !fullOfTraps;
 		maxTrapBuffering = true;
 		safeBuyBuilding('Trap');
 		setGather('buildings');
