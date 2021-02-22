@@ -29,24 +29,29 @@ function manualLabor2() {
 	//If not using auto-gather, return
 	if (getPageSetting('ManualGather2') == 0) return;
 	
-	//Init
-	var trapsPS
+	//Init - Traps config
+	var trapTrimpsOK = getPageSetting('TrapTrimps');
+	var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
 	var minTraps = Math.ceil(calcTPS());
 	var trapsBufferSize = Math.ceil(5 * calcTPS());
 	var maxTraps = calcMaxTraps();
+	
+	//Init - Traps control
 	var lowOnTraps = game.buildings.Trap.owned < minTraps;
 	var trapsReady = game.buildings.Trap.owned >= minTraps + trapsBufferSize;
-	var fullOfTraps = game.buildings.Trap.owned >= maxTraps + (maxTrapBuffering ? trapsBufferSize : 0);
+	var fullOfTraps = game.buildings.Trap.owned >= maxTraps;
+	var maxTrapsReady = game.buildings.Trap.owned >= maxTraps + trapsBufferSize;
+	if (trapsReady) trapBuffering = false;
+	if (maxTrapsReady) maxTrapBuffering = false;
+	
+	
+	//Init - Others
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
-	var trapTrimpsOK = getPageSetting('TrapTrimps');
 	var targetBreed = getPageSetting('GeneticistTimer');
-	var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
-	if (trapsReady) trapBuffering = false;
-	if (fullOfTraps) maxTrapBuffering = false;
 	
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
@@ -105,8 +110,7 @@ function manualLabor2() {
 	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
 	
 	//Low Priority Trap Building
-	if (trapTrimpsOK && canAffordBuilding('Trap') && !fullOfTraps) {
-		trapBuffering = true;
+	if (trapTrimpsOK && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {
 		maxTrapBuffering = true;
 		safeBuyBuilding('Trap');
 		setGather('buildings');
