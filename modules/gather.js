@@ -82,6 +82,9 @@ function manualLabor2() {
 		return;
 	}
 	
+	//Mid Priority Trapping
+	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
+	
 	//Build if we don't have foremany, there are 2+ buildings in the queue, or if we can speed up something other than a trap
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1'))) {
 		setGather('buildings');
@@ -100,12 +103,6 @@ function manualLabor2() {
 		return;
 	}
 	
-	//Low Priority Trapping
-	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
-	
-	//Mid Priority Research
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
-	
 	//Metal if Turkimp is active
 	if (hasTurkimp) {setGather('metal'); return;}
 	
@@ -117,6 +114,9 @@ function manualLabor2() {
 		setGather('buildings');
 		return;
 	}
+	
+	//Mid Priority Research
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
 	
 	//Untouched mess
 	var manualResourceList = {
