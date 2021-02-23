@@ -1,11 +1,12 @@
 MODULES["buildings"] = {};
-MODULES["buildings"].nurseryWall = 10;
-MODULES["buildings"].nurserySpireWall = 10;
 MODULES["buildings"].storageMainCutoff = 0.85;
 MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
 //Psycho-Ray
+MODULES["buildings"].gatewayWall = 10;
+MODULES["buildings"].nurseryWall = 10;
+MODULES["buildings"].nurserySpireWall = 10;
 MODULES["buildings"].gemEfficiencyIgnoresLimit = true;
 MODULES["buildings"].advancedNurseries = game.stats.highestLevel.valueTotal() >= 220 && true; //Use on Magma. HIGHLY EXPERIMENTAL
 
@@ -138,6 +139,14 @@ function buyGemEfficientHousing() {
         if (game.buildings[keysSorted[best]].owned < max || max == -1 || (MODULES["buildings"].gemEfficiencyIgnoresLimit && keysSorted[best] != "Gateway")) {
             bestBuilding = keysSorted[best];
             document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
+            
+            //Gateway Wall
+            if (bestBuilding == "Gateway" && MODULES["buildings"].gatewayWall > 1) {
+                if (getBuildingItemPrice(game.buildings.Gateway, "fragments", false, 1) > (game.resources.fragments.owned / MODULES["buildings"].gatewayWall)) {
+	            bestBuilding = null;
+                }
+	    }
+
             var skipWarp = false;
             if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
                 if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
