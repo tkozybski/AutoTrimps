@@ -21,7 +21,7 @@ function calcMaxTraps() {
 	if (time > maxZoneDuration) maxZoneDuration = time;
 	
 	//Return enough traps to last 1/4 of the longest duration zone we've seen so far
-	return Math.ceil(calcTPS() * time/4);
+	return Math.ceil(calcTPS() * maxZoneDuration/4);
 }
 
 //OLD: "Auto Gather/Build"
