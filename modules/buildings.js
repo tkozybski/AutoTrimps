@@ -197,8 +197,12 @@ function buyBuildings() {
 	//Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
 	    var nextGym = Math.max(1, game.upgrades.Gymystic.modifier + game.upgrades.Gymystic.done - 1);
-            if (!game.global.preMapsActive && !game.global.spireActive && calcOurBlock(true) > nextGym * calcBadGuyDmg(getCurrentEnemy(), null, true,true))
-                skipGym = true;
+            var currentEnemyDamage = calcBadGuyDmg(getCurrentEnemy(), null, true,true);
+            var zoneEnemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 99, 'Snimp', 1.0), true, true);
+            if (!game.global.preMapsActive && !game.global.spireActive && calcOurBlock(true) > nextGym * currentEnemyDamage) {
+		    if (!game.global.mapsActive || enoughHealth || calcOurBlock(true) > nextGym * zoneEnemyDamage)
+			skipGym = true;
+            }
 	}
 	
 	//Gym Wall
