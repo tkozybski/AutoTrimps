@@ -128,7 +128,7 @@ function buyJobs() {
             if (breeding > game.resources.trimps.realMax() * 0.33) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
                 if (freeWorkers > 0 && game.resources.trimps.realMax() <= 3e5) {
-                    safeBuyJob('Miner', 1);
+                    if (!game.jobs.Miner.locked) safeBuyJob('Miner', 1);
                     safeBuyJob('Farmer', 1);
                     safeBuyJob('Lumberjack', 1);
                 }
