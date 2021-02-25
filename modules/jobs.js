@@ -89,7 +89,7 @@ function buyJobs() {
     }
 
     if (game.global.world == 1 && game.global.totalHeliumEarned <= 5000) {
-        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9) {
+        //if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9) {
             if (game.resources.food.owned > 5 && freeWorkers > 0) {
                 if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned)
                     safeBuyJob('Farmer', 1);
@@ -101,8 +101,7 @@ function buyJobs() {
                 if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned && !game.jobs.Miner.locked)
                     safeBuyJob('Miner', 1);
             }
-        }
-	else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) safeBuyJob('Farmer', 1);
+        //}
         return;
     } else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) {
         safeBuyJob('Farmer', 1);
