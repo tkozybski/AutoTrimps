@@ -102,6 +102,7 @@ function buyJobs() {
                     safeBuyJob('Miner', 1);
             }
         }
+	else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) safeBuyJob('Farmer', 1);
         return;
     } else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) {
         safeBuyJob('Farmer', 1);
