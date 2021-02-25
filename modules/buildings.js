@@ -143,6 +143,7 @@ function buyGemEfficientHousing() {
             //Gateway Wall
             if (bestBuilding == "Gateway" && MODULES["buildings"].gatewayWall > 1) {
                 if (getBuildingItemPrice(game.buildings.Gateway, "fragments", false, 1) > (game.resources.fragments.owned / MODULES["buildings"].gatewayWall)) {
+                    document.getElementById(bestBuilding).style.border = "1px solid orange";
 	            bestBuilding = null;
                     continue;
                 }
