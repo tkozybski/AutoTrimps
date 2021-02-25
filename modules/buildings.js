@@ -124,8 +124,7 @@ function buyGemEfficientHousing() {
         var building = game.buildings[unlockedHousing[house]];
         var cost = getBuildingItemPrice(building, "gems", false, 1);
         var ratio = cost / building.increase.by;
-	if (unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway'))
-            continue;
+	//if (unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway')) continue;
         obj[unlockedHousing[house]] = ratio;
         document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
     }
