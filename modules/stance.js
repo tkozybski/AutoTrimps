@@ -93,12 +93,13 @@ function directDamage(formation, block, minDamage, critPower=2) {
     return harm;
 }
 
-function survive(formation = "S", critPower) {
+function survive(formation = "S", critPower = 2) {
     //Check if the formation is valid
-    if (formation == "D" && !game.upgrades.Dominance.done) return false;
-    if (formation == "H" && !game.upgrades.Formations.done) return false;
-    if (formation == "B" && !game.upgrades.Barrier.done) return false;
-    if (formation == "S" && !game.global.world >= 60 || game.global.highestLevelCleared < 180) return false;
+    if (formation == "D"  && !game.upgrades.Dominance.done) return false;
+    if (formation == "XB" && !game.upgrades.Barrier.done) return false;
+    if (formation == "B"  && !game.upgrades.Barrier.done) return false;
+    if (formation == "H"  && !game.upgrades.Formations.done) return false;
+    if (formation == "S"  && !game.global.world >= 60 || game.global.highestLevelCleared < 180) return false;
 
     //Base stats
     var damage = baseDamage;
