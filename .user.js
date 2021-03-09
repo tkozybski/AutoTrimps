@@ -3,6 +3,7 @@
 // @version      0.1-Ray
 // @namespace    https://Psycho-Ray.github.io/AutoTrimps
 // @downloadURL  https://Psycho-Ray.github.io/AutoTrimps/.user.js
+// @updateURL    https://Psycho-Ray.github.io/AutoTrimps/.user.js
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, Ishkaru, genBTC, Zeker0, Psycho-Ray
 // @include      *trimps.github.io*
