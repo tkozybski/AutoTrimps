@@ -94,6 +94,7 @@ function directDamage(formation, block, minDamage, critPower=2) {
 }
 
 function survive(formation = "S", critPower = 2) {
+	debug(formation);
     //Check if the formation is valid
     if (formation == "D"  && !game.upgrades.Dominance.done) return false;
     if (formation == "XB" && !game.upgrades.Barrier.done) return false;
