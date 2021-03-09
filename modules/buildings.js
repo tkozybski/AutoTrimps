@@ -74,7 +74,7 @@ function advancedNurseries() {
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDratio() < getPageSetting("mapcuntoff");
     var e = !preSpireFarming || !MODULES.buildings.advancedNurseries;
-    var f = MODULES["buildings"].advancedNurseries;
+    var f = !MODULES["buildings"].advancedNurseries;
     return f || (a && b && c && d && e);
 }
 
