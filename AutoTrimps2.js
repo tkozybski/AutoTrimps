@@ -1,4 +1,4 @@
-var ATversion = 'Zek v4.3.0';
+var ATversion = '0.1-Ray';
 var atscript = document.getElementById('AutoTrimps-script');
 var basepath = 'https://Psycho-Ray.github.io/AutoTrimps/', modulepath='modules/';
 atscript !== null && (basepath = atscript.src.replace(/AutoTrimps2\.js$/,''));
