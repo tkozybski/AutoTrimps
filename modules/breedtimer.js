@@ -43,7 +43,7 @@ function breedingPS() {
     potencyMod = calcHeirloomBonusDecimal("Shield", "breedSpeed", potencyMod);
     if (game.jobs.Geneticist.owned > 0) potencyMod = potencyMod.mul(Math.pow(.98, game.jobs.Geneticist.owned));
     
-    return potencyMod
+    return potencyMod;
 }
 
 function ATGA2() {
