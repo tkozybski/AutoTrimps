@@ -213,36 +213,36 @@ function autoMap() {
 
     //Void Vars
     var minVoidZone = 0;
-	var maxVoidZone = 0;
+    var maxVoidZone = 0;
     var voidCell = 0;
-	
-	//Regular Run Voids
+    
+    //Regular Run Voids
     if (game.global.challengeActive != "Daily") {
-		//What cell to run Voids at
-		voidCell = ((getPageSetting('voidscell') > 0) ? getPageSetting('voidscell') : 70);
-		
-		//What Zone Range to run Voids at
-		var poisonOK = !getPageSetting('runnewvoidspoison') || getEmpowerment() == 'Poison';
-		if (getPageSetting('VoidMaps') > 0) minVoidZone = getPageSetting('VoidMaps');
-		if (getPageSetting('RunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('RunNewVoidsUntilNew');
+        //What cell to run Voids at
+        voidCell = ((getPageSetting('voidscell') > 0) ? getPageSetting('voidscell') : 70);
+        
+        //What Zone Range to run Voids at
+        var poisonOK = !getPageSetting('runnewvoidspoison') || getEmpowerment() == 'Poison';
+        if (getPageSetting('VoidMaps') > 0) minVoidZone = getPageSetting('VoidMaps');
+        if (getPageSetting('RunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('RunNewVoidsUntilNew');
     }
-	
-	//Daily Voids
+    
+    //Daily Voids
     else {
-		//What cell to run Daily Voids at
-		voidCell = ((getPageSetting('dvoidscell') > 0) ? getPageSetting('dvoidscell') : 70);
-		
-		//What Zone Range to run Voids at
-		var poisonOK = !getPageSetting('drunnewvoidspoison') || getEmpowerment() == 'Poison';
-		if (getPageSetting('DailyVoidMod') > 0) minVoidZone = getPageSetting('DailyVoidMod');
-		if (getPageSetting('dRunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('dRunNewVoidsUntilNew');
+        //What cell to run Daily Voids at
+        voidCell = ((getPageSetting('dvoidscell') > 0) ? getPageSetting('dvoidscell') : 70);
+        
+        //What Zone Range to run Voids at
+        var poisonOK = !getPageSetting('drunnewvoidspoison') || getEmpowerment() == 'Poison';
+        if (getPageSetting('DailyVoidMod') > 0) minVoidZone = getPageSetting('DailyVoidMod');
+        if (getPageSetting('dRunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('dRunNewVoidsUntilNew');
     }
 	
-	//Convert maxZone from an modificer (+1, +2...) to an fixed zone value (65, 66...)
-	maxVoidZone += minVoidZone;
+    //Convert maxZone from an modificer (+1, +2...) to an fixed zone value (65, 66...)
+    maxVoidZone += minVoidZone;
 	
-	//Checks if it's on the right zone range and with voids available
-	preVoidCheck = minVoidZone > 0 && game.global.totalVoidMaps > 0 && game.global.world >= minVoidZone && game.global.world <= maxVoidZone;
+    //Checks if it's on the right zone range and with voids available
+    preVoidCheck = minVoidZone > 0 && game.global.totalVoidMaps > 0 && game.global.world >= minVoidZone && game.global.world <= maxVoidZone;
     needToVoid = preVoidCheck && game.global.lastClearedCell + 1 >= voidCell;
 
     var voidArrayDoneS = [];
