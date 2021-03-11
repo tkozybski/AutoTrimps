@@ -23,20 +23,21 @@ MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived
 MODULES.maps.voidHitsMult = 1/4; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 
 var isFarming = !1;
-var doVoids=!1;
-var needToVoid=!1;
-var needPrestige=!1;
-var skippedPrestige=!1;
-var scryerStuck=!1;
-var shouldDoMaps=!1;
-var mapTimeEstimate=0;
-var lastMapWeWereIn=null;
-var preSpireFarming=!1;
-var spireMapBonusFarming=!1;
-var spireTime=0;
-var doMaxMapBonus=!1;
-var vanillaMapatZone=!1;
-var additionalCritMulti=2<getPlayerCritChance()?25:5;
+var doVoids = !1;
+var needToVoid = !1;
+var preVoidCheck = !1;
+var needPrestige = !1;
+var skippedPrestige = !1;
+var scryerStuck = !1;
+var shouldDoMaps = !1;
+var mapTimeEstimate = 0;
+var lastMapWeWereIn = null;
+var preSpireFarming = !1;
+var spireMapBonusFarming = !1;
+var spireTime = 0;
+var doMaxMapBonus = !1;
+var vanillaMapatZone = !1;
+var additionalCritMulti = 2 < getPlayerCritChance() ? 25 : 5;
 
 function updateAutoMapsStatus(get) {
     var status;
@@ -69,12 +70,12 @@ function updateAutoMapsStatus(get) {
 	    var stackedMaps = Fluffy.isRewardActive('void') ? countStackedVoidMaps() : 0;
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
-    else if (shouldFarm && !doVoids && !enoughHealth && calcHDratio() >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio().toFixed(4) + 'x';
-    else if (shouldFarm && !doVoids && !enoughHealth) status = 'Farming ' + (getMapHealthCutOff()/calcHealthRatio(false, doVoids, true)).toFixed(4) + 'x &nbspmore Health ';
-    else if (shouldFarm && !doVoids) status = 'Farming more Damage ' + calcHDratio().toFixed(4) + 'x';
+    else if (shouldFarm && !enoughHealth && calcHDratio() >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio().toFixed(4) + 'x';
+    else if (shouldFarm && !enoughHealth) status = 'Farming ' + (getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true)).toFixed(4) + 'x &nbspmore Health ';
+    else if (shouldFarm) status = 'Farming more Damage ' + calcHDratio().toFixed(4) + 'x';
     else if (!enoughHealth && !enoughDamage) status = 'Want Health and Damage';
     else if (!enoughDamage) status = 'Want ' + calcHDratio().toFixed(4) + 'x &nbspmore Damage';
-    else if (!enoughHealth) status = 'Want ' + (getMapHealthCutOff()/calcHealthRatio(false, doVoids, true)).toFixed(4) + 'x &nbspmore Health';
+    else if (!enoughHealth) status = 'Want ' + (getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true)).toFixed(4) + 'x &nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
     if (skippedPrestige)
@@ -211,57 +212,38 @@ function autoMap() {
     var extraMapLevels = getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0;
 
     //Void Vars
-    var voidMapLevelSetting = 0;
-    var voidMapLevelSettingCell;
-    var voidMapLevelPlus = 0;
+    var minVoidZone = 0;
+	var maxVoidZone = 0;
+    var voidCell = 0;
+	
+	//Regular Run Voids
     if (game.global.challengeActive != "Daily") {
-	voidMapLevelSettingCell = ((getPageSetting('voidscell') > 0) ? getPageSetting('voidscell') : 70);
+		//What cell to run Voids at
+		voidCell = ((getPageSetting('voidscell') > 0) ? getPageSetting('voidscell') : 70);
+		
+		//What Zone Range to run Voids at
+		var poisonOK = !getPageSetting('runnewvoidspoison') || getEmpowerment() == 'Poison';
+		if (getPageSetting('VoidMaps') > 0) minVoidZone = getPageSetting('VoidMaps');
+		if (getPageSetting('RunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('RunNewVoidsUntilNew');
     }
-    if (game.global.challengeActive == "Daily") {
-	voidMapLevelSettingCell = ((getPageSetting('dvoidscell') > 0) ? getPageSetting('dvoidscell') : 70);
+	
+	//Daily Voids
+    else {
+		//What cell to run Daily Voids at
+		voidCell = ((getPageSetting('dvoidscell') > 0) ? getPageSetting('dvoidscell') : 70);
+		
+		//What Zone Range to run Voids at
+		var poisonOK = !getPageSetting('drunnewvoidspoison') || getEmpowerment() == 'Poison';
+		if (getPageSetting('DailyVoidMod') > 0) minVoidZone = getPageSetting('DailyVoidMod');
+		if (getPageSetting('dRunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('dRunNewVoidsUntilNew');
     }
-    if (game.global.challengeActive != "Daily" && getPageSetting('VoidMaps') > 0) {
-        voidMapLevelSetting = getPageSetting('VoidMaps');
-    }
-    if (game.global.challengeActive == "Daily" && getPageSetting('DailyVoidMod') >= 1) {
-        voidMapLevelSetting = getPageSetting('DailyVoidMod');
-    }
-    if (getPageSetting('RunNewVoidsUntilNew') != 0 && game.global.challengeActive != "Daily") {
-	voidMapLevelPlus = getPageSetting('RunNewVoidsUntilNew');
-    }
-    if (getPageSetting('dRunNewVoidsUntilNew') != 0 && game.global.challengeActive == "Daily") {
-	voidMapLevelPlus = getPageSetting('dRunNewVoidsUntilNew');
-    }
-
-    needToVoid = (voidMapLevelSetting > 0 && game.global.totalVoidMaps > 0 && game.global.lastClearedCell + 1 >= voidMapLevelSettingCell &&
-			(
-			 (game.global.world == voidMapLevelSetting) ||
-			 (voidMapLevelPlus < 0 && game.global.world >= voidMapLevelSetting && 
-			  (game.global.universe == 1 && 
-			   (
-			    (getPageSetting('runnewvoidspoison') == false && game.global.challengeActive != "Daily") || 
-				(getPageSetting('drunnewvoidspoison') == false && game.global.challengeActive == "Daily")
-			   ) ||
-			   (
-			    (getPageSetting('runnewvoidspoison') == true && getEmpowerment() == 'Poison' && game.global.challengeActive != "Daily") || 
-			    (getPageSetting('drunnewvoidspoison') == true && getEmpowerment() == 'Poison' && game.global.challengeActive == "Daily")
-			   )
-			  ) ||
-			  (voidMapLevelPlus > 0 && game.global.world >= voidMapLevelSetting && game.global.world <= (voidMapLevelSetting + voidMapLevelPlus) &&
-			   (game.global.universe == 1 && 
-			    (
-			     (getPageSetting('runnewvoidspoison') == false && game.global.challengeActive != "Daily") || 
-				 (getPageSetting('drunnewvoidspoison') == false && game.global.challengeActive == "Daily")
-			    ) ||
-			    (
-			     (getPageSetting('runnewvoidspoison') == true && getEmpowerment() == 'Poison' && game.global.challengeActive != "Daily") || 
-			     (getPageSetting('drunnewvoidspoison') == true && getEmpowerment() == 'Poison' && game.global.challengeActive == "Daily")
-			    )
-			   )
-			  )
-			 )
-                        )
-);
+	
+	//Convert maxZone from an modificer (+1, +2...) to an fixed zone value (65, 66...)
+	maxVoidZone += minVoidZone;
+	
+	//Checks if it's on the right zone range and with voids available
+	preVoidCheck = minVoidZone > 0 && game.global.totalVoidMaps > 0 && game.global.world >= minVoidZone && game.global.world <= maxVoidZone;
+    needToVoid = preVoidCheck && game.global.lastClearedCell + 1 >= voidCell;
 
     var voidArrayDoneS = [];
     if (game.global.challengeActive != "Daily" && getPageSetting('onlystackedvoids') == true) {
@@ -318,7 +300,7 @@ function autoMap() {
 
     //H:D Calc
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var enemyHealth = calcEnemyHealth() * (doVoids ? 4.5 : 1);
+    var enemyHealth = calcEnemyHealth() * (preVoidCheck ? 4.5 : 1);
     
     //Shield Calc
     highDamageShield();
@@ -332,7 +314,7 @@ function autoMap() {
     var ourBaseDamage2 = ourBaseDamage / mapbonusmulti;
 
     //Check for Health & Damage
-    enoughHealth = calcHealthRatio(false, doVoids, true) > getMapHealthCutOff();
+    enoughHealth = calcHealthRatio(false, preVoidCheck, true) > getMapHealthCutOff();
     enoughDamage = ourBaseDamage * getMapCutOff() > enemyHealth;
     updateAutoMapsStatus();
 
