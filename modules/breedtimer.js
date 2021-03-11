@@ -3,6 +3,7 @@ MODULES["breedtimer"].voidCheckPercent = 95;
 
 var DecimalBreed = Decimal.clone({precision: 30, rounding: 4});
 var missingTrimps = new DecimalBreed(0);
+var breedingPS = 0;
 
 //Lowers breed timer proportionally to the amount of Momentum during Lead
 function customLeadTimer() {
@@ -42,6 +43,7 @@ function ATGA2() {
 		}
 		potencyMod = calcHeirloomBonusDecimal("Shield", "breedSpeed", potencyMod);
 		if (game.jobs.Geneticist.owned > 0) potencyMod = potencyMod.mul(Math.pow(.98, game.jobs.Geneticist.owned));
+		breedingPS = potencyMod;
 		potencyMod = potencyMod.div(10).add(1);
 		var decimalOwned = missingTrimps.add(trimps.owned);
 		var timeRemaining = DecimalBreed.log10(maxBreedable.div(decimalOwned.minus(trimps.employed))).div(DecimalBreed.log10(potencyMod)).div(10);
