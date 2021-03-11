@@ -55,7 +55,6 @@ function manualLabor2() {
 	//Verifies if trapping is still relevant
 	var trappingIsRelevant = calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 100;
 	
-	
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
 		//If not building and not trapping 
@@ -67,7 +66,7 @@ function manualLabor2() {
 	}
 	
 	//High Priority Trapping (doing Trapper or without breeding trimps)
-	if (trapTrimpsOK && ((notFullPop && breedingTrimps < 5) || trapperTrapUntilFull)) {
+	if (trapTrimpsOK && trappingIsRelevant && ((notFullPop && breedingTrimps < 5) || trapperTrapUntilFull)) {
 		//Bait trimps if we have traps
 		if (!lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
 		
@@ -98,7 +97,7 @@ function manualLabor2() {
 	}
 	
 	//Mid Priority Trapping
-	if (trapTrimpsOK && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
+	if (trapTrimpsOK && trappingIsRelevant && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
 	
 	//High Priority Research - When manual research still has more impact than scientists
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() > getPerSecBeforeManual('Scientist')) {
@@ -107,7 +106,7 @@ function manualLabor2() {
 	}
 	
 	//High Priority Trap Building
-	if (trapTrimpsOK && canAffordBuilding('Trap') && (lowOnTraps || trapBuffering)) {
+	if (trapTrimpsOK && trappingIsRelevant && canAffordBuilding('Trap') && (lowOnTraps || trapBuffering)) {
 		trapBuffering = true;
 		safeBuyBuilding('Trap');
 		setGather('buildings');
@@ -121,7 +120,7 @@ function manualLabor2() {
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
 	
 	//Low Priority Trap Building
-	if (trapTrimpsOK && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {
+	if (trapTrimpsOK && trappingIsRelevant && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {
 		trapBuffering = !fullOfTraps;
 		maxTrapBuffering = true;
 		safeBuyBuilding('Trap');
