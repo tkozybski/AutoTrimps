@@ -3,7 +3,6 @@ MODULES["breedtimer"].voidCheckPercent = 95;
 
 var DecimalBreed = Decimal.clone({precision: 30, rounding: 4});
 var missingTrimps = new DecimalBreed(0);
-var breedingPS = 0;
 
 //Lowers breed timer proportionally to the amount of Momentum during Lead
 function customLeadTimer() {
