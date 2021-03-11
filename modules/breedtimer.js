@@ -43,7 +43,7 @@ function breedingPS() {
     potencyMod = calcHeirloomBonusDecimal("Shield", "breedSpeed", potencyMod);
     if (game.jobs.Geneticist.owned > 0) potencyMod = potencyMod.mul(Math.pow(.98, game.jobs.Geneticist.owned));
     
-    return potencyMod;
+    return potencyMod.mul(trimps.owned - trimps.employed);
 }
 
 function ATGA2() {
@@ -53,7 +53,7 @@ function ATGA2() {
 		var trimpsMax = trimps.realMax();
 		var maxBreedable = new DecimalBreed(trimpsMax).minus(trimps.employed);
 		var potencyMod = breedingPS();
-		potencyMod = potencyMod.div(10).add(1);
+		potencyMod = potencyMod.div(trimps.owned - trimps.employed).div(10).add(1);
 		
 		var decimalOwned = missingTrimps.add(trimps.owned);
 		var timeRemaining = DecimalBreed.log10(maxBreedable.div(decimalOwned.minus(trimps.employed))).div(DecimalBreed.log10(potencyMod)).div(10);
