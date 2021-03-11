@@ -268,7 +268,7 @@ function autoLevelEquipment() {
     var enemyHp = calcEnemyHealth();
     
     //Void Maps
-    if (doVoids) enemyHp *= 4.5;
+    if (preVoidCheck) enemyHp *= 4.5;
 
     //Map Bonus Multiplier
     ourDamage *= 1 + (0.20 * game.global.mapBonus);
@@ -285,7 +285,7 @@ function autoLevelEquipment() {
 
     //Check for H & D
     var numHits = (game.global.formation != 4) ? MODULES["maps"].numHitsSurvived * MODULES["equipment"].numHitsMult : MODULES["maps"].numHitsSurvived * MODULES["equipment"].scryMult;
-    var enoughHealthE = calcHealthRatio(false, doVoids) > numHits;
+    var enoughHealthE = calcHealthRatio(false, preVoidCheck) > numHits;
     var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
 
     for (var equipName in equipmentList) {
