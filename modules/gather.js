@@ -53,7 +53,7 @@ function manualLabor2() {
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 	
 	//Verifies if trapping is still relevant
-	var trappingIsRelevant = calcTPS() * (game.portal.Bait.level + 1) >  / 100;
+	var trappingIsRelevant = calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 100;
 	
 	
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
