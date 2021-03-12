@@ -5,9 +5,9 @@ function calcBaseDamageinX() {
 }
 
 function calcBaseDamageinX2() {
-    baseMinDamage  = calcOurDmg("min", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
-    baseMaxDamage  = calcOurDmg("max", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
-    baseDamage = calcOurDmg("avg", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseMinDamage  = calcOurDmg("min", false, true, "never", game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseMaxDamage  = calcOurDmg("max", false, true, "force", game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseDamage = calcOurDmg("avg", false, true, "maybe", game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
     baseHealth = calcOurHealth();
     baseBlock  = calcOurBlock(false, true);
 }
