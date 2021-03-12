@@ -215,7 +215,7 @@ function calcOurBlock(stance, realBlock) {
     return block;
 }
 
-function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode) {
+function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
     var number = getTrimpAttack();
     var fluctuation = .2;
     var maxFluct = -1;
@@ -227,7 +227,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode) {
     }
 	
     //Map Bonus
-    if (game.global.mapBonus > 0) {
+    if (game.global.mapBonus > 0 && !ignoreMapBonus) {
         var mapBonus = game.global.mapBonus;
         if (game.talents.mapBattery.purchased && mapBonus == 10) mapBonus *= 2;
         number *= ((mapBonus * .2) + 1);
