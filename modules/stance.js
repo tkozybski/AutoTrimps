@@ -1,13 +1,13 @@
 function calcBaseDamageinX() {
-    baseDamage = calcOurDmg("avg",!1,!0);
+    baseDamage = calcOurDmg("avg", false, true);
     baseBlock = game.global.soldierCurrentBlock;
     baseHealth = game.global.soldierHealthMax;
 }
 
 function calcBaseDamageinX2() {
-    baseMinDamage  = calcOurDmg("min", false, true) * (game.global.titimpLeft ? 2 : 1);
-    baseMaxDamage  = calcOurDmg("max", false, true) * (game.global.titimpLeft ? 2 : 1);
-    baseDamage = calcOurDmg("avg", false, true) * (game.global.titimpLeft ? 2 : 1);
+    baseMinDamage  = calcOurDmg("min", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseMaxDamage  = calcOurDmg("max", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseDamage = calcOurDmg("avg", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
     baseHealth = calcOurHealth();
     baseBlock  = calcOurBlock(false, true);
 }
