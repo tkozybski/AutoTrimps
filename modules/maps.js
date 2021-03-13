@@ -242,7 +242,9 @@ function autoMap() {
     maxVoidZone += minVoidZone;
 	
     //Checks if it's on the right zone range and with voids available
+    var preVoidCell = Math.floor((voidCell-1)/10)*10;
     preVoidCheck = minVoidZone > 0 && game.global.totalVoidMaps > 0 && game.global.world >= minVoidZone && game.global.world <= maxVoidZone;
+    preVoidCheck &= game.global.lastClearedCell + 1 >= preVoidCell;
     needToVoid = preVoidCheck && game.global.lastClearedCell + 1 >= voidCell;
 
     var voidArrayDoneS = [];
