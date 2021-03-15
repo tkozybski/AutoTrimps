@@ -30,7 +30,7 @@ function challengeDamage(health, minDamage, maxDamage, missingHealth, critPower)
 
     //Active Challenges
     var leadChallenge = game.global.challengeActive == 'Lead';
-    var electricityChallenge = game.global.challengeActive == "Electricity";
+    var electricityChallenge = game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse";
     var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
     var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
     var dailyMirrored = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.mirrored !== 'undefined');
