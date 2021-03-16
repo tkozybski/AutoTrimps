@@ -420,10 +420,11 @@ function calcSpire(what, cell, name) {
 function badGuyChallengeMult() {
     var number=1;
 
+    //WARNING! Something is afoot!
     //A few challenges
     if      (game.global.challengeActive == "Meditate")   number *= 1.5;
     else if (game.global.challengeActive == "Watch")      number *= 1.25;
-    else if (game.global.challengeActive == 'Life')       number *= 6;
+    //else if (game.global.challengeActive == 'Life')       number *= 6;
     else if (game.global.challengeActive == "Corrupted")  number *= 3;
     else if (game.global.challengeActive == "Domination") number *= 2.5;
     else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
