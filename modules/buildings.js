@@ -93,7 +93,7 @@ function autoGiga(targetZone, metalRatio, slowDown, customBase) {
     var megabook = (game.global.frugalDone) ? 1.6 : 1.5;
     
     //Calculus
-    var nGigas = min(floor(targetZone-60), floor(targetZone/2 - 25), floor(targetZone/3 - 12), floor(targetZone/5), floor(targetZone/10 + 17), 39);
+    var nGigas = Math.min(floor(targetZone-60), floor(targetZone/2 - 25), floor(targetZone/3 - 12), floor(targetZone/5), floor(targetZone/10 + 17), 39);
     var metalDiff = Math.max((0.1 * gemsPS) / (metalPS * metalRatio), 1);
 
     for (var i=0; i<5; i++) {
