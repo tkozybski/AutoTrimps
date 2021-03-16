@@ -96,20 +96,20 @@ function autoGiga(targetZone, metalRatio, slowDown, customBase) {
     var nGigas = min(floor(targetZone-60), floor(targetZone/2 - 25), floor(targetZone/3 - 12), floor(targetZone/5), floor(targetZone/10 + 17), 39);
     var metalDiff = Math.max((0.1 * gemsPS) / (metalPS * metalRatio), 1);
 
-    for (int i=0; i<5; i++) {
-	//Population guess
-    	var pop = 6 * Math.pow(1.2, nGigas)*10000;
-	pop *= base * (1 - Math.pow(5/6, nGigas+1)) + 3*(nGigas+1 - 5*(1 - Math.pow(5/6, nGigas+1)));
-	pop += rawPop - base*10000;
-	var factor = pop / rawPop;
-	
-	//Delta
-	var delta = Math.pow(megabook, targetZone - baseZone);
-	delta *= metalDiff * slowDown * factor;
-	delta /= Math.pow(1.75, nGigas);
-	delta = Math.log(delta);
-	delta /= Math.log(1.4);
-	delta /= nGigas;
+    for (var i=0; i<5; i++) {
+        //Population guess
+        var pop = 6 * Math.pow(1.2, nGigas)*10000;
+        pop *= base * (1 - Math.pow(5/6, nGigas+1)) + 3*(nGigas+1 - 5*(1 - Math.pow(5/6, nGigas+1)));
+        pop += rawPop - base*10000;
+        var factor = pop / rawPop;
+        
+        //Delta
+        var delta = Math.pow(megabook, targetZone - baseZone);
+        delta *= metalDiff * slowDown * factor;
+        delta /= Math.pow(1.75, nGigas);
+        delta = Math.log(delta);
+        delta /= Math.log(1.4);
+        delta /= nGigas;
     }
 }
 
