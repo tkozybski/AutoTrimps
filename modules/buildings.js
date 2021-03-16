@@ -96,21 +96,24 @@ function autoGiga(targetZone, metalRatio, slowDown, customBase) {
     var nGigas = Math.min(Math.floor(targetZone-60), Math.floor(targetZone/2 - 25), Math.floor(targetZone/3 - 12), Math.floor(targetZone/5), Math.floor(targetZone/10 + 17), 39);
     var metalDiff = Math.max((0.1 * gemsPS) / (metalPS * metalRatio), 1);
 
-    for (var i=0; i<5; i++) {
+    var delta = 3;
+    for (var i=0; i<10; i++) {
         //Population guess
         var pop = 6 * Math.pow(1.2, nGigas)*10000;
-        pop *= base * (1 - Math.pow(5/6, nGigas+1)) + 3*(nGigas+1 - 5*(1 - Math.pow(5/6, nGigas+1)));
+        pop *= base * (1 - Math.pow(5/6, nGigas+1)) + delta*(nGigas+1 - 5*(1 - Math.pow(5/6, nGigas+1)));
         pop += rawPop - base*10000;
-        var factor = pop / rawPop;
+        pop /= rawPop;
         
         //Delta
-        var delta = Math.pow(megabook, targetZone - baseZone);
-        delta *= metalDiff * slowDown * factor;
+        delta = Math.pow(megabook, targetZone - baseZone);
+        delta *= metalDiff * slowDown * pop;
         delta /= Math.pow(1.75, nGigas);
         delta = Math.log(delta);
         delta /= Math.log(1.4);
         delta /= nGigas;
     }
+    
+    return delta;
 }
 
 function buyFoodEfficientHousing() {
