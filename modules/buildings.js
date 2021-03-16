@@ -107,7 +107,7 @@ function autoGiga(targetZone, metalRatio, slowDown, customBase) {
 	var delta = Math.pow(megabook, targetZone - baseZone);
 	delta *= metalDiff * slowDown * factor;
 	delta /= Math.pow(1.75, nGigas);
-	delta = Math.log(delta)
+	delta = Math.log(delta);
 	delta /= Math.log(1.4);
 	delta /= nGigas;
     }
