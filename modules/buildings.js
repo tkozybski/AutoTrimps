@@ -83,20 +83,22 @@ function gigaTargetZone() {
     var targetZone = 60;
     var daily = game.global.challengeActive == 'Daily';
     var runningC2 = game.global.runningChallengeSquared;
+    var challengeActive = game.global.challengeActive;
     
     //Check Void Zone
     var voidZone = (daily) ? getPageSetting('DailyVoidMod') : getPageSetting('VoidMaps');
     if (!runningC2 && voidZone) targetZone = Math.max(targetZone, voidZone-5);
     
     //Check Helium Challenge Zone
-    var challengeZone = game.challenges[game.global.challengeActive].heliumThrough;
+    var challengeZone;
+    if (challengeActive) challengeZone = game.challenges[challengeActive].heliumThrough;
     if (!runningC2 && challengeZone) targetZone = Math.max(targetZone, challengeZone-5);
     
     //Check Portal Settings Zone
     var portalZone;
     if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") portalZone = (daily) ? getPageSetting('dHeHrDontPortalBefore') : getPageSetting('HeHrDontPortalBefore');
     else if (autoTrimpSettings.AutoPortal.selected == "Custom") portalZone = (daily) ? getPageSetting('dCustomAutoPortal') : getPageSetting('CustomAutoPortal');
-    if (!runningC2 && portalZone) targetZone = Math.max(targetZone, portalZone-5);
+    if (!runningC2 && portalZone) targetZone = Math.max(targetZone, portalZone-6);
     
     //C2 Zone
     //TODO
