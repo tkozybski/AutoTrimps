@@ -216,10 +216,10 @@ function calcOurBlock(stance, realBlock) {
 }
 
 function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
+    //Init
     var number = getTrimpAttack();
-    var fluctuation = .2;
-    var maxFluct = -1;
-    var minFluct = -1;
+    var minFluct = 0.8;
+    var maxFluct = 1.2;
 
     //Amalgamator
     if (game.jobs.Amalgamator.owned > 0) {
@@ -231,10 +231,16 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
         var mapBonus = game.global.mapBonus;
         if (game.talents.mapBattery.purchased && mapBonus == 10) mapBonus *= 2;
         number *= ((mapBonus * .2) + 1);
-   }
-	
+    }
+    
+    //Discipline
+    if (game.global.challengeActive == "Discipline") {
+        minFluct *= 0.005;
+        maxFluct *= 1.995;
+    }
+    
     //Range
-    if (game.portal.Range.level > 0) minFluct = fluctuation - (.02 * game.portal.Range.level);
+    else if (game.portal.Range.level > 0) minFluct += 0.02 * game.portal.Range.level;
 
     //Achievements
     if (game.global.achievementBonus > 0) number *= (1 + (game.global.achievementBonus / 100));
@@ -262,9 +268,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
     //Gamma Burst
     if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0))) >= 5))
         number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
-	
-    //Discipline
-    if (game.global.challengeActive == "Discipline") fluctuation = .995;
+    
     if (game.global.challengeActive == "Life") number *= game.challenges.Life.getHealthMult();
     if (game.global.challengeActive == "Lead" && (game.global.world % 2) == 1) number *= 1.5;
     if (game.challenges.Electricity.stacks > 0) number *= 1 - (game.challenges.Electricity.stacks * 0.1);
@@ -276,24 +280,20 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
     }
 
     //Daily
-    if (game.global.challengeActive == "Daily"){
-        if (typeof game.global.dailyChallenge.minDamage !== 'undefined'){
-            if (minFluct == -1) minFluct = fluctuation;
-                minFluct += dailyModifiers.minDamage.getMult(game.global.dailyChallenge.minDamage.strength);
-        }
-        if (typeof game.global.dailyChallenge.maxDamage !== 'undefined'){
-            if (maxFluct == -1) maxFluct = fluctuation;
-                maxFluct += dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
-        }
-        if (typeof game.global.dailyChallenge.oddTrimpNerf !== 'undefined' && ((game.global.world % 2) == 1)){
+    if (game.global.challengeActive == "Daily") {
+        //Range Dailies
+        if (typeof game.global.dailyChallenge.minDamage !== 'undefined') minFluct *= dailyModifiers.minDamage.getMult(game.global.dailyChallenge.minDamage.strength);
+        if (typeof game.global.dailyChallenge.maxDamage !== 'undefined') maxFluct *= dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
+        
+	//Even-Odd Dailies
+        if (typeof game.global.dailyChallenge.oddTrimpNerf !== 'undefined' && ((game.global.world % 2) == 1))
             number *= dailyModifiers.oddTrimpNerf.getMult(game.global.dailyChallenge.oddTrimpNerf.strength);
-        }
-        if (typeof game.global.dailyChallenge.evenTrimpBuff !== 'undefined' && ((game.global.world % 2) == 0)){
+        if (typeof game.global.dailyChallenge.evenTrimpBuff !== 'undefined' && ((game.global.world % 2) == 0))
             number *= dailyModifiers.evenTrimpBuff.getMult(game.global.dailyChallenge.evenTrimpBuff.strength);
-        }
-        if (typeof game.global.dailyChallenge.rampage !== 'undefined'){
+        
+        //Rampage Dailies
+        if (typeof game.global.dailyChallenge.rampage !== 'undefined')
             number *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
-        }
     }
 	
     //Battle Goldens
@@ -337,28 +337,21 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
     if (game.singleRunBonuses.sharpTrimps.owned) number *= 1.5;
     if (game.global.uberNature == "Poison") number *= 3;
     if (game.global.totalSquaredReward > 0) number *= ((game.global.totalSquaredReward / 100) + 1);
-
-    //Init Damage Variation
-    var min = number;
-    var max = number;
-    var avg = number;
-
-    //Crit
-    min *= getCritMulti(false, (critMode) ? critMode : "never");
-    avg *= getCritMulti(false, (critMode) ? critMode : "maybe");
-    max *= getCritMulti(false, (critMode) ? critMode : "force");
+    
+    //Init Damage Variation (Crit)
+    var min = number * getCritMulti(false, (critMode) ? critMode : "never");
+    var avg = number * getCritMulti(false, (critMode) ? critMode : "maybe");
+    var max = number * getCritMulti(false, (critMode) ? critMode : "force");
 
     //Damage Range
     if (incFlucts) {
         //Defaults
         if (minFluct > 1) minFluct = 1;
-        if (maxFluct == -1) maxFluct = fluctuation;
-        if (minFluct == -1) minFluct = fluctuation;
-
+        
         //Apply fluctuation
-        min *= (1 - minFluct);
-        max *= (1 + maxFluct);
-        avg *= 1 + (maxFluct - minFluct)/2;
+        min *= minFluct;
+        max *= maxFluct;
+        avg *= (maxFluct - minFluct)/2;
     }
 
     //Well, finally, huh?
