@@ -4,7 +4,6 @@ MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
 //Psycho-Ray
-MODULES["upgrades"].autoGigas = true;
 MODULES["buildings"].gatewayWall = 100;
 MODULES["buildings"].gatewayWall = 100;
 MODULES["buildings"].nurseryWall = 10;
@@ -78,73 +77,6 @@ function advancedNurseries() {
     var e = !preSpireFarming || !MODULES.buildings.advancedNurseries;
     var f = !MODULES["buildings"].advancedNurseries;
     return f || (a && b && c && d && e);
-}
-
-function gigaTargetZone() {
-    //Init
-    var targetZone = 60;
-    var daily = game.global.challengeActive == 'Daily';
-    var runningC2 = game.global.runningChallengeSquared;
-    var challengeActive = game.global.challengeActive;
-    
-    //Check Void Zone
-    var voidZone = (daily) ? getPageSetting('DailyVoidMod') : getPageSetting('VoidMaps');
-    if (!runningC2 && voidZone) targetZone = Math.max(targetZone, voidZone-5);
-    
-    //Check Helium Challenge Zone
-    var challengeZone;
-    if (challengeActive) challengeZone = game.challenges[challengeActive].heliumThrough;
-    if (!runningC2 && challengeZone) targetZone = Math.max(targetZone, challengeZone-5);
-    
-    //Check Portal Settings Zone
-    var portalZone;
-    if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") portalZone = (daily) ? getPageSetting('dHeHrDontPortalBefore') : getPageSetting('HeHrDontPortalBefore');
-    else if (autoTrimpSettings.AutoPortal.selected == "Custom") portalZone = (daily) ? getPageSetting('dCustomAutoPortal') : getPageSetting('CustomAutoPortal');
-    if (!runningC2 && portalZone) targetZone = Math.max(targetZone, portalZone-6);
-    
-    //C2 Zone
-    //TODO
-
-    return targetZone;
-}
-
-function autoGiga(targetZone, metalRatio, slowDown, customBase) {
-    //Pre Init
-    if (!targetZone) targetZone = gigaTargetZone();
-    if (!metalRatio) metalRatio = 0.5;
-    if (!slowDown) slowDown = 2;
-    
-    //Init
-    var base = (customBase) ? getPageSetting('FirstGigastation') : game.buildings.Warpstation.owned;
-    var baseZone = game.global.world;
-    var rawPop = game.resources.trimps.max - game.unlocks.impCount.TauntimpAdded;
-    var gemsPS = getPerSecBeforeManual("Dragimp");
-    var metalPS = getPerSecBeforeManual("Miner");
-    var megabook = (game.global.frugalDone) ? 1.6 : 1.5;
-    
-    
-    //Calculus
-    var nGigas = Math.min(Math.floor(targetZone-60), Math.floor(targetZone/2 - 25), Math.floor(targetZone/3 - 12), Math.floor(targetZone/5), Math.floor(targetZone/10 + 17), 39);
-    var metalDiff = Math.max((0.1 * gemsPS) / (metalPS * metalRatio), 1);
-
-    var delta = 3;
-    for (var i=0; i<10; i++) {
-        //Population guess
-        var pop = 6 * Math.pow(1.2, nGigas)*10000;
-        pop *= base * (1 - Math.pow(5/6, nGigas+1)) + delta*(nGigas+1 - 5*(1 - Math.pow(5/6, nGigas+1)));
-        pop += rawPop - base*10000;
-        pop /= rawPop;
-        
-        //Delta
-        delta = Math.pow(megabook, targetZone - baseZone);
-        delta *= metalDiff * slowDown * pop;
-        delta /= Math.pow(1.75, nGigas);
-        delta = Math.log(delta);
-        delta /= Math.log(1.4);
-        delta /= nGigas;
-    }
-    
-    return delta;
 }
 
 function buyFoodEfficientHousing() {
