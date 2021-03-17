@@ -7,28 +7,35 @@ MODULES["upgrades"].autoGigas = true;
 
 function gigaTargetZone() {
     //Init
-    var targetZone = 60;
+    var targetZone = 59;
     var daily = game.global.challengeActive == 'Daily';
     var runningC2 = game.global.runningChallengeSquared;
     var challengeActive = game.global.challengeActive;
     
-    //Check Void Zone
+    //Try setting target zone to the zone we finish our current challenge or do our void maps
     var voidZone = (daily) ? getPageSetting('DailyVoidMod') : getPageSetting('VoidMaps');
-    if (!runningC2 && voidZone) targetZone = Math.max(targetZone, voidZone);
-    
-    //Check Helium Challenge Zone
     var challengeZone = (challengeActive) ? game.challenges[challengeActive].heliumThrough : false;
-    if (!runningC2 && challengeZone) targetZone = Math.max(targetZone, challengeZone);
     
-    //Check Portal Settings Zone
+    //Also consider the zone we configured our portal to be used
     var portalZone = 0;
     if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") portalZone = (daily) ? getPageSetting('dHeHrDontPortalBefore') : getPageSetting('HeHrDontPortalBefore');
     else if (autoTrimpSettings.AutoPortal.selected == "Custom") portalZone = (daily) ? getPageSetting('dCustomAutoPortal') : getPageSetting('CustomAutoPortal');
-    if (!runningC2 && portalZone) targetZone = Math.max(targetZone, portalZone-1);
     
-    //C2 Zone
-    //TODO
-
+    //Finds a target zone for when doing c2
+    var c2zone = 0;
+    if (getPageSetting('c2runnerstart') == true && getPageSetting("c2runnerportal") > 0) c2zone = getPageSetting("c2runnerportal");
+    else if (getPageSetting("FinishC2") > 0) c2zone = getPageSetting("FinishC2");
+    
+    //Set targetZone
+    if (!runningC2) targetZone = Math.max(targetZone, voidZone, challengeZone, portalZone-1);
+    else targetZone = Math.max(targetZone, c2zone-1);
+    
+    //Failsafe
+    if (targetZone < 60) {
+	targetZone = Math.max(65, game.global.highestLevelCleared);
+        debug("Auto Gigastation: Warning! Unable to find a proper targetZone. Using your HZE instead", "general", "*rocket");
+    }
+    
     return targetZone;
 }
 
