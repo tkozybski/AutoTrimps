@@ -233,14 +233,8 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
         number *= ((mapBonus * .2) + 1);
     }
     
-    //Discipline
-    if (game.global.challengeActive == "Discipline") {
-        minFluct *= 0.005;
-        maxFluct *= 1.995;
-    }
-    
     //Range
-    else if (game.portal.Range.level > 0) minFluct += 0.02 * game.portal.Range.level;
+    if (game.portal.Range.level > 0) minFluct += 0.02 * game.portal.Range.level;
 
     //Achievements
     if (game.global.achievementBonus > 0) number *= (1 + (game.global.achievementBonus / 100));
@@ -269,6 +263,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
     if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0))) >= 5))
         number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
     
+    //Challenges
     if (game.global.challengeActive == "Life") number *= game.challenges.Life.getHealthMult();
     if (game.global.challengeActive == "Lead" && (game.global.world % 2) == 1) number *= 1.5;
     if (game.challenges.Electricity.stacks > 0) number *= 1 - (game.challenges.Electricity.stacks * 0.1);
@@ -278,12 +273,18 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
         number *= 5;
         number *= Math.pow(0.995, game.challenges.Decay.stacks);
     }
+    
+    //Discipline
+    if (game.global.challengeActive == "Discipline") {
+        minFluct = 0.005;
+        maxFluct = 1.995;
+    }
 
     //Daily
     if (game.global.challengeActive == "Daily") {
         //Range Dailies
-        if (typeof game.global.dailyChallenge.minDamage !== 'undefined') minFluct *= dailyModifiers.minDamage.getMult(game.global.dailyChallenge.minDamage.strength);
-        if (typeof game.global.dailyChallenge.maxDamage !== 'undefined') maxFluct *= dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
+        if (typeof game.global.dailyChallenge.minDamage !== 'undefined') minFluct = dailyModifiers.minDamage.getMult(game.global.dailyChallenge.minDamage.strength);
+        if (typeof game.global.dailyChallenge.maxDamage !== 'undefined') maxFluct = dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
         
 	//Even-Odd Dailies
         if (typeof game.global.dailyChallenge.oddTrimpNerf !== 'undefined' && ((game.global.world % 2) == 1))
@@ -345,9 +346,6 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
 
     //Damage Range
     if (incFlucts) {
-        //Defaults
-        if (minFluct > 1) minFluct = 1;
-        
         //Apply fluctuation
         min *= minFluct;
         max *= maxFluct;
@@ -357,7 +355,8 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
     //Well, finally, huh?
     if (minMaxAvg == "min") return min;
     if (minMaxAvg == "max") return max;
-    if (minMaxAvg == "avg") return avg;
+    
+    return avg;
 }
 
 function calcDailyAttackMod(number) {
