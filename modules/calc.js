@@ -675,9 +675,10 @@ function calcSpecificEnemyHealth(world, map, cell, isVoid) {
     return health;
 }
 
-function calcHDratio(mapZone) {
+function calcHDratio(mapZone, considerVoid = preVoidCheck) {
+    //Init
     var ratio = 0;
-    var ourBaseDamage = calcOurDmg("avg", false, true);
+    var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", considerVoid);
 
     //Shield
     highDamageShield();
@@ -690,11 +691,21 @@ function calcHDratio(mapZone) {
 	ourBaseDamage /= getCritMulti(false);
         ourBaseDamage *= trimpAA;
 	ourBaseDamage *= getCritMulti(true);
-    }
+    } 
 
     //Math, considering maps or not
     if (!mapZone || mapZone < 1) ratio = calcEnemyHealth() / ourBaseDamage;
     if (mapZone || mapZone >= 1) ratio = calcEnemyHealth(mapZone, true) / ourBaseDamage;
+    
+    //Enemy Health on Void Maps
+    if (considerVoid) {
+        //Increased Health from map difficulty
+        ratio *= (game.global.world >= 60) ? 4.5 : 2.5;
+        
+        //Void Corruption
+        if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(game.global.world, 10);
+        else if (mutations.Corruption.active()) voidDamage *= calcCorruptionScale(game.global.world, 10)/2;
+    } 
 
     return ratio;
 }
