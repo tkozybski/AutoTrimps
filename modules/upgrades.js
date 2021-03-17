@@ -14,17 +14,17 @@ function gigaTargetZone() {
     
     //Check Void Zone
     var voidZone = (daily) ? getPageSetting('DailyVoidMod') : getPageSetting('VoidMaps');
-    if (!runningC2 && voidZone) targetZone = Math.max(targetZone, voidZone-5);
+    if (!runningC2 && voidZone) targetZone = Math.max(targetZone, voidZone);
     
     //Check Helium Challenge Zone
     var challengeZone = (challengeActive) ? game.challenges[challengeActive].heliumThrough : false;
-    if (!runningC2 && challengeZone) targetZone = Math.max(targetZone, challengeZone-5);
+    if (!runningC2 && challengeZone) targetZone = Math.max(targetZone, challengeZone);
     
     //Check Portal Settings Zone
     var portalZone = 0;
     if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") portalZone = (daily) ? getPageSetting('dHeHrDontPortalBefore') : getPageSetting('HeHrDontPortalBefore');
     else if (autoTrimpSettings.AutoPortal.selected == "Custom") portalZone = (daily) ? getPageSetting('dCustomAutoPortal') : getPageSetting('CustomAutoPortal');
-    if (!runningC2 && portalZone) targetZone = Math.max(targetZone, portalZone-6);
+    if (!runningC2 && portalZone) targetZone = Math.max(targetZone, portalZone-1);
     
     //C2 Zone
     //TODO
