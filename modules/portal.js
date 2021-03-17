@@ -135,7 +135,7 @@ function dailyAutoPortal() {
 }
 
 function c2runnerportal() {
-            if (game.global.world > getPageSetting('c2runnerportal')) {
+            if (game.global.world >= getPageSetting('c2runnerportal')) {
                 if (game.global.runningChallengeSquared)
                     abandonChallenge();
                 if (autoTrimpSettings.HeliumHourChallenge.selected != 'None')
