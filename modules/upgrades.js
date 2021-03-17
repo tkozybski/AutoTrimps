@@ -68,15 +68,20 @@ function autoGiga(targetZone, metalRatio, slowDown, customBase) {
         delta /= nGigas;
     }
     
-    return delta;
+    //Returns a number in the x.yy format, and as a number, not a string
+    return +(Math.round(delta + "e+2")  + "e-2");
 }
 
 function firstGiga(forced) {
     //If it's not the first giga, or we have less than two warpstations, or we can afford all of our coordinations, skip it
     if (!forced && (game.buildings.Warpstation.owned < 2 || canAffordCoordinationTrimps())) return false;
     
-    setPageSetting('FirstGigastation', game.buildings.Warpstation.owned);
-    setPageSetting('DeltaGigastation', autoGiga());
+    //Define and save Base and Delta for this run
+    var base = game.buildings.Warpstation.owned, delta = autoGiga();
+    setPageSetting('FirstGigastation', base);
+    setPageSetting('DeltaGigastation', delta);
+    
+    debug("Auto Gigastation: Setting pattern to " + base + "+" + delta, "general", "*rocket");
     
     return true;
 }
