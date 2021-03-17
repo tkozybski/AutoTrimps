@@ -39,11 +39,9 @@ function gigaTargetZone() {
     return targetZone;
 }
 
-function autoGiga(targetZone, metalRatio, slowDown, customBase) {
+function autoGiga(targetZone, metalRatio = 0.5, slowDown = 5, customBase) {
     //Pre Init
     if (!targetZone) targetZone = gigaTargetZone();
-    if (!metalRatio) metalRatio = 0.5;
-    if (!slowDown) slowDown = 2;
     
     //Init
     var base = (customBase) ? customBase : getPageSetting('FirstGigastation');
