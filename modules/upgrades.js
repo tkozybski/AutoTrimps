@@ -54,7 +54,7 @@ function autoGiga(targetZone, metalRatio = 0.5, slowDown = 5, customBase) {
     
     //Calculus
     var nGigas = Math.min(Math.floor(targetZone-60), Math.floor(targetZone/2 - 25), Math.floor(targetZone/3 - 12), Math.floor(targetZone/5), Math.floor(targetZone/10 + 17), 39);
-    var metalDiff = Math.max((0.1 * gemsPS) / (metalPS * metalRatio), 1);
+    var metalDiff = Math.max(0.1 * metalRatio * metalPS / gemsPS, 1);
 
     var delta = 3;
     for (var i=0; i<10; i++) {
