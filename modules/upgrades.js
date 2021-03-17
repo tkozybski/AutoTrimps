@@ -73,7 +73,7 @@ function autoGiga(targetZone, metalRatio, slowDown, customBase) {
 
 function firstGiga(forced) {
     //If it's not the first giga, or we have less than two warpstations, or we can afford all of our coordinations, skip it
-    if (!forced && (game.upgrades.Gigastation.done > 0 || game.buildings.Warpstation.owned < 2 || canAffordCoordinationTrimps())) return false;
+    if (!forced && (game.buildings.Warpstation.owned < 2 || canAffordCoordinationTrimps())) return false;
     
     setPageSetting('FirstGigastation', game.buildings.Warpstation.owned);
     setPageSetting('DeltaGigastation', autoGiga());
@@ -109,7 +109,9 @@ function buyUpgrades() {
         
         //Gigastations
         if (upgrade == 'Gigastation' && !fuckbuildinggiga) {
-            if (MODULES.upgrades.autoGigas && !firstGiga()) continue;
+            if (MODULES.upgrades.autoGigas && game.upgrades.Gigastation.done == 0) {
+		if (!firstGiga()) continue;
+	    }
             else if (game.buildings.Warpstation.owned < (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation'))) continue;
         }
           
