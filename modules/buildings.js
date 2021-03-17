@@ -4,6 +4,8 @@ MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
 //Psycho-Ray
+MODULES["upgrades"].autoGigas = true;
+MODULES["buildings"].gatewayWall = 100;
 MODULES["buildings"].gatewayWall = 100;
 MODULES["buildings"].nurseryWall = 10;
 MODULES["buildings"].nurserySpireWall = 10;
