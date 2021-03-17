@@ -77,6 +77,8 @@ function firstGiga(forced) {
     
     setPageSetting('FirstGigastation', game.buildings.Warpstation.owned);
     setPageSetting('DeltaGigastation', autoGiga());
+    
+    return true;
 }
 
 function buyUpgrades() {
