@@ -45,7 +45,7 @@ function updateAutoMapsStatus(get) {
     var status;
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
     var wantedHealth = getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true);
-    var wantedDamage = getMapCutOff()/calcHDratio();
+    var wantedDamage = calcHDratio()/getMapCutOff();
 
     //Fail Safes
     if (getPageSetting('AutoMaps') == 0) status = 'Off';
@@ -306,7 +306,7 @@ function autoMap() {
 
     //H:D Calc
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var enemyHealth = calcEnemyHealth() * (preVoidCheck ? 4.5 : 1);
+    var ourBaseDamage2 = calcOurDmg("avg", false, true, "maybe", true);
     
     //Shield Calc
     highDamageShield();
@@ -315,13 +315,9 @@ function autoMap() {
     if (getPageSetting('dloomswap') > 0 && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg'))
         ourBaseDamage *= trimpAA;
 
-    //Damage with Map Multipliers
-    var mapbonusmulti = 1 + (0.20 * game.global.mapBonus);
-    var ourBaseDamage2 = ourBaseDamage / mapbonusmulti;
-
     //Check for Health & Damage
     enoughHealth = calcHealthRatio(false, preVoidCheck, true) > getMapHealthCutOff();
-    enoughDamage = ourBaseDamage * getMapCutOff() > enemyHealth;
+    enoughDamage = calcHDratio() > getMapCutOff();
     updateAutoMapsStatus();
 
     //Farming
@@ -332,7 +328,7 @@ function autoMap() {
     shouldFarm = false;
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
         //Farm on Low Damage
-        shouldFarmDamage = calcHDratio() >= (getPageSetting("DisableFarm") * ((preVoidCheck) ? MODULES.maps.voidHDMult : 1));
+        shouldFarmDamage = calcHDratio() >= (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
 
         //Farm on Low Health
         shouldFarm = shouldFarmDamage || (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
