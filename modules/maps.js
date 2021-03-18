@@ -332,7 +332,7 @@ function autoMap() {
     shouldFarm = false;
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
         //Farm on Low Damage
-        shouldFarmDamage = calcHDratio() >= getPageSetting("DisableFarm") * ((preVoidCheck) ? MODULES.maps.voidHDMult : 1);
+        shouldFarmDamage = calcHDratio() >= (getPageSetting("DisableFarm") * ((preVoidCheck) ? MODULES.maps.voidHDMult : 1));
 
         //Farm on Low Health
         shouldFarm = shouldFarmDamage || (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
