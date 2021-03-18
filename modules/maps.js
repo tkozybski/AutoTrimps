@@ -164,7 +164,7 @@ function getMapCutOff() {
     if (wind && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
     
     //Void Map cut off
-    if (preVoidCheck) cut *= MODULES.maps.voidHDmult;
+    if (preVoidCheck) cut *= MODULES.maps.voidHDMult;
 
     return cut;
 }
@@ -329,7 +329,7 @@ function autoMap() {
     shouldFarm = false;
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
         //Farm on Low Damage
-        shouldFarm = calcHDratio() >= getPageSetting("DisableFarm");
+        shouldFarm = calcHDratio() >= getPageSetting("DisableFarm") * (preVoidCheck) ? MODULES.maps.voidHDMult;
 
         //Farm on Low Health
         shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
