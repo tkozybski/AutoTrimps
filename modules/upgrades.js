@@ -39,7 +39,7 @@ function gigaTargetZone() {
     return targetZone;
 }
 
-function autoGiga(targetZone, metalRatio = 0.5, slowDown = 5, customBase) {
+function autoGiga(targetZone, metalRatio = 0.5, slowDown = 10, customBase) {
     //Pre Init
     if (!targetZone) targetZone = gigaTargetZone();
     
