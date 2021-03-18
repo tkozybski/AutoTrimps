@@ -23,21 +23,22 @@ MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived
 MODULES.maps.voidHitsMult = 0.25; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 MODULES.maps.voidHDMult = MODULES.maps.voidHitsMult; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 
-var isFarming = !1;
-var doVoids = !1;
-var needToVoid = !1;
-var preVoidCheck = !1;
-var needPrestige = !1;
-var skippedPrestige = !1;
-var scryerStuck = !1;
-var shouldDoMaps = !1;
+var isFarming = false;
+var doVoids = false;
+var needToVoid = false;
+var preVoidCheck = false;
+var needPrestige = false;
+var skippedPrestige = false;
+var scryerStuck = false;
+var shouldDoMaps = false;
+var shouldFarmDamage = false;
 var mapTimeEstimate = 0;
 var lastMapWeWereIn = null;
-var preSpireFarming = !1;
-var spireMapBonusFarming = !1;
+var preSpireFarming = false;
+var spireMapBonusFarming = false;
 var spireTime = 0;
-var doMaxMapBonus = !1;
-var vanillaMapatZone = !1;
+var doMaxMapBonus = false;
+var vanillaMapatZone = false;
 var additionalCritMulti = 2 < getPlayerCritChance() ? 25 : 5;
 
 function updateAutoMapsStatus(get) {
@@ -71,11 +72,11 @@ function updateAutoMapsStatus(get) {
 	    var stackedMaps = Fluffy.isRewardActive('void') ? countStackedVoidMaps() : 0;
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
-    else if (shouldFarm && !enoughHealth && calcHDratio() >= getPageSetting("DisableFarm")) status = 'Farming: H & D ' + calcHDratio().toFixed(4) + 'x';
+    else if (shouldFarm && !enoughHealth && shouldFarmDamage) status = 'Farming Health and Damage';
     else if (shouldFarm && !enoughHealth) status = 'Farming ' + (getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true)).toFixed(4) + 'x &nbspmore Health ';
-    else if (shouldFarm) status = 'Farming more Damage ' + calcHDratio().toFixed(4) + 'x';
-    else if (!enoughHealth && !enoughDamage) status = 'Want Health and Damage';
-    else if (!enoughDamage) status = 'Want ' + calcHDratio().toFixed(4) + 'x &nbspmore Damage';
+    else if (shouldFarm) status = 'Farming ' + (getMapCutOff()/calcHDratio()).toFixed(4) + 'x' + 'more Damage';
+    else if (!enoughHealth && !enoughDamage) status = 'Want Health and ' ' Damage';
+    else if (!enoughDamage) status = 'Want ' + (getMapCutOff()/calcHDratio()).toFixed(4) + 'x &nbspmore Damage';
     else if (!enoughHealth) status = 'Want ' + (getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true)).toFixed(4) + 'x &nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
@@ -329,10 +330,10 @@ function autoMap() {
     shouldFarm = false;
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
         //Farm on Low Damage
-        shouldFarm = calcHDratio() >= getPageSetting("DisableFarm") * (preVoidCheck) ? MODULES.maps.voidHDMult;
+        shouldFarmDamage = calcHDratio() >= getPageSetting("DisableFarm") * (preVoidCheck) ? MODULES.maps.voidHDMult;
 
         //Farm on Low Health
-        shouldFarm |= (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
+        shouldFarm = shouldFarmDamage || (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
 
         //Toggle "Repeat Until"
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm) toggleSetting('repeatUntil');
