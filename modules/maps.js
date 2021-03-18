@@ -680,7 +680,7 @@ function autoMap() {
                 (
                     (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1) ||
                     ((game.global.challengeActive == 'Lead' && !challSQ) && game.global.lastClearedCell > 93) ||
-                    (doVoids && game.global.lastClearedCell > 70)
+                    ((doVoids || preVoidCheck) && game.global.lastClearedCell > 70)
                 )
             ) {
                 if (scryerStuck) {
