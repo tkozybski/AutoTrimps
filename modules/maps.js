@@ -44,6 +44,8 @@ var additionalCritMulti = 2 < getPlayerCritChance() ? 25 : 5;
 function updateAutoMapsStatus(get) {
     var status;
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
+    var wantedHealth = getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true);
+    var wantedDamage = getMapCutOff()/calcHDratio();
 
     //Fail Safes
     if (getPageSetting('AutoMaps') == 0) status = 'Off';
@@ -62,7 +64,7 @@ function updateAutoMapsStatus(get) {
             (hours + 'h') : (mins + 'm:' + (secs >= 10 ? secs : ('0' + secs)) + 's');
         status = 'Farming for Spire ' + spiretimeStr + ' left';
     } 
-
+    
     else if (spireMapBonusFarming) status = 'Getting Spire Map Bonus';
     else if (getPageSetting('SkipSpires') == 1 && ((game.global.challengeActive != 'Daily' && isActiveSpireAT()) || (game.global.challengeActive == 'Daily' && disActiveSpireAT()))) status = 'Skipping Spire';
     else if (doMaxMapBonus) status = 'Max Map Bonus After Zone';
@@ -72,12 +74,12 @@ function updateAutoMapsStatus(get) {
 	    var stackedMaps = Fluffy.isRewardActive('void') ? countStackedVoidMaps() : 0;
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
-    else if (shouldFarm && !enoughHealth && shouldFarmDamage) status = 'Farming Health and Damage';
-    else if (shouldFarm && !enoughHealth) status = 'Farming ' + (getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true)).toFixed(4) + 'x &nbspmore Health ';
-    else if (shouldFarm) status = 'Farming ' + (getMapCutOff()/calcHDratio()).toFixed(4) + 'x' + 'more Damage';
-    else if (!enoughHealth && !enoughDamage) status = 'Want Health and ' ' Damage';
-    else if (!enoughDamage) status = 'Want ' + (getMapCutOff()/calcHDratio()).toFixed(4) + 'x &nbspmore Damage';
-    else if (!enoughHealth) status = 'Want ' + (getMapHealthCutOff()/calcHealthRatio(false, preVoidCheck, true)).toFixed(4) + 'x &nbspmore Health';
+    else if (shouldFarm && !enoughHealth && shouldFarmDamage) status = 'Farming ' + wantedHealth.toFixed(2) + 'x Health & ' + wantedDamage(2) + 'x Damage';
+    else if (shouldFarm && !enoughHealth) status = 'Farming ' + wantedHealth.toFixed(4) + 'x &nbspmore Health ';
+    else if (shouldFarm) status = 'Farming ' + wantedDamage.toFixed(4) + 'x' + 'more Damage';
+    else if (!enoughHealth && !enoughDamage) status = 'Want ' + wantedHealth.toFixed(2) + 'x Health &' + wantedDamage.toFixed(2)  + 'x Damage';
+    else if (!enoughDamage) status = 'Want ' + wantedDamage.toFixed(4) + 'x &nbspmore Damage';
+    else if (!enoughHealth) status = 'Want ' + wantedHealth.toFixed(4) + 'x &nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
     if (skippedPrestige)
