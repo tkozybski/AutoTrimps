@@ -500,7 +500,7 @@ function autoMap() {
                     break;
                 }
                 var treasure = getPageSetting('TrimpleZ');
-                if (theMap.name == 'Trimple Of Doom' && (game.portal.Relentlessness.locked || !runningC2 && game.mapUnlocks.AncientTreasure.canRunOnce && game.global.world >= treasure)) {
+                if (theMap.name == 'Trimple Of Doom' && (game.portal.Relentlessness.locked || game.mapUnlocks.AncientTreasure.canRunOnce && game.global.world >= treasure)) {
                     var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                     if ((game.global.world < 33 + theMapDifficulty) || treasure > -33 && treasure < 33) continue;
                     selectedMap = theMap.id;
@@ -515,7 +515,7 @@ function autoMap() {
                         selectedMap = theMap.id;
                         break;
                     }
-                    if (theMap.name == 'Bionic Wonderland' && game.global.challengeActive == "Crushed") {
+                    if (theMap.name == 'Bionic Wonderland' && (game.global.roboTrimpLevel == 0 || game.global.challengeActive == "Crushed")) {
                         var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                         if (game.global.world < 125 + theMapDifficulty) continue;
                         selectedMap = theMap.id;
