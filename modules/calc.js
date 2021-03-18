@@ -349,7 +349,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
         //Apply fluctuation
         min *= minFluct;
         max *= maxFluct;
-        avg *= (maxFluct - minFluct)/2;
+        avg *= (maxFluct + minFluct)/2;
     }
 
     //Well, finally, huh?
