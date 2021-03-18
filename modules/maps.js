@@ -324,12 +324,12 @@ function autoMap() {
     var selectedMap = "world";
     var shouldFarmLowerZone = false;
 
-    //Farm Trigger
+    //Farm Flags
     shouldFarm = false;
+    shouldFarmDamage = calcHDratio() >= (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
+    
+    //Only actually trigger farming after doing map bonuses
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
-        //Farm on Low Damage
-        shouldFarmDamage = calcHDratio() >= (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
-
         //Farm on Low Health
         shouldFarm = shouldFarmDamage || (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
 
