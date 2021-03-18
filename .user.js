@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AutoTrimps-Ray
-// @version      0.2.1
+// @version      0.2.2
 // @namespace    https://Psycho-Ray.github.io/AutoTrimps
 // @downloadURL  https://Psycho-Ray.github.io/AutoTrimps/.user.js
 // @updateURL    https://Psycho-Ray.github.io/AutoTrimps/.user.js
