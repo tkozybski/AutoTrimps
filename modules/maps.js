@@ -74,10 +74,10 @@ function updateAutoMapsStatus(get) {
 	    var stackedMaps = Fluffy.isRewardActive('void') ? countStackedVoidMaps() : 0;
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
-    else if (shouldFarm && !enoughHealth && shouldFarmDamage) status = 'Farming ' + wantedHealth.toFixed(2) + 'x Health & ' + wantedDamage(2) + 'x Damage';
+    else if (shouldFarm && !enoughHealth && shouldFarmDamage) status = 'Farming ' + wantedHealth.toFixed(2) + 'x &nbspHealth & ' + wantedDamage(2) + 'x &nbspDamage';
     else if (shouldFarm && !enoughHealth) status = 'Farming ' + wantedHealth.toFixed(4) + 'x &nbspmore Health ';
-    else if (shouldFarm) status = 'Farming ' + wantedDamage.toFixed(4) + 'x' + 'more Damage';
-    else if (!enoughHealth && !enoughDamage) status = 'Want ' + wantedHealth.toFixed(2) + 'x Health &' + wantedDamage.toFixed(2)  + 'x Damage';
+    else if (shouldFarm) status = 'Farming ' + wantedDamage.toFixed(4) + 'x &nbspmore Damage';
+    else if (!enoughHealth && !enoughDamage) status = 'Want ' + wantedHealth.toFixed(2) + 'x &nbspHealth &' + wantedDamage.toFixed(2)  + 'x &nbspDamage';
     else if (!enoughDamage) status = 'Want ' + wantedDamage.toFixed(4) + 'x &nbspmore Damage';
     else if (!enoughHealth) status = 'Want ' + wantedHealth.toFixed(4) + 'x &nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
