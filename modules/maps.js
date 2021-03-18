@@ -21,6 +21,7 @@ MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
 MODULES.maps.voidHitsMult = 0.25; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
+MODULES.maps.voidHDMult = MODULES.maps.voidHitsMult; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 
 var isFarming = !1;
 var doVoids = !1;
@@ -161,6 +162,9 @@ function getMapCutOff() {
 
     //Windstack
     if (wind && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
+    
+    //Void Map cut off
+    if (preVoidCheck) cut *= MODULES.maps.voidHDmult;
 
     return cut;
 }
@@ -171,10 +175,7 @@ function getMapHealthCutOff() {
     if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
 
     //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
-    if (game.global.mapsActive && getCurrentMapObject().location == "Void") {
-        //TODO
-        return base * MODULES.maps.voidHitsMult;
-    }
+    if (preVoidCheck) return base * MODULES.maps.voidHitsMult;
 
     //Scryer (only if scrying)
     var scryCorrupt = game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
