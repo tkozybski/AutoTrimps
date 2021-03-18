@@ -317,7 +317,7 @@ function autoMap() {
 
     //Check for Health & Damage
     enoughHealth = calcHealthRatio(false, preVoidCheck, true) > getMapHealthCutOff();
-    enoughDamage = calcHDratio() > getMapCutOff();
+    enoughDamage = calcHDratio() < getMapCutOff();
     updateAutoMapsStatus();
 
     //Farming
