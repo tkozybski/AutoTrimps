@@ -9,7 +9,7 @@ MODULES["buildings"].gatewayWall = 100;
 MODULES["buildings"].nurseryWall = 10;
 MODULES["buildings"].nurserySpireWall = 10;
 MODULES["buildings"].gemEfficiencyIgnoresLimit = true;
-MODULES["buildings"].advancedNurseries = game.stats.highestLevel.valueTotal() >= 220 && true; //Use on Magma. HIGHLY EXPERIMENTAL
+MODULES["buildings"].advancedNurseries = true; //Use on Magma. HIGHLY EXPERIMENTAL
 
 //Helium
 
@@ -76,7 +76,7 @@ function advancedNurseries() {
     var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDratio() < getPageSetting("mapcuntoff");
     var e = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || getPageSetting('MaxMapBonushealth') == 0;
     var f = !preSpireFarming || !MODULES.buildings.advancedNurseries;
-    var off = !MODULES["buildings"].advancedNurseries;
+    var off = !MODULES["buildings"].advancedNurseries || game.stats.highestLevel.valueTotal() < 230;
     return off || (a && b && c && d && e && f);
 }
 
