@@ -22,7 +22,7 @@ function autoStanceNew() {
     else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax)        setFormation('2');
 }
 
-function challengeDamage(health, minDamage, maxDamage, missingHealth, critPower) {
+function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower) {
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
@@ -46,15 +46,15 @@ function challengeDamage(health, minDamage, maxDamage, missingHealth, critPower)
     if (dailyBogged) challengeDamage = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
 
     //Lead - Only takes damage if the enemy doesn't die
-    if (leadChallenge && minDamage < enemyHealth) harm += health * game.challenges.Lead.stacks * 0.0003;
+    if (leadChallenge && minDamage < enemyHealth) harm += maxHealth * game.challenges.Lead.stacks * 0.0003;
 
     //Adds Drain Damage -- % of max health
-    harm += health * challengeDamage;
+    harm += maxHealth * challengeDamage;
 
     //Adds Bleed Damage -- % of current health
     if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed') {
         challengeDamage = (enemy.corrupted == 'healthyBleed') ? 0.30 : 0.20;
-        harm += (health - missingHealth) * challengeDamage;
+        harm += (maxHealth - missingHealth) * challengeDamage;
     }
 
     //Explosive Daily (or Magma Omnipotrimp --TODO) -- Blockable
@@ -113,14 +113,17 @@ function survive(formation = "S", critPower = 2) {
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
 
     //Applies the formation modifiers
-    if      (formation == "XB") health /= 2;
+    if      (formation == "XB") {health /= 2;}
     else if (formation == "D") {damage *= 4; minDamage *= 4; maxDamage *= 4; health /= 2; block  /= 2;}
     else if (formation == "B") {damage /= 2; minDamage /= 2; maxDamage /= 2; health /= 2; block  *= 4;}
     else if (formation == "H") {damage /= 2; minDamage /= 2; maxDamage /= 2; health *= 4; block  /= 2;}
     else if (formation == "S") {damage /= 2; minDamage /= 2; maxDamage /= 2; health /= 2; block  /= 2;}
+    
+    //Max health for XB formation
+    var maxHealth = health * (formation == "XB" ? 2 : 1);
 
     //Decides if the trimps can survive in this formation
-    var harm = directDamage(formation, block, minDamage, critPower) + challengeDamage(health, minDamage, maxDamage, missingHealth, critPower);
+    var harm = directDamage(formation, block, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower);
     return (newSquadRdy && health > harm) || (health - missingHealth > harm);
 }
 
