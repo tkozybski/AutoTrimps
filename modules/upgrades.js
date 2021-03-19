@@ -80,7 +80,7 @@ function autoGiga(targetZone, metalRatio = 0.5, slowDown = 10, customBase) {
 function firstGiga(forced) {
     //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C) Lacking Health or Damage & D) Has run at least 1 map or if forced to
     var a = game.buildings.Warpstation.owned >= 2;
-    var b = !canAffordCoordinationTrimps();
+    var b = !canAffordCoordinationTrimps() && game.upgrades.Coordination.allowed > game.upgrades.Coordination.done;
     var c = !enoughHealth || !enoughDamage;
     var d = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || getPageSetting('MaxMapBonushealth') == 0;
     if (!forced && !(a && b && c && d)) return false;
