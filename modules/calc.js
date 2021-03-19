@@ -478,12 +478,14 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     return number;
 }
 
-function badGuyCritMult(enemy, critPower=2) {
+function badGuyCritMult(enemy, critPower=2, block, health) {
     //Pre-Init
     if (getPageSetting('IgnoreCrits') == 2) return 1;
     if (!enemy) enemy = getCurrentEnemy();
     if (!enemy || critPower <= 0) return 1;
-
+    if (!block) block = game.global.soldierCurrentBlock;
+    if (!health) health = game.global.soldierHealth;
+    
     //Init   
     var regular=1, challenge=1;
 
@@ -498,20 +500,20 @@ function badGuyCritMult(enemy, critPower=2) {
 
     //Challenge multiplier
     if (critDaily) challenge = dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength);
-    else if (crushed && game.global.soldierHealth > game.global.soldierCurrentBlock) challenge = 5;
+    else if (crushed && health > block) challenge = 5;
 
     //Result -- Yep. Crits may crit! Yey!
     if (critPower == 2) return regular * challenge;
     else return Math.max(regular, challenge);
 }
 
-function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts) {
+function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts, customBlock, customHealth) {
     //Pre-Init
     if (!enemy) enemy = getCurrentEnemy();
     if (!enemy) return 1;
 
     //Crit
-    var number = enemy.attack * badGuyCritMult(enemy, critPower) * badGuyChallengeMult();
+    var number = enemy.attack * badGuyCritMult(enemy, critPower, customBlock, customHealth) * badGuyChallengeMult();
 	
     //Ice
     if (getEmpowerment() == "Ice") number *= game.empowerments.Ice.getCombatModifier();
