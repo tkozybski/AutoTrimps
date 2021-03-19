@@ -22,7 +22,7 @@ function autoStanceNew() {
     else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax)        setFormation('2');
 }
 
-function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower) {
+function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower=2) {
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
@@ -70,6 +70,17 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
 }
 
 function directDamage(formation, block, minDamage, critPower=2) {
+    //Pre Init
+    if (!formation) {
+        if (game.global.formation == 0) formation = "X";
+        else if (game.global.formation == 1) formation = "H";
+        else if (game.global.formation == 2) formation = "D";
+        else if (game.global.formation == 3) formation = "B";
+        else if (game.global.formation == 4) formation = "S";
+    }
+    if (!block) block = calcOurBlock(true, true);
+    if (!minDamage) minDamage = calcOurDmg("min", false, true, "never", game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
