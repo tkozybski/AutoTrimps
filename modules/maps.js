@@ -515,7 +515,7 @@ function autoMap() {
                         selectedMap = theMap.id;
                         break;
                     }
-                    if (theMap.name == 'Bionic Wonderland' && (game.global.roboTrimpLevel == 0 || game.global.challengeActive == "Crushed")) {
+                    if (theMap.name == 'Bionic Wonderland' && (!bwRewardUnlocked("Foremany") || game.global.challengeActive == "Crushed")) {
                         var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                         if (game.global.world < 125 + theMapDifficulty) continue;
                         selectedMap = theMap.id;
