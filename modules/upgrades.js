@@ -10,11 +10,11 @@ function gigaTargetZone() {
     var targetZone = 59;
     var daily = game.global.challengeActive == 'Daily';
     var runningC2 = game.global.runningChallengeSquared;
-    var heliumChallengeActive = game.global.challengeActive && game.challenges[heliumChallengeActive].heliumThrough;
+    var heliumChallengeActive = game.global.challengeActive && game.challenges[game.global.challengeActive].heliumThrough;
     
     //Try setting target zone to the zone we finish our current challenge or do our void maps
     var voidZone = (daily) ? getPageSetting('DailyVoidMod') : getPageSetting('VoidMaps');
-    var challengeZone = (heliumChallengeActive) ? game.challenges[heliumChallengeActive].heliumThrough : 0;
+    var challengeZone = (heliumChallengeActive) ? game.challenges[game.global.challengeActive].heliumThrough : 0;
     
     //Also consider the zone we configured our portal to be used
     var portalZone = 0;
