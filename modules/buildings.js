@@ -153,8 +153,9 @@ function buyGemEfficientHousing() {
 
             var skipWarp = false;
             if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
-                if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
-                    skipWarp = true;
+                var firstGigaOK = MODULES["upgrades"].autoGigas == false || game.upgrades.Gigastation.done > 0;
+                var gigaCapped = game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation'))
+                if (firstGigaOK && gigaCapped) skipWarp = true;
             }
             var warpwallpct = getPageSetting('WarpstationWall3');
             if (warpwallpct > 1 && bestBuilding == "Warpstation") {
