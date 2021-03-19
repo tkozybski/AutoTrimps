@@ -69,7 +69,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
     return harm;
 }
 
-function directDamage(formation, block, minDamage, critPower=2) {
+function directDamage(formation, block, currentHealth, minDamage, critPower=2) {
     //Pre Init
     if (!formation) {
         if (game.global.formation == 0) formation = "X";
@@ -79,12 +79,13 @@ function directDamage(formation, block, minDamage, critPower=2) {
         else if (game.global.formation == 4) formation = "S";
     }
     if (!block) block = calcOurBlock(true, true);
+    if (!currentHealth) health = calcOurHealth(true);
     if (!minDamage) minDamage = calcOurDmg("min", false, true, "never", game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
     
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
-    var enemyDamage = calcSpecificBadGuyDmg(enemy, critPower);
+    var enemyDamage = calcSpecificBadGuyDmg(enemy, critPower, false, false, block, currentHealth);
 
     //Calculates block and pierce
     var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
@@ -134,7 +135,7 @@ function survive(formation = "S", critPower = 2) {
     var maxHealth = health * (formation == "XB" ? 2 : 1);
 
     //Decides if the trimps can survive in this formation
-    var harm = directDamage(formation, block, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower);
+    var harm = directDamage(formation, block, health - missingHealth, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower);
     return (newSquadRdy && health > harm) || (health - missingHealth > harm);
 }
 
