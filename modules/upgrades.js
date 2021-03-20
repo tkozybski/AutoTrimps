@@ -6,7 +6,7 @@ MODULES["upgrades"] = {};
 MODULES["upgrades"].autoGigas = true;
 MODULES["upgrades"].customTargetZone = undefined;
 MODULES["upgrades"].customMetalRatio = undefined;
-MODULES["upgrades"].customSlowDownFactor = 5;
+MODULES["upgrades"].customSlowDownFactor = 10;
 
 function gigaTargetZone() {
     //Init
