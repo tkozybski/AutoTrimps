@@ -46,7 +46,7 @@ function updateAutoMapsStatus(get) {
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
     var wantedHealth = getMapHealthCutOff() / calcHealthRatio(false, preVoidCheck, true);
     var wantedDamage = calcHDratio() / getMapCutOff();
-    var wantedFarmDmg = (calcHDratio() / getPageSetting("DisableFarm")) * (preVoidCheck ? MODULES.maps.voidHDMult : 1);
+    var wantedFarmDmg = calcHDratio() / (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
 
     //Fail Safes
     if (getPageSetting('AutoMaps') == 0) status = 'Off';
