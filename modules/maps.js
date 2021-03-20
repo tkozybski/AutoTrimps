@@ -76,11 +76,11 @@ function updateAutoMapsStatus(get) {
 	    status = 'Void Maps: ' + game.global.totalVoidMaps + ((stackedMaps) ? " (" + stackedMaps + " stacked)" : "") + ' remaining';
     }
     else if (shouldFarm && !enoughHealth && shouldFarmDamage) status = 'Farming ' + wantedHealth.toFixed(2) + 'x&nbspHealth & ' + wantedFarmDmg.toFixed(2) + 'x&nbspDamage';
-    else if (shouldFarm && !enoughHealth) status = 'Farming ' + wantedHealth.toFixed(4) + 'x&nbspmore Health ';
-    else if (shouldFarm) status = 'Farming ' + wantedFarmDmg.toFixed(4) + 'x&nbspmore Damage';
+    else if (shouldFarm && !enoughHealth) status = 'Farming ' + wantedHealth.toFixed(2) + 'x&nbspmore Health ';
+    else if (shouldFarm) status = 'Farming ' + wantedFarmDmg.toFixed(2) + 'x&nbspmore Damage';
     else if (!enoughHealth && !enoughDamage) status = 'Want ' + wantedHealth.toFixed(2) + 'x&nbspHealth & ' + wantedDamage.toFixed(2)  + 'x&nbspDamage';
-    else if (!enoughDamage) status = 'Want ' + wantedDamage.toFixed(4) + 'x&nbspmore Damage';
-    else if (!enoughHealth) status = 'Want ' + wantedHealth.toFixed(4) + 'x&nbspmore Health';
+    else if (!enoughDamage) status = 'Want ' + wantedDamage.toFixed(2) + 'x&nbspmore Damage';
+    else if (!enoughHealth) status = 'Want ' + wantedHealth.toFixed(2) + 'x&nbspmore Health';
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
     if (skippedPrestige)
