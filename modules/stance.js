@@ -97,7 +97,12 @@ function directDamage(formation, block, currentHealth, minDamage, critPower=2) {
     //Fast Enemies
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || enemy.corrupted == 'healthyDbl';
     var enemyFast = isDoubleAttack || game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom");
-    var dodgeDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.slippery !== undefined && game.global.world%2 == 0;
+    
+    //Dodge Dailies
+    if (game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.slippery !== undefined) {
+        var slipStr = game.global.dailyChallenge.slippery.strength;
+        var dodgeDaily = (slipStr > 15 && game.global.world % 2 == 0) || (slipStr <= 15 && game.global.world % 2 == 1);
+    }
 
     //Double Attack and One Shot situations
     if (isDoubleAttack && minDamage < enemyHealth) harm *= 2;
