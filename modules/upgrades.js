@@ -1,9 +1,12 @@
 //Helium
 var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedlumber', 'Speedfarming', 'Speedscience', 'Speedexplorer', 'Megaminer', 'Megalumber', 'Megafarming', 'Megascience', 'Efficiency', 'TrainTacular', 'Trainers', 'Explorers', 'Blockmaster', 'Battle', 'Bloodlust', 'Bounty', 'Egg', 'Anger', 'Formations', 'Dominance', 'Barrier', 'UberHut', 'UberHouse', 'UberMansion', 'UberHotel', 'UberResort', 'Trapstorm', 'Gigastation', 'Shieldblock', 'Potency', 'Magmamancers'];
 
-//Psycho Ray
+//Psycho Ray - Auto Giga Base and Delta
 MODULES["upgrades"] = {};
 MODULES["upgrades"].autoGigas = true;
+MODULES["upgrades"].customTargetZone = undefined;
+MODULES["upgrades"].customMetalRatio = undefined;
+MODULES["upgrades"].customSlowDownFactor = 30;
 
 function gigaTargetZone() {
     //Init
@@ -41,7 +44,7 @@ function gigaTargetZone() {
 
 function autoGiga(targetZone, metalRatio = 0.5, slowDown = 10, customBase) {
     //Pre Init
-    if (!targetZone) targetZone = gigaTargetZone();
+    if (!targetZone || targetZone < 60) targetZone = gigaTargetZone();
     
     //Init
     var base = (customBase) ? customBase : getPageSetting('FirstGigastation');
@@ -50,7 +53,6 @@ function autoGiga(targetZone, metalRatio = 0.5, slowDown = 10, customBase) {
     var gemsPS = getPerSecBeforeManual("Dragimp");
     var metalPS = getPerSecBeforeManual("Miner");
     var megabook = (game.global.frugalDone) ? 1.6 : 1.5;
-    
     
     //Calculus
     var nGigas = Math.min(Math.floor(targetZone-60), Math.floor(targetZone/2 - 25), Math.floor(targetZone/3 - 12), Math.floor(targetZone/5), Math.floor(targetZone/10 + 17), 39);
@@ -85,11 +87,18 @@ function firstGiga(forced) {
     var d = game.global.mapBonus >= 2 || game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     if (!forced && !(a && b && c && d)) return false;
     
-    //Define and save Base and Delta for this run
-    var base = game.buildings.Warpstation.owned, delta = autoGiga();
+    //Define Base and Delta for this run
+    var base = game.buildings.Warpstation.owned;
+    var deltaZ = (MODULES["upgrades"].customTargetZone     >= 60) ? MODULES["upgrades"].customTargetZone     : undefined;
+    var deltaM = (MODULES["upgrades"].customMetalRatio     >   0) ? MODULES["upgrades"].customMetalRatio     : undefined;
+    var deltaS = (MODULES["upgrades"].customSlowDownFactor >   1) ? MODULES["upgrades"].customSlowDownFactor : undefined;
+    var delta = autoGiga(deltaZ, deltaM, deltaS);
+    
+    //Save settings
     setPageSetting('FirstGigastation', base);
     setPageSetting('DeltaGigastation', delta);
     
+    //Log
     debug("Auto Gigastation: Setting pattern to " + base + "+" + delta, "general", "*rocket");
     
     return true;
