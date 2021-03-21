@@ -39,7 +39,7 @@ function getTrimpAttack(realDamage) {
     return dmg;
 }
 
-function getTrimpHealth(realHealth) {
+function getTrimpHealth(fullGeneticist, realHealth) {
     var health = 50;
     
     //This is the actual health of the army ATM, disconsidering itens bought, but not yet in use
@@ -73,7 +73,7 @@ function getTrimpHealth(realHealth) {
     
     //Geneticists
     var geneticist = game.jobs.Geneticist;
-    if (geneticist.owned > 0) health *= (Math.pow(1.01, fullGeneticist ? geneticist.owned : game.global.lastLowGen));
+    if (geneticist.owned > 0) health *= (Math.pow(1.01, game.global.lastLowGen));
     
     //Formation
     if (game.global.formation !== 0) health *= (game.global.formation == 1) ? 4 : 0.5;
@@ -96,6 +96,10 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     
     //Formation
     if (!stance && game.global.formation != 0) number /= (game.global.formation == 2) ? 4 : 0.5;
+    
+    //Geneticists
+    var geneticist = game.jobs.Geneticist;
+    if (geneticist.owned > 0) health *= (Math.pow(1.01, geneticist.owned - game.global.lastLowGen));
     
     //Challenges
     if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
