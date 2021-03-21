@@ -215,9 +215,9 @@ function calcOurBlock(stance, realBlock) {
     return block;
 }
 
-function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus) {
+function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, realDamage) {
     //Init
-    var number = getTrimpAttack();
+    var number = (realDamage) ? game.global.soldierCurrentAttack : getTrimpAttack();
     var minFluct = 0.8;
     var maxFluct = 1.2;
 
