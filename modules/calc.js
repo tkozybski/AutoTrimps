@@ -4,9 +4,13 @@ var trimpAA = 1;
 
 //Helium
 
-function getTrimpAttack() {
+function getTrimpAttack(realDamage) {
+    //Init
     var dmg = 6;
     var equipmentList = ["Dagger", "Mace", "Polearm", "Battleaxe", "Greatsword", "Arbalest"];
+    
+    //This is actual damage of the army in combat ATM, disconsidering itens bought, but not yet in use
+    if (realDamage) game.global.soldierCurrentAttack;
 	
     //For each weapon...
     for(var i = 0; i < equipmentList.length; i++) {
@@ -32,8 +36,11 @@ function getTrimpAttack() {
     return dmg * game.resources.trimps.maxSoldiers;
 }
 
-function getTrimpHealth() {
+function getTrimpHealth(realHealth) {
     var health = 50;
+    
+    //This is the actual health of the army ATM, disconsidering itens bought, but not yet in use
+    if (realHealth) return game.global.soldierHealthMax;
     
     //For each armor...
     if (game.resources.trimps.maxSoldiers > 0) {
@@ -45,6 +52,9 @@ function getTrimpHealth() {
             health += healthBonus*level;
         }
     }
+    
+    //Coordinations
+    health *= game.resources.trimps.maxSoldiers;
     
     //Toughness
     if (game.portal.Toughness.level > 0)
@@ -61,11 +71,11 @@ function getTrimpHealth() {
     //Formation
     if (game.global.formation !== 0) health *= (game.global.formation == 1) ? 4 : 0.5;
     
-    return health * game.resources.trimps.maxSoldiers;
+    return health;
 }
 
 function calcOurHealth(stance, fullGeneticist, realHealth) {
-    var health = = (realHealth) ? 
+    var health = getTrimpHealth(realHealth);
     
     //Golden Battle
     if (game.goldenUpgrades.Battle.currentBonus > 0) health *= game.goldenUpgrades.Battle.currentBonus + 1;
@@ -220,7 +230,7 @@ function calcOurBlock(stance, realBlock) {
 
 function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, realDamage) {
     //Init
-    var number = (realDamage) ? game.global.soldierCurrentAttack : getTrimpAttack();
+    var number = getTrimpAttack(realDamage);
     var minFluct = 0.8;
     var maxFluct = 1.2;
 
