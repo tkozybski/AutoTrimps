@@ -95,7 +95,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     var health = getTrimpHealth(realHealth);
     
     //Formation
-    if (!stance && game.global.formation != 0) number /= (game.global.formation == 2) ? 4 : 0.5;
+    if (!stance && game.global.formation != 0) health /= (game.global.formation == 2) ? 4 : 0.5;
     
     //Geneticists
     var geneticist = game.jobs.Geneticist;
