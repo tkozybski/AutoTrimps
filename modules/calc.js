@@ -99,7 +99,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     
     //Geneticists
     var geneticist = game.jobs.Geneticist;
-    if (geneticist.owned > 0) health *= (Math.pow(1.01, geneticist.owned - game.global.lastLowGen));
+    if (fullGeneticist && geneticist.owned > 0) health *= (Math.pow(1.01, geneticist.owned - game.global.lastLowGen));
     
     //Challenges
     if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
