@@ -71,24 +71,28 @@ function getTrimpHealth(realHealth) {
     if (game.portal.Resilience.level > 0)
         health *= (Math.pow(game.portal.Resilience.modifier + 1, game.portal.Resilience.level));
     
-    //Golden Battle
-    if (game.goldenUpgrades.Battle.currentBonus > 0) health *= game.goldenUpgrades.Battle.currentBonus + 1;
-    
-    //C2
-    if (game.global.totalSquaredReward > 0) health *= (1 + (game.global.totalSquaredReward / 100));
+    //Geneticists
+    var geneticist = game.jobs.Geneticist;
+    if (geneticist.owned > 0) health *= (Math.pow(1.01, fullGeneticist ? geneticist.owned : game.global.lastLowGen));
     
     //Formation
     if (game.global.formation !== 0) health *= (game.global.formation == 1) ? 4 : 0.5;
+    
+    //Golden Battle
+    if (game.goldenUpgrades.Battle.currentBonus > 0) health *= game.goldenUpgrades.Battle.currentBonus + 1;
+    
+    //Heirloom
+    var heirloomBonus = calcHeirloomBonus("Shield", "trimpHealth", 0, true);
+    if (heirloomBonus > 0) health *= ((heirloomBonus / 100) + 1);
+    
+    //C2
+    if (game.global.totalSquaredReward > 0) health *= (1 + (game.global.totalSquaredReward / 100));
     
     return health;
 }
 
 function calcOurHealth(stance, fullGeneticist, realHealth) {
     var health = getTrimpHealth(realHealth);
-    
-    //Geneticists
-    var geneticist = game.jobs.Geneticist;
-    if (geneticist.owned > 0) health *= (Math.pow(1.01, fullGeneticist ? geneticist.owned : game.global.lastLowGen));
     
     //Challenges
     if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
@@ -102,10 +106,6 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
         var lvls = game.global.world - mutations.Magma.start() + 1;
         health *= mult;
     }
-    
-    //Heirloom
-    var heirloomBonus = calcHeirloomBonus("Shield", "trimpHealth", 0, true);
-    if (heirloomBonus > 0) health *= ((heirloomBonus / 100) + 1);
     
     //Radio
     if (game.global.radioStacks > 0) health *= (1 - (game.global.radioStacks * 0.1));
