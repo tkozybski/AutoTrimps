@@ -34,7 +34,7 @@ function getTrimpAttack(realDamage) {
     if (game.portal.Power_II.level > 0) dmg *= (1 + (game.portal.Power_II.modifier * game.portal.Power_II.level));
     
     //Formation
-    if (game.global.formation !== 0) dmg *= (game.global.formation == 2) ? 4 : 0.5;
+    if (game.global.formation != 0) dmg *= (game.global.formation == 2) ? 4 : 0.5;
     
     return dmg;
 }
@@ -93,6 +93,9 @@ function getTrimpHealth(realHealth) {
 
 function calcOurHealth(stance, fullGeneticist, realHealth) {
     var health = getTrimpHealth(realHealth);
+    
+    //Formation
+    if (!stance && game.global.formation != 0) number /= (game.global.formation == 2) ? 4 : 0.5;
     
     //Challenges
     if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
