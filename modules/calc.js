@@ -39,7 +39,7 @@ function getTrimpAttack(realDamage) {
     return dmg;
 }
 
-function getTrimpHealth(fullGeneticist, realHealth) {
+function getTrimpHealth(realHealth) {
     var health = 50;
     
     //This is the actual health of the army ATM, disconsidering itens bought, but not yet in use
