@@ -8,7 +8,7 @@ function calcBaseDamageinX2() {
     baseMinDamage  = calcOurDmg("min", false, true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
     baseMaxDamage  = calcOurDmg("max", false, true, "force", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
     baseDamage = calcOurDmg("avg", false, true, "maybe", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
-    baseHealth = calcOurHealth();
+    baseHealth = calcOurHealth(false, false, true);
     baseBlock  = calcOurBlock(false, true);
 }
 
