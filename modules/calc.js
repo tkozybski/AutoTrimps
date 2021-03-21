@@ -21,6 +21,9 @@ function getTrimpAttack(realDamage) {
         dmg += attackBonus * level;
     }
     
+    //Coordinations
+    dmg *= game.resources.trimps.maxSoldiers;
+    
     //Magma
     if (mutations.Magma.active()) dmg *= mutations.Magma.getTrimpDecay();
     
@@ -33,7 +36,7 @@ function getTrimpAttack(realDamage) {
     //Formation
     if (game.global.formation !== 0) dmg *= (game.global.formation == 2) ? 4 : 0.5;
     
-    return dmg * game.resources.trimps.maxSoldiers;
+    return dmg;
 }
 
 function getTrimpHealth(realHealth) {
@@ -68,6 +71,12 @@ function getTrimpHealth(realHealth) {
     if (game.portal.Resilience.level > 0)
         health *= (Math.pow(game.portal.Resilience.modifier + 1, game.portal.Resilience.level));
     
+    //Golden Battle
+    if (game.goldenUpgrades.Battle.currentBonus > 0) health *= game.goldenUpgrades.Battle.currentBonus + 1;
+    
+    //C2
+    if (game.global.totalSquaredReward > 0) health *= (1 + (game.global.totalSquaredReward / 100));
+    
     //Formation
     if (game.global.formation !== 0) health *= (game.global.formation == 1) ? 4 : 0.5;
     
@@ -76,9 +85,6 @@ function getTrimpHealth(realHealth) {
 
 function calcOurHealth(stance, fullGeneticist, realHealth) {
     var health = getTrimpHealth(realHealth);
-    
-    //Golden Battle
-    if (game.goldenUpgrades.Battle.currentBonus > 0) health *= game.goldenUpgrades.Battle.currentBonus + 1;
     
     //Geneticists
     var geneticist = game.jobs.Geneticist;
@@ -103,9 +109,6 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     
     //Radio
     if (game.global.radioStacks > 0) health *= (1 - (game.global.radioStacks * 0.1));
-    
-    //C2
-    if (game.global.totalSquaredReward > 0) health *= (1 + (game.global.totalSquaredReward / 100));
     
     //Amalgamator
     if (game.jobs.Amalgamator.owned > 0) health *= game.jobs.Amalgamator.getHealthMult();
