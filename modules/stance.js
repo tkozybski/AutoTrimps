@@ -22,6 +22,16 @@ function autoStanceNew() {
     else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax)        setFormation('2');
 }
 
+function debugStance() {
+    for (critPower=2; critPower >= -2; critPower--) {
+        if      (survive("D", critPower))  {return "D" + critPower}
+        else if (survive("XB", critPower)) {return "XB" + critPower}
+        else if (survive("B", critPower))  {return "B" + critPower}
+        else if (survive("X", critPower))  {return "X" + critPower}
+        else if (survive("H", critPower))  {return "H" + critPower}
+    }
+}
+
 function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower=2) {
     //Enemy
     var enemy = getCurrentEnemy();
