@@ -91,7 +91,7 @@ var useoverkill = getPageSetting('UseScryerStance') == true && game.portal.Overk
 //Overkill
 if (useoverkill && getCurrentEnemy()) {
     //Calculates our minimum damage
-    var minDamage = 0.5 * calcOurDmg("min", false, true);
+    var minDamage = 0.5 * calcOurDmg("min", false, true, "never", !game.global.mapsActive, true);
     if (game.global.mapsActive) minDamage /= 1 + (0.20 * game.global.mapBonus);
 
     //Calculates our minimum "left over" damage, which will be used by the Overkill
