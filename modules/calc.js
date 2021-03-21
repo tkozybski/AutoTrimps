@@ -611,7 +611,7 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
 
     //Challenges - worst case for lead, conservative on domination unless it's on a map
     if (game.global.challengeActive == "Domination")   health *= 7.5 * (map ? 1 : 4);
-    if (game.global.challengeActive == "Lead") health *= game.challenges.Lead.stacks * (!map ? 102 : game.challenges.Lead.stacks);
+    if (game.global.challengeActive == "Lead") health *= 1 + 0.04 * (!map ? 102 : game.challenges.Lead.stacks);
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy && !game.global.spireActive) {
