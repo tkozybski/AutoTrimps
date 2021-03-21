@@ -18,31 +18,24 @@ function getTrimpAttack() {
     }
     
     //Magma
-    if (mutations.Magma.active()){
-        dmg *= mutations.Magma.getTrimpDecay();
-    }
+    if (mutations.Magma.active()) dmg *= mutations.Magma.getTrimpDecay();
     
     //Power I
-    if (game.portal.Power.level > 0) {
-            dmg += (dmg * game.portal.Power.level * game.portal.Power.modifier);
-    }
+    if (game.portal.Power.level > 0) dmg += (dmg * game.portal.Power.level * game.portal.Power.modifier);
     
     //Power II
-    if (game.portal.Power_II.level > 0) {
-        dmg *= (1 + (game.portal.Power_II.modifier * game.portal.Power_II.level));
-    }
+    if (game.portal.Power_II.level > 0) dmg *= (1 + (game.portal.Power_II.modifier * game.portal.Power_II.level));
     
     //Formation
-    if (game.global.formation !== 0){
-        dmg *= (game.global.formation == 2) ? 4 : 0.5;
-    }
+    if (game.global.formation !== 0) dmg *= (game.global.formation == 2) ? 4 : 0.5;
     
     return dmg * game.resources.trimps.maxSoldiers;
 }
 
-function calcOurHealth(stance, fullGeneticist) {
+function getTrimpHealth() {
     var health = 50;
-
+    
+    //For each armor...
     if (game.resources.trimps.maxSoldiers > 0) {
         var equipmentList = ["Shield", "Boots", "Helmet", "Pants", "Shoulderguards", "Breastplate", "Gambeson"];
         for(var i = 0; i < equipmentList.length; i++){
@@ -52,57 +45,67 @@ function calcOurHealth(stance, fullGeneticist) {
             health += healthBonus*level;
         }
     }
-    health *= game.resources.trimps.maxSoldiers;
-    if (game.goldenUpgrades.Battle.currentBonus > 0) {
-        health *= game.goldenUpgrades.Battle.currentBonus + 1;
-    }
-    if (game.portal.Toughness.level > 0) {
+    
+    //Toughness
+    if (game.portal.Toughness.level > 0)
         health *= ((game.portal.Toughness.level * game.portal.Toughness.modifier) + 1);
-    }
-    if (game.portal.Toughness_II.level > 0) {
+    
+    //Toughness II
+    if (game.portal.Toughness_II.level > 0)
         health *= ((game.portal.Toughness_II.level * game.portal.Toughness_II.modifier) + 1);
-    }
-    if (game.portal.Resilience.level > 0) {
+    
+    //Resilience
+    if (game.portal.Resilience.level > 0)
         health *= (Math.pow(game.portal.Resilience.modifier + 1, game.portal.Resilience.level));
-    }
+    
+    //Formation
+    if (game.global.formation !== 0) health *= (game.global.formation == 1) ? 4 : 0.5;
+    
+    return health * game.resources.trimps.maxSoldiers;
+}
+
+function calcOurHealth(stance, fullGeneticist, realHealth) {
+    var health = = (realHealth) ? 
+    
+    //Golden Battle
+    if (game.goldenUpgrades.Battle.currentBonus > 0) health *= game.goldenUpgrades.Battle.currentBonus + 1;
+    
+    //Geneticists
     var geneticist = game.jobs.Geneticist;
-    if (geneticist.owned > 0) {
-        health *= (Math.pow(1.01, fullGeneticist ? geneticist.owned : game.global.lastLowGen));
-    }
-    if (stance && game.global.formation > 0) {
-        var formStrength = 0.5;
-        if (game.global.formation == 1) formStrength = 4;
-        health *= formStrength;
-    }
-    if (game.global.challengeActive == "Life") {
-        health *= game.challenges.Life.getHealthMult();
-    } else if (game.global.challengeActive == "Balance") {
-        health *= game.challenges.Balance.getHealthMult();
-    } else if (typeof game.global.dailyChallenge.pressure !== 'undefined') {
+    if (geneticist.owned > 0) health *= (Math.pow(1.01, fullGeneticist ? geneticist.owned : game.global.lastLowGen));
+    
+    //Challenges
+    if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
+    else if (game.global.challengeActive == "Balance") health *= game.challenges.Balance.getHealthMult();
+    else if (typeof game.global.dailyChallenge.pressure !== 'undefined')
         health *= (dailyModifiers.pressure.getMult(game.global.dailyChallenge.pressure.strength, game.global.dailyChallenge.pressure.stacks));
-    }
+    
+    //Magma
     if (mutations.Magma.active()) {
         var mult = mutations.Magma.getTrimpDecay();
         var lvls = game.global.world - mutations.Magma.start() + 1;
         health *= mult;
     }
+    
+    //Heirloom
     var heirloomBonus = calcHeirloomBonus("Shield", "trimpHealth", 0, true);
-    if (heirloomBonus > 0) {
-        health *= ((heirloomBonus / 100) + 1);
-    }
-    if (game.global.radioStacks > 0) {
-        health *= (1 - (game.global.radioStacks * 0.1));
-    }
-    if (game.global.totalSquaredReward > 0) {
-        health *= (1 + (game.global.totalSquaredReward / 100));
-    }
-    if (game.jobs.Amalgamator.owned > 0) {
-        health *= game.jobs.Amalgamator.getHealthMult();
-    }
+    if (heirloomBonus > 0) health *= ((heirloomBonus / 100) + 1);
+    
+    //Radio
+    if (game.global.radioStacks > 0) health *= (1 - (game.global.radioStacks * 0.1));
+    
+    //C2
+    if (game.global.totalSquaredReward > 0) health *= (1 + (game.global.totalSquaredReward / 100));
+    
+    //Amalgamator
+    if (game.jobs.Amalgamator.owned > 0) health *= game.jobs.Amalgamator.getHealthMult();
+    
+    //Void Power
     if (game.talents.voidPower.purchased && game.global.voidBuff) {
         var amt = (game.talents.voidPower2.purchased) ? ((game.talents.voidPower3.purchased) ? 65 : 35) : 15;
         health *= (1 + (amt / 100));
     }
+    
     return health;
 }
 
