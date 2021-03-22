@@ -34,29 +34,28 @@ function debugStance() {
 
 function maxOneShootPower() {
     //No Overkill at all
-    if (game.portal.Overkill == 0) return 1;
+    if (game.portal.Overkill > 0) return 1;
     
     //Regular Overkills
     return 2;
 }
 
-function oneShootPower(stance) {
+function oneShootPower(stance, worstCase) {
     //Calculates our minimum damage
     var damageLeft = calcOurDmg("min", !stance, true, "never", !game.global.mapsActive, true);
-    if (stance != "X") minDamage *= (stance == "D") ? 4 : 0.5;
-
-    //Calculates our minimum "left over" damage, which will be used by the Overkill
-    var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
+    if (stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
     
+    //Calculates how many enemies we can oneshoot + overkill
     for (var power=1; power <= maxOneShootPower(); power++) {
         //No enemy to overkill (usually this happens at the last cell)
         if (typeof getCurrentEnemy(power) == undefined) return power-1;
         
-        //Check if we can oneshoot the next enemy
-        damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power).level);
+        //Check if we can oneshoot the next enemy (or a Turtlimp on Cell 99, if worstCase == true)
+        if (!worstCase) damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power).level);
+        else damageLeft -= calcSpecificEnemyHealth(undefined, false, 99-maxOneShootPower()+power, preVoidCheck, "Turtlimp");
         if (damageLeft < 0) return power-1;
         
-        //Apply overkill penalty to the left over damage
+        //Calculates our minimum "left over" damage, which will be used by the Overkill
         damageLeft *= 0.005 * game.portal.Overkill.level;
     }
 }
