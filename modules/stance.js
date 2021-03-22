@@ -32,6 +32,35 @@ function debugStance() {
     }
 }
 
+function maxOneShootPower() {
+    //No Overkill at all
+    if (game.portal.Overkill == 0) return 1;
+    
+    //Regular Overkills
+    return 2;
+}
+
+function oneShootPower(stance) {
+    //Calculates our minimum damage
+    var damageLeft = calcOurDmg("min", !stance, true, "never", !game.global.mapsActive, true);
+    if (stance != "X") minDamage *= (stance == "D") ? 4 : 0.5;
+
+    //Calculates our minimum "left over" damage, which will be used by the Overkill
+    var leftOverDmg = Math.max(0, minDamage - getCurrentEnemy().health);
+    
+    for (var power=1; power <= maxOneShootPower(); power++) {
+        //No enemy to overkill (usually this happens at the last cell)
+        if (typeof getCurrentEnemy(power) == undefined) return power-1;
+        
+        //Check if we can oneshoot the next enemy
+        damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power).level);
+        if (damageLeft < 0) return power-1;
+        
+        //Apply overkill penalty to the left over damage
+        damageLeft *= 0.005 * game.portal.Overkill.level;
+    }
+}
+
 function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower=2) {
     //Enemy
     var enemy = getCurrentEnemy();
