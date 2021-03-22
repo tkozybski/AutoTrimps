@@ -264,10 +264,10 @@ function autoLevelEquipment() {
     }
 
     //H:D Calc
-    var ourDamage = calcOurDmg("avg", false, true);
+    //var ourDamage = calcOurDmg("avg", false, true);
     var enemyHp = calcEnemyHealth();
     
-    //Void Maps
+    /*//Void Maps
     if (preVoidCheck) enemyHp *= 4.5;
 
     //Map Bonus Multiplier
@@ -281,12 +281,14 @@ function autoLevelEquipment() {
     if (getPageSetting('loomswap') > 0 && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg'))
 	ourDamage *= trimpAA;
     if (getPageSetting('dloomswap') > 0 && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg'))
-	ourDamage *= trimpAA;
+	ourDamage *= trimpAA;*/
 
     //Check for H & D
     var numHits = (game.global.formation != 4) ? MODULES["maps"].numHitsSurvived * MODULES["equipment"].numHitsMult : MODULES["maps"].numHitsSurvived * MODULES["equipment"].scryMult;
     var enoughHealthE = calcHealthRatio(false, preVoidCheck) > numHits;
-    var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
+    //var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
+    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
+    var enoughDamageE = oneShootPower(formation, true);
 
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];
