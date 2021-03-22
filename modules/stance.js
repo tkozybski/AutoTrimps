@@ -89,7 +89,7 @@ function directDamage(formation, block, currentHealth, minDamage, critPower=2) {
         else if (game.global.formation == 4) formation = "S";
     }
     if (!block) block = calcOurBlock(true, true);
-    if (!currentHealth) health = calcOurHealth(true);
+    if (!currentHealth) currentHealth = calcOurHealth(true, false, true) - (game.global.soldierHealthMax - game.global.soldierHealth);
     if (!minDamage) minDamage = calcOurDmg("min", false, true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
     
     //Enemy
