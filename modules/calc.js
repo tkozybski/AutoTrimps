@@ -538,7 +538,10 @@ function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts, cust
 
     //Crit
     var number = enemy.attack * badGuyCritMult(enemy, critPower, customBlock, customHealth) * badGuyChallengeMult();
-	
+    
+    //Other Challenges
+    if (game.global.challengeActive == "Lead") number *= 1 + 0.04 * game.challenges.Lead.stacks; //Assume max stacks
+    
     //Ice
     if (getEmpowerment() == "Ice") number *= game.empowerments.Ice.getCombatModifier();
 
