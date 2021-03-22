@@ -49,7 +49,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
 
     //Electricity Lead - Tox/Nom
     if (electricityChallenge) challengeDamage = game.challenges.Electricity.stacks * 0.1;
-    else if (drainChallenge) challengeDamage = 0.20;
+    else if (drainChallenge) challengeDamage = 0.05;
 
     //Plague & Bogged (Daily)
     if (dailyPlague) challengeDamage = dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength, 1 + game.global.dailyChallenge.plague.stacks);
