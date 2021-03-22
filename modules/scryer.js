@@ -25,7 +25,6 @@ function useScryerStance() {
         never_scry |= USS && !MA && getPageSetting('ScryerSkipBoss2') == 1 && game.global.world < getPageSetting('VoidMaps') && game.global.lastClearedCell == 98;
         never_scry |= USS && !MA && getPageSetting('ScryerSkipBoss2') == 0 && game.global.lastClearedCell == 98;
         never_scry |= USS && !MA && (getEmpowerment() == "Poison" && (getPageSetting('ScryUseinPoison') == 0 || (getPageSetting('ScryUseinPoison') > 0 && game.global.world >= getPageSetting('ScryUseinPoison')))) || (getEmpowerment() == "Wind" && (getPageSetting('ScryUseinWind') == 0 || (getPageSetting('ScryUseinWind') > 0 && game.global.world >= getPageSetting('ScryUseinWind')))) || (getEmpowerment() == "Ice" && (getPageSetting('ScryUseinIce') == 0 || (getPageSetting('ScryUseinIce') > 0 && game.global.world >= getPageSetting('ScryUseinIce'))));
-        never_scry |= USS && !MA && getPageSetting('screwessence') == true && countRemainingEssenceDrops() < 1;
 
     //check Corrupted Never
     var curEnemy = getCurrentEnemy(1);
@@ -83,7 +82,7 @@ function useScryerStance() {
         if (dieC && dieC.length == 1) dieC = dieC + "0";
         die = game.global.world >= dieZ && (!dieC || (game.global.lastClearedCell + 1 >= dieC));
     }
-    oktoswitch = die || newSquadRdy || survive("S", 2);
+    oktoswitch = die || survive("S", 2);
 
     //Checks if Overkill is allowed
     var useoverkill = getPageSetting('UseScryerStance') == true && getPageSetting('ScryerUseWhenOverkill');
@@ -98,6 +97,13 @@ function useScryerStance() {
             setFormation(4);
             return;
         }
+    }
+    
+    //No Essence
+    if (USS && !MA && getPageSetting('screwessence') == true && countRemainingEssenceDrops() < 1) {
+        autostancefunction();
+        wantToScry = false;
+        return;
     }
     
     //Default
