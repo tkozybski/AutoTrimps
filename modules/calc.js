@@ -662,7 +662,7 @@ function calcSpecificEnemyHealth(world, map, cell, isVoid, forcedName) {
 
     //Init
     var enemy = (!map) ? game.global.gridArray[cell-1] : game.global.mapGridArray[cell-1];
-    if (!enemy) return;
+    if (!enemy) return 50;
     
     //Init
     var corrupt = enemy.hasOwnProperty("corrupted");
