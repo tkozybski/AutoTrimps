@@ -34,7 +34,7 @@ function debugStance() {
 
 function maxOneShootPower() {
     //No Overkill at all
-    if (game.portal.Overkill > 0) return 1;
+    if (game.portal.Overkill.level == 0) return 1;
     
     //Regular Overkills
     return 2;
