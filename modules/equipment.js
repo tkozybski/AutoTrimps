@@ -285,7 +285,7 @@ function autoLevelEquipment() {
 
     //Check for H & D
     var numHits = (game.global.formation != 4) ? MODULES["maps"].numHitsSurvived * MODULES["equipment"].numHitsMult : MODULES["maps"].numHitsSurvived * MODULES["equipment"].scryMult;
-    var enoughHealthE = calcHealthRatio(false, preVoidCheck) > numHits;
+    var enoughHealthE = (game.upgrades.formations ? 0.5 : 1) * calcHealthRatio(false, preVoidCheck) > numHits;
     //var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
     var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
     var enoughDamageE = oneShootPower(formation, true) >= 1;
