@@ -50,12 +50,12 @@ function oneShootPower(stance, worstCase) {
         //No enemy to overkill (usually this happens at the last cell)
         if (!worstCase && typeof getCurrentEnemy(power) == undefined) return power-1;
         
-        //Enemy Health: current enemy, his neighbours, or a C99 Turtlimp (worstCase)
+        //Enemy Health: current enemy, his neighbours, or a C99 Dragimp (worstCase)
         if (worstCase) damageLeft -= calcSpecificEnemyHealth(undefined, false, 99-maxOneShootPower()+power, preVoidCheck, "Dragimp");
         else if (power > 1) damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power).level);
         else damageLeft -= getCurrentEnemy().health;
         
-        //Check if we can oneshoot the next enemy (or a Turtlimp on Cell 99, if worstCase == true)
+        //Check if we can oneshoot the next enemy
         if (damageLeft < 0) return power-1;
         
         //Calculates our minimum "left over" damage, which will be used by the Overkill
