@@ -288,7 +288,7 @@ function autoLevelEquipment() {
     var enoughHealthE = calcHealthRatio(false, preVoidCheck) > numHits;
     //var enoughDamageE = ourDamage * enoughDamageCutoff > enemyHp;
     var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
-    var enoughDamageE = oneShootPower(formation, true);
+    var enoughDamageE = oneShootPower(formation, true) >= 1;
 
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];
