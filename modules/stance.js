@@ -61,6 +61,8 @@ function oneShootPower(stance, worstCase) {
         //Calculates our minimum "left over" damage, which will be used by the Overkill
         damageLeft *= 0.005 * game.portal.Overkill.level;
     }
+    
+    return power-1;
 }
 
 function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower=2) {
