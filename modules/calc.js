@@ -625,7 +625,6 @@ function calcEnemyHealthCore(world, map, cell, name) {
 function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
     //Pre-Init
     if (!world) world = game.global.world;
-    if (game.global.challengeActive == 'Lead' && world%2 == 1) world++;
 
     //Init
     var health = calcEnemyHealthCore(world, map, cell, name, map);
@@ -634,7 +633,7 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
 
     //Challenges - worst case for lead, conservative on domination unless it's on a map
     if (game.global.challengeActive == "Domination")   health *= 7.5 * (map ? 1 : 4);
-    if (game.global.challengeActive == "Lead") health *= 1 + 0.04 * (!map ? 102 : game.challenges.Lead.stacks);
+    if (game.global.challengeActive == "Lead") health *= 5.08; //Worst case: Cell 99 of an even zone. By then, you'll have 102 stacks of lead
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy && !game.global.spireActive) {
