@@ -140,7 +140,7 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     var block = calcOurBlock(stance) / formationMod;
 
     //Lead farms one zone ahead
-    if (game.global.challengeActive == "Lead" && game.global.world%2 == 1) targetZone++;
+    if (game.global.challengeActive == "Lead" && !considerVoid && game.global.world%2 == 1) targetZone++;
 
     //Enemy Damage
     enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true);
@@ -633,7 +633,7 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
 
     //Challenges - worst case for lead, conservative on domination unless it's on a map
     if (game.global.challengeActive == "Domination")   health *= 7.5 * (map ? 1 : 4);
-    if (game.global.challengeActive == "Lead") health *= 5.08; //Worst case: Cell 99 of an even zone. By then, you'll have 102 stacks of lead
+    if (game.global.challengeActive == "Lead") health *= (world%2 == 0) 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy && !game.global.spireActive) {
