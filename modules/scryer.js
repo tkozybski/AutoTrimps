@@ -68,8 +68,7 @@ function useScryerStance() {
     }
 
     //Calc Damage
-    if (AutoStance==1) calcBaseDamageinX();
-    else if (AutoStance>=2) calcBaseDamageinX2();
+    if (AutoStance>=1) calcBaseDamageinX2();
     
     //Suicide to Scry
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
