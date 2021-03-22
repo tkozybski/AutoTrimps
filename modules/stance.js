@@ -50,7 +50,7 @@ function oneShootPower(stance, worstCase, offset=0) {
     //Calculates how many enemies we can oneshoot + overkill
     for (var power=1; power <= maxOneShootPower(); power++) {
         //No enemy to overkill (usually this happens at the last cell)
-        if (!worstCase && typeof getCurrentEnemy(power+offset) == undefined) return power+offset-1;
+        if (!worstCase && !getCurrentEnemy(power+offset)) return power+offset-1;
         
         //Enemy Health: current enemy, his neighbours, or a C99 Dragimp (worstCase)
         if (worstCase) damageLeft -= calcSpecificEnemyHealth(undefined, false, 99-maxOneShootPower()+power, preVoidCheck, "Dragimp");
