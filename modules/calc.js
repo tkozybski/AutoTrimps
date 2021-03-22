@@ -622,7 +622,7 @@ function calcEnemyHealthCore(world, map, cell, name) {
     return health;
 }
 
-function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
+function calcEnemyHealth(world, map, cell = 99, name = "Dragimp") {
     //Pre-Init
     if (!world) world = game.global.world;
 
