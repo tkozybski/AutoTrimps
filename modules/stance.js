@@ -51,7 +51,7 @@ function oneShootPower(stance, worstCase) {
         if (!worstCase && typeof getCurrentEnemy(power) == undefined) return power-1;
         
         //Enemy Health: current enemy, his neighbours, or a C99 Turtlimp (worstCase)
-        if (worstCase) damageLeft -= calcSpecificEnemyHealth(undefined, false, 99-maxOneShootPower()+power, preVoidCheck, "Turtlimp");
+        if (worstCase) damageLeft -= calcSpecificEnemyHealth(undefined, false, 99-maxOneShootPower()+power, preVoidCheck, "Dragimp");
         else if (power > 1) damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power).level);
         else damageLeft -= getCurrentEnemy().health;
         
