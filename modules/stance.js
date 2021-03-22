@@ -40,19 +40,21 @@ function maxOneShootPower() {
     return 2;
 }
 
-function oneShootPower(stance, worstCase) {
+function oneShootPower(stance, worstCase, offset=0) {
     //Calculates our minimum damage
     var damageLeft = calcOurDmg("min", !stance, true, "never", !game.global.mapsActive, true);
     if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
+
+    if (worstCase && offset) offset = 0;
     
     //Calculates how many enemies we can oneshoot + overkill
     for (var power=1; power <= maxOneShootPower(); power++) {
         //No enemy to overkill (usually this happens at the last cell)
-        if (!worstCase && typeof getCurrentEnemy(power) == undefined) return power-1;
+        if (!worstCase && typeof getCurrentEnemy(power+offset) == undefined) return power+offset-1;
         
         //Enemy Health: current enemy, his neighbours, or a C99 Dragimp (worstCase)
         if (worstCase) damageLeft -= calcSpecificEnemyHealth(undefined, false, 99-maxOneShootPower()+power, preVoidCheck, "Dragimp");
-        else if (power > 1) damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power).level);
+        else if (power+offset > 1) damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power+offset).level);
         else damageLeft -= getCurrentEnemy().health;
         
         //Check if we can oneshoot the next enemy
