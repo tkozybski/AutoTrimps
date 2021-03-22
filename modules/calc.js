@@ -655,7 +655,7 @@ function calcEnemyHealth(world, map, cell = 99, name = "Turtlimp") {
 
 function calcSpecificEnemyHealth(world, map, cell, isVoid) {
     //Pre-Init
-    if (!map) map = game.global.mapsActive;
+    if (!map && map != false) map = game.global.mapsActive;
     if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
     if (!isVoid && map) isVoid = getCurrentMapObject().location == "Void";
