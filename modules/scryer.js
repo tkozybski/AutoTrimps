@@ -87,7 +87,7 @@ function useScryerStance() {
         oktoswitch = die || newSquadRdy || survive("S", 2);
 
     //Checks if Overkill is allowed
-    var useoverkill = getPageSetting('UseScryerStance') == true && game.portal.Overkill.level > 0 && getPageSetting('ScryerUseWhenOverkill');
+    var useoverkill = getPageSetting('UseScryerStance') == true && getPageSetting('ScryerUseWhenOverkill');
         useoverkill &= !(getPageSetting('ScryerUseinSpire2') == 0 && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()));
 
     //Overkill
