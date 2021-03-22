@@ -43,7 +43,7 @@ function maxOneShootPower() {
 function oneShootPower(stance, worstCase) {
     //Calculates our minimum damage
     var damageLeft = calcOurDmg("min", !stance, true, "never", !game.global.mapsActive, true);
-    if (stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
+    if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
     
     //Calculates how many enemies we can oneshoot + overkill
     for (var power=1; power <= maxOneShootPower(); power++) {
