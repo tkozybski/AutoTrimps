@@ -4,6 +4,7 @@ var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedl
 //Psycho Ray - Auto Giga Base and Delta
 MODULES["upgrades"] = {};
 MODULES["upgrades"].autoGigas = true;
+MODULES["upgrades"].delayFirstGiga = false;
 MODULES["upgrades"].customTargetZone = undefined;
 MODULES["upgrades"].customMetalRatio = undefined;
 MODULES["upgrades"].customSlowDownFactor = 10;
@@ -80,11 +81,12 @@ function autoGiga(targetZone, metalRatio = 0.5, slowDown = 10, customBase) {
 }
 
 function firstGiga(forced) {
-    //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C) Lacking Health or Damage & D) Has run at least 1 map or if forced to
+    //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C)* Lacking Health or Damage & D)* Has run at least 1 map or if forced to
+    var s = !MODULES["upgrades"].delayFirstGiga;
     var a = game.buildings.Warpstation.owned >= 2;
     var b = game.upgrades.Coordination.allowed > game.upgrades.Coordination.done;
-    var c = !enoughHealth || !enoughDamage;
-    var d = game.global.mapBonus >= 2 || game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
+    var c = s || !enoughHealth || !enoughDamage;
+    var d = s || game.global.mapBonus >= 2 || game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     if (!forced && !(a && b && c && d)) return false;
     
     //Define Base and Delta for this run
