@@ -108,7 +108,7 @@ function gatherInfo() {
             pushData();
         }
         GraphsVars.OVKcellsInWorld = game.stats.cellsOverkilled.value - GraphsVars.lastOVKcellsInWorld;
-        GraphVars.lastOVKcellsInWorld = game.stats.cellsOverkilled.value;
+        GraphsVars.lastOVKcellsInWorld = game.stats.cellsOverkilled.value;
         GraphsVars.ZoneStartTime = 0;
         GraphsVars.MapBonus = 0;
     }
