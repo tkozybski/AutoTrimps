@@ -441,6 +441,7 @@ function badGuyChallengeMult() {
     else if (game.global.challengeActive == "Watch")      number *= 1.25;
     else if (game.global.challengeActive == "Corrupted")  number *= 3;
     else if (game.global.challengeActive == "Crushed")    number *= 3;
+    else if (game.global.challengeActive == "Toxicity")   number *= 5;
     else if (game.global.challengeActive == "Domination") number *= 2.5;
     else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
     else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
