@@ -83,6 +83,7 @@ function gatherInfo() {
     GraphsVars.aWholeNewPortal = GraphsVars.currentPortal != getTotalPortals(true);
     if (GraphsVars.aWholeNewPortal) {
         GraphsVars.currentPortal = getTotalPortals(true);
+        GraphsVars.lastOVKcellsInWorld = 0;
         filteredLoot = {
             'produced': {
                 metal: 0,
@@ -106,15 +107,18 @@ function gatherInfo() {
         if (allSaveData.length > 0 && allSaveData[allSaveData.length - 1].world != game.global.world) {
             pushData();
         }
-        GraphsVars.OVKcellsInWorld = 0;
+        GraphsVars.OVKcellsInWorld = game.stats.cellsOverkilled.value - GraphsVars.lastOVKcellsInWorld;
+        GraphVars.lastOVKcellsInWorld = game.stats.cellsOverkilled.value;
         GraphsVars.ZoneStartTime = 0;
         GraphsVars.MapBonus = 0;
     }
     if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');
     if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp")
         GraphsVars.OVKcellsInWorld = 100;
-    else
-        GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
+    else {
+        var onScreenOVK = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
+        GraphsVars.OVKcellsInWorld = Math.min(GraphsVars.OVKcellsInWorld, (onScreenOVK == 49) ? 50 : onScreenOVK);
+    }
     GraphsVars.ZoneStartTime = new Date().getTime() - game.global.zoneStarted;
     GraphsVars.MapBonus = game.global.mapBonus;
 }
