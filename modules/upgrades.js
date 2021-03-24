@@ -4,10 +4,12 @@ var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedl
 //Psycho Ray - Auto Giga Base and Delta
 MODULES["upgrades"] = {};
 MODULES["upgrades"].autoGigas = true;
-MODULES["upgrades"].delayFirstGiga = false;
 MODULES["upgrades"].customTargetZone = undefined;
 MODULES["upgrades"].customMetalRatio = undefined;
-MODULES["upgrades"].customSlowDownFactor = 10;
+
+//2 or less = very fast run, around 5 = most regular runs, 10 = pushing, 100 = pushing to ridiculously inefective levels
+MODULES["upgrades"].customSlowDownFactor = 5;
+MODULES["upgrades"].delayFirstGiga = MODULES["upgrades"].customSlowDownFactor >= 10;
 
 function gigaTargetZone() {
     //Init
