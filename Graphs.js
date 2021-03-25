@@ -115,9 +115,9 @@ function gatherInfo() {
     if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp")
         GraphsVars.OVKcellsInWorld = 100;
     else {
-        GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
-        if (getCurrentWorldCell() && getCurrentWorldCell().level == 99) {GraphsVars.OVKcellsInWorld++; GraphsVars.lastOVKBuffer = true;}
         if (GraphsVars.lastOVKBuffer && getCurrentWorldCell() && getCurrentWorldCell().level == 100) GraphsVars.OVKcellsInWorld--;
+        else GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
+        if (getCurrentWorldCell() && getCurrentWorldCell().level == 99) {GraphsVars.OVKcellsInWorld++; GraphsVars.lastOVKBuffer = true;}
     }
     
     GraphsVars.ZoneStartTime = new Date().getTime() - game.global.zoneStarted;
