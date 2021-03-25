@@ -91,6 +91,48 @@ function getTrimpHealth(realHealth) {
     return health;
 }
 
+function calcOurBlock(stance, realBlock) {
+    var block = 0;
+
+    //Ignores block gyms/shield that have been brought, but not yet deployed
+    if (realBlock) {
+        block = game.global.soldierCurrentBlock;
+        if (stance || game.global.formation == 0) return block;
+        if (game.global.formation == 3) return block/4;
+        return block * 2;
+    }
+    
+    //Gyms
+    var gym = game.buildings.Gym;
+    if (gym.owned > 0) block += gym.owned * gym.increase.by;
+    
+    //Shield Block
+    var shield = game.equipment.Shield;
+    if (shield.blockNow && shield.level > 0) block += shield.level * shield.blockCalculated;
+    
+    //Trainers
+    var trainer = game.jobs.Trainer;
+    if (trainer.owned > 0) {
+        var trainerStrength = trainer.owned * (trainer.modifier / 100);
+        block *= 1 + calcHeirloomBonus("Shield", "trainerEfficiency", trainerStrength);
+    }
+    
+    //Coordination
+    block *= game.resources.trimps.maxSoldiers;
+
+    //Stances
+    if (stance && game.global.formation != 0) block *= game.global.formation == 3 ? 4 : 0.5;
+    
+    //Heirloom
+    var heirloomBonus = calcHeirloomBonus("Shield", "trimpBlock", 0, true);
+    if (heirloomBonus > 0) block *= ((heirloomBonus / 100) + 1);
+    
+    //Radio Stacks
+    if (game.global.radioStacks > 0) block *= (1 - (game.global.radioStacks * 0.1));
+    
+    return block;
+}
+
 function calcOurHealth(stance, fullGeneticist, realHealth) {
     var health = getTrimpHealth(realHealth);
     
@@ -194,48 +236,6 @@ function getCritMulti(high, crit) {
     else                     CritDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * CritD + (3-critChance) * getMegaCritDamageMult(2) * CritD);
 
     return CritDHModifier;
-}
-
-function calcOurBlock(stance, realBlock) {
-    var block = 0;
-
-    //Ignores block gyms/shield that have been brought, but not yet deployed
-    if (realBlock) {
-        block = game.global.soldierCurrentBlock;
-        if (stance || game.global.formation == 0) return block;
-        if (game.global.formation == 3) return block/4;
-        return block * 2;
-    }
-    
-    //Gyms
-    var gym = game.buildings.Gym;
-    if (gym.owned > 0) block += gym.owned * gym.increase.by;
-    
-    //Shield Block
-    var shield = game.equipment.Shield;
-    if (shield.blockNow && shield.level > 0) block += shield.level * shield.blockCalculated;
-    
-    //Trainers
-    var trainer = game.jobs.Trainer;
-    if (trainer.owned > 0) {
-        var trainerStrength = trainer.owned * (trainer.modifier / 100);
-        block *= 1 + calcHeirloomBonus("Shield", "trainerEfficiency", trainerStrength);
-    }
-    
-    //Coordination
-    block *= game.resources.trimps.maxSoldiers;
-
-    //Stances
-    if (stance && game.global.formation != 0) block *= game.global.formation == 3 ? 4 : 0.5;
-    
-    //Heirloom
-    var heirloomBonus = calcHeirloomBonus("Shield", "trimpBlock", 0, true);
-    if (heirloomBonus > 0) block *= ((heirloomBonus / 100) + 1);
-    
-    //Radio Stacks
-    if (game.global.radioStacks > 0) block *= (1 - (game.global.radioStacks * 0.1));
-    
-    return block;
 }
 
 function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, realDamage) {
