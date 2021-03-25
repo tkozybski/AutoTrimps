@@ -432,18 +432,18 @@ function calcSpire(what, cell, name) {
     return base;
 }
 
-function badGuyChallengeMult() {
+function badGuyChallengeMult(map) {
     var number=1;
 
     //WARNING! Something is afoot!
     //A few challenges
-    if      (game.global.challengeActive == "Meditate")   number *= 1.5;
-    else if (game.global.challengeActive == "Watch")      number *= 1.25;
-    else if (game.global.challengeActive == "Corrupted")  number *= 3;
-    else if (game.global.challengeActive == "Crushed")    number *= 3;
-    else if (game.global.challengeActive == "Toxicity")   number *= 5;
-    else if (game.global.challengeActive == "Domination") number *= 2.5;
-    else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
+    if      (game.global.challengeActive == "Meditate")         number *= 1.5;
+    else if (game.global.challengeActive == "Watch")            number *= 1.25;
+    else if (game.global.challengeActive == "Corrupted")        number *= 3;
+    else if (game.global.challengeActive == "Crushed")          number *= 3;
+    else if (game.global.challengeActive == "Toxicity" && !map) number *= 5;
+    else if (game.global.challengeActive == "Domination")       number *= 2.5;
+    else if (game.global.challengeActive == "Coordinate")       number *= getBadCoordLevel();
     else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
 
     //Obliterated and Eradicated
@@ -480,7 +480,7 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
     }
 
     //Challenge buffs & nerfs
-    number *= badGuyChallengeMult();
+    number *= badGuyChallengeMult(game.global.mapsActive);
     if (game.global.challengeActive == "Lead") number *= 9; //Assume max stacks
     else if (game.global.challengeActive == 'Life') number *= 6; //For some reason, Life is buggy and needs to be fixed here
 
@@ -538,7 +538,7 @@ function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts, cust
     if (!enemy) return 1;
 
     //Crit
-    var number = enemy.attack * badGuyCritMult(enemy, critPower, customBlock, customHealth) * badGuyChallengeMult();
+    var number = enemy.attack * badGuyCritMult(enemy, critPower, customBlock, customHealth) * badGuyChallengeMult(game.global.mapsActive);
     
     //Other Challenges
     if (game.global.challengeActive == "Lead") number *= 1 + 0.04 * game.challenges.Lead.stacks; //Assume max stacks
