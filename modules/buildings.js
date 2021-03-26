@@ -211,7 +211,7 @@ function buyBuildings() {
 	//Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
 	    var nextGym = game.upgrades.Gymystic.modifier;
-            var currentEnemyDamageOK = (calcOurBlock(true) > nextGym * calcBadGuyDmg(getCurrentEnemy(), null, true,true));
+            var currentEnemyDamageOK = (calcOurBlock(true) > nextGym * calcSpecificEnemyAttack());
             var zoneDamage = calcEnemyAttack();
             var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > nextGym * zoneDamage);
             
