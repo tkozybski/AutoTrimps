@@ -525,9 +525,12 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     
     //Challenges
     if (game.global.challengeActive == "Lead") attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
+
+    //Daily
+    else attack = calcDailyAttackMod(attack);
     
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
+    if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
         //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
         var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
