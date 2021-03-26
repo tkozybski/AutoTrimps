@@ -454,6 +454,10 @@ function calcEnemyBaseAttack(zone, map, cell=99, name="Snimp") {
     else if (zone < 60) {
         attack = (0.375 * attack) + (0.7 * attack * (cell / 100));
     }
+    
+    //Also Befor Breaking the Planet
+    if (zone < 60) attack *= 0.85;
+    
 
     //After Breaking the Planet
     else {
