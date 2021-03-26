@@ -74,7 +74,7 @@ trackHourlyGraphAnalytics();
 setInterval(trackHourlyGraphAnalytics, 3600000);
 function initializeData(){null===allSaveData&&(allSaveData=[]),0===allSaveData.length&&pushData()}
 var GraphsVars={};
-function InitGraphsVars(){GraphsVars.currentPortal=0,GraphsVars.OVKcellsInWorld=0,GraphsVars.lastOVKBuffer=false,GraphsVars.currentworld=0,GraphsVars.lastrunworld=0,GraphsVars.aWholeNewWorld=!1,GraphsVars.lastZoneStartTime=0,GraphsVars.ZoneStartTime=0,GraphsVars.MapBonus=0,GraphsVars.aWholeNewPortal=0,GraphsVars.currentPortal=0}
+function InitGraphsVars(){GraphsVars.currentPortal=0,GraphsVars.OVKcellsInWorld=0,GraphsVars.lastOVKBuffer=0,GraphsVars.currentworld=0,GraphsVars.lastrunworld=0,GraphsVars.aWholeNewWorld=!1,GraphsVars.lastZoneStartTime=0,GraphsVars.ZoneStartTime=0,GraphsVars.MapBonus=0,GraphsVars.aWholeNewPortal=0,GraphsVars.currentPortal=0}
 InitGraphsVars();
 
 function gatherInfo() {
@@ -106,7 +106,7 @@ function gatherInfo() {
         if (allSaveData.length > 0 && allSaveData[allSaveData.length - 1].world != game.global.world) {
             pushData();
         }
-        GraphsVars.lastOVKBuffer = false;
+        GraphsVars.lastOVKBuffer = 0;
         GraphsVars.OVKcellsInWorld = 0;
         GraphsVars.ZoneStartTime = 0;
         GraphsVars.MapBonus = 0;
@@ -115,9 +115,12 @@ function gatherInfo() {
     if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp")
         GraphsVars.OVKcellsInWorld = 100;
     else {
-        if (GraphsVars.lastOVKBuffer && getCurrentWorldCell() && getCurrentWorldCell().level == 100) GraphsVars.OVKcellsInWorld--;
-        else GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
-        if (getCurrentWorldCell() && getCurrentWorldCell().level == 99) {GraphsVars.OVKcellsInWorld++; GraphsVars.lastOVKBuffer = true;}
+        //If we are at c100, then we didn't overkill at zone 99, and the assumption below must be nullified
+        if (GraphsVars.lastOVKBuffer > 0 && getCurrentWorldCell() && getCurrentWorldCell().level == 100) GraphsVars.OVKcellsInWorld = graphs.lastOVKBuffer;
+        else GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("celColorOverkill").length;
+
+        //At c99, it assumes that it will overkill
+        if (getCurrentWorldCell() && getCurrentWorldCell().level == 99) GraphsVars.lastOVKBuffer = GraphsVars.OVKcellsInWorld++;
     }
     
     GraphsVars.ZoneStartTime = new Date().getTime() - game.global.zoneStarted;
