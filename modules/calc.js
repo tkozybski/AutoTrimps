@@ -511,8 +511,8 @@ function calcEnemyAttackCore(zone, map, cell, name, customAttack, minormax) {
     }
 
     //Fluctuations
-    var min = Math.floor(attack * 0.8);
-    var max = Math.ceil(attack * 1.2);
+    var min = attack * 0.8;
+    var max = attack * 1.2;
     
     return minormax ? min : max;
 }
@@ -548,7 +548,7 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
         attack *= 1.15;
     }
     
-    return attack;
+    return Math.floor(attack);
 }
 
 function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
@@ -589,7 +589,7 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     /*//Ice
     if (getEmpowerment() == "Ice") number *= game.empowerments.Ice.getCombatModifier();*/
 
-    return attack;
+    return Math.floor(attack);
 }
 
 function badGuyChallengeMult() {
