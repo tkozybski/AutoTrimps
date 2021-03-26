@@ -753,7 +753,7 @@ function calcEnemyBaseHealth(zone, cell, name, map) {
 
 function calcEnemyHealthCore(zone, map, cell, name, customHealth) {
     //Pre-Init
-    if (!zone) world = (!map) ? game.global.world : getCurrentMapObject().level;
+    if (!zone) zone = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
 
     //Init
@@ -785,7 +785,7 @@ function calcEnemyHealthCore(zone, map, cell, name, customHealth) {
 
 function calcEnemyHealth(zone, map, cell = 99, name = "Dragimp") {
     //Pre-Init
-    if (!zone) world = game.global.world;
+    if (!zone) zone = game.global.world;
 
     //Init
     var health = calcEnemyHealthCore(zone, map, cell, name);
