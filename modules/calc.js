@@ -792,7 +792,7 @@ function calcEnemyHealth(zone, map, cell = 99, name = "Dragimp") {
     if (!zone) world = game.global.world;
 
     //Init
-    var health = calcEnemyHealthCore(zone, map, cell, name, map);
+    var health = calcEnemyHealthCore(zone, map, cell, name);
     var corrupt = !map && zone >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
 
