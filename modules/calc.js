@@ -171,7 +171,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHealthRatio(stance, considerVoid, fullGeneticist, oldFormula) {
+function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     //Init
     var enemyDamage, voidDamage=0;
     var targetZone = game.global.world;
@@ -185,11 +185,11 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist, oldFormula) {
     if (game.global.challengeActive == "Lead" && !considerVoid && game.global.world%2 == 1) targetZone++;
 
     //Enemy Damage
-    enemyDamage = (oldFormula) ? calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true) : calcEnemyAttack(targetZone);
+    enemyDamage = calcEnemyAttack(targetZone);
     
     //Enemy Damage on Void Maps (1.1x from being a Map + x9 because it's 450% difficulty * 2x attack on some maps)
     if (considerVoid) {
-        voidDamage = 1.1 * 9 * enemyDamage;
+        voidDamage = 1.1 * 4.5 * enemyDamage;
         if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(game.global.world, 3);
         else if (mutations.Corruption.active()) voidDamage *= calcCorruptionScale(game.global.world, 3)/2;
     }    
