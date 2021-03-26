@@ -518,7 +518,7 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     if (!zone) zone = game.global.world;
     
     //Init
-    var attack = calcEnemyAttackCore(zone, map, cell, name, map, minormax);
+    var attack = calcEnemyAttackCore(zone, map, cell, name, minormax);
     var corrupt = !map && zone >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
     
