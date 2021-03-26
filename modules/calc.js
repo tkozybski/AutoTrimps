@@ -485,7 +485,7 @@ function calcEnemyAttackCore(zone, map, cell, name, customAttack, minormax) {
     if (!map && game.global.spireActive) attack = calcSpire("attack");
     
     //Use custom values instead
-    if (customAttack) ? attack = customAttack;
+    if (customAttack) attack = customAttack;
     
     //WARNING! Something is afoot!
     //A few challenges
