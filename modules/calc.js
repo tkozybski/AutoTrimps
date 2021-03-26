@@ -885,7 +885,7 @@ function calcHDratio(mapZone, considerVoid = preVoidCheck) {
     //Enemy Health on Void Maps
     if (considerVoid) {
         //Increased Health from map difficulty
-        ratio *= (game.global.world >= 60) ? 4.5 : 2.5;
+        ratio *= 1.1 * ((game.global.world >= 60) ? 4.5 : 2.5);
         
         //Void Corruption
         if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(game.global.world, 10);
