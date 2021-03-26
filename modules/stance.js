@@ -241,7 +241,7 @@ function autoStanceCheck(enemyCrit) {
     var enemy = getCurrentEnemy();
     if (typeof enemy === 'undefined') return [true,true];
     var enemyHealth = enemy.health;
-    var enemyDamage = calcBadGuyDmg(enemy,null,true,true,true);
+    var enemyDamage = calcSpecificEnemyAttack();
     var critMulti = 1;
     const ignoreCrits = getPageSetting('IgnoreCrits');
     var isCrushed = false;
