@@ -473,7 +473,7 @@ function calcEnemyBaseAttack(zone, map, cell=99, name="Snimp") {
     return Math.floor(attack);
 }
 
-function calcEnemyAttackCore(zone, map, cell, name) {
+function calcEnemyAttackCore(zone, map, cell, name, customAttack, minormax) {
     //Pre-Init
     if (!zone) zone = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
@@ -482,8 +482,11 @@ function calcEnemyAttackCore(zone, map, cell, name) {
     var attack = calcEnemyBaseAttack(zone, map, cell, name);
 
     //Spire - Overrides the base health number
-    if (!map && game.global.spireActive) health = calcSpire("attack");
-
+    if (!map && game.global.spireActive) attack = calcSpire("attack");
+    
+    //Use custom values instead
+    if (customAttack) ? attack = customAttack;
+    
     //WARNING! Something is afoot!
     //A few challenges
     if      (game.global.challengeActive == "Meditate")   attack *= 1.5;
@@ -504,7 +507,11 @@ function calcEnemyAttackCore(zone, map, cell, name) {
         attack *= oblitMult
     }
 
-    return attack;
+    //Fluctuations
+    var min = Math.floor(attack * 0.8);
+    var max = Math.ceil(attack * 1.2);
+    
+    return minormax ? min : max;
 }
 
 function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
@@ -512,7 +519,7 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     if (!zone) zone = game.global.world;
     
     //Init
-    var attack = calcEnemyAttackCore(zone, map, cell, name, map);
+    var attack = calcEnemyAttackCore(zone, map, cell, name, map, minormax);
     var corrupt = !map && zone >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
     
@@ -539,6 +546,47 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     var max = Math.ceil(attack * 1.2);
     
     return minormax ? min : max;
+}
+
+function calcSpecificEnemyAttack(critPower, customBlock, customHealth) {
+    //Init
+    var enemy = getCurrentEnemy();
+    if (!enemy) return 1;
+    
+    //Init
+    var corrupt = enemy.hasOwnProperty("corrupted");
+    var healthy = enemy.hasOwnProperty("healthy");
+    var attack = calcEnemyHealthCore(undefined, undefined, undefined, undefined, enemy.attack) * badGuyCritMult(enemy, critPower, customBlock, customHealth);
+    
+    /*//Map Corruption
+    var corruptionScale = calcCorruptionScale(world, 10);
+    if (map && mutations.Magma.active()) health *= corruptionScale / (isVoid ? 1 : 2);
+    else if (map && isVoid && mutations.Corruption.active()) health *= corruptionScale / 2;*/
+    
+    //Challenges - considers the actual scenario for this enemy
+    if (game.global.challengeActive == "Lead") health *= 1 + (0.04 * game.challenges.Lead.stacks);
+    /*if (game.global.challengeActive == 'Domination') {
+        if (!map && !game.global.spireActive && cell != 100) health /= 10;
+        if (map && cell != game.global.mapGridArray.length) health /= 10;
+    }*/
+
+    /*//Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+    if (corrupt && !healthy) {
+        health *= calcCorruptionScale(world, 10);
+        if (enemy.corrupted == "corruptTough") health *= 5;
+    }
+
+    //Healthy -- DEBUG
+    if (healthy) {
+        var scales = Math.floor((world - 150) / 6);
+        health *= 14*Math.pow(1.05, scales);
+        health *= 1.15;
+    }*/
+
+    /*//Ice
+    if (getEmpowerment() == "Ice") number *= game.empowerments.Ice.getCombatModifier();*/
+
+    return attack;
 }
 
 function badGuyChallengeMult() {
@@ -704,16 +752,19 @@ function calcEnemyBaseHealth(zone, cell, name, map) {
     return Math.floor(health);
 }
 
-function calcEnemyHealthCore(world, map, cell, name) {
+function calcEnemyHealthCore(zone, map, cell, name, customHealth) {
     //Pre-Init
-    if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
+    if (!zone) world = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
 
     //Init
-    var health = calcEnemyBaseHealth(world, cell, name, map);
+    var health = calcEnemyBaseHealth(zone, cell, name, map);
 
     //Spire - Overrides the base health number
     if (!map && game.global.spireActive) health = calcSpire("health");
+    
+    //Use a custom value instead
+    if (customHealth) health = customHealth;
 
     //Challenges
     if (game.global.challengeActive == 'Balance')    health *= 2;
@@ -733,30 +784,30 @@ function calcEnemyHealthCore(world, map, cell, name) {
     return health;
 }
 
-function calcEnemyHealth(world, map, cell = 99, name = "Dragimp") {
+function calcEnemyHealth(zone, map, cell = 99, name = "Dragimp") {
     //Pre-Init
-    if (!world) world = game.global.world;
+    if (!zone) world = game.global.world;
 
     //Init
-    var health = calcEnemyHealthCore(world, map, cell, name, map);
-    var corrupt = !map && world >= mutations.Corruption.start();
+    var health = calcEnemyHealthCore(zone, map, cell, name, map);
+    var corrupt = !map && zone >= mutations.Corruption.start();
     var healthy = !map && mutations.Healthy.active();
 
     //Challenges - worst case for lead, conservative on domination unless it's on a map
     if (game.global.challengeActive == "Domination") health *= 7.5 * (map ? 1 : 4);
-    if (game.global.challengeActive == "Lead") health *= (world%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
+    if (game.global.challengeActive == "Lead") health *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy && !game.global.spireActive) {
         //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
-        var corruptionAmount = ~~((world - mutations.Corruption.start())/3) + 2; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(world, 10);
+        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 2; //Integer division
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 10);
         health *= corruptionWeight/100;
     }
 
     //Healthy -- DEBUG
     if (healthy && !game.global.spireActive) {
-        var scales = Math.floor((world - 150) / 6);
+        var scales = Math.floor((zone - 150) / 6);
         health *= 14 * Math.pow(1.05, scales);
         health *= 1.15;
     }
@@ -764,25 +815,25 @@ function calcEnemyHealth(world, map, cell = 99, name = "Dragimp") {
     return health;
 }
 
-function calcSpecificEnemyHealth(world, map, cell, isVoid, forcedName) {
+function calcSpecificEnemyHealth(zone, map, cell, isVoid, forcedName) {
     //Pre-Init
     if (!map && map != false) map = game.global.mapsActive;
-    if (!world) world = (!map) ? game.global.world : getCurrentMapObject().level;
+    if (!zone) zone = (!map) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
     if (!isVoid && map) isVoid = getCurrentMapObject().location == "Void";
 
     //Init
     var enemy = (!map) ? game.global.gridArray[cell-1] : game.global.mapGridArray[cell-1];
-    if (!enemy) return 50;
+    if (!enemy) return 1;
     
     //Init
     var corrupt = enemy.hasOwnProperty("corrupted");
     var healthy = enemy.hasOwnProperty("healthy");
     var name = (corrupt || healthy) ? "Chimp" : (forcedName) ? forcedName : enemy.name;
-    var health = calcEnemyHealthCore(world, map, cell, name);
+    var health = calcEnemyHealthCore(zone, map, cell, name);
 
     //Map Corruption
-    var corruptionScale = calcCorruptionScale(world, 10);
+    var corruptionScale = calcCorruptionScale(zone, 10);
     if (map && mutations.Magma.active()) health *= corruptionScale / (isVoid ? 1 : 2);
     else if (map && isVoid && mutations.Corruption.active()) health *= corruptionScale / 2;
 
@@ -795,14 +846,14 @@ function calcSpecificEnemyHealth(world, map, cell, isVoid, forcedName) {
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy) {
-        health *= calcCorruptionScale(world, 10);
+        health *= calcCorruptionScale(zone, 10);
         if (enemy.corrupted == "corruptTough") health *= 5;
     }
 
     //Healthy -- DEBUG
     if (healthy) {
-        var scales = Math.floor((world - 150) / 6);
-        health *= 14*Math.pow(1.05, scales);
+        var scales = Math.floor((zone - 150) / 6);
+        health *= 14 * Math.pow(1.05, scales);
         health *= 1.15;
     }
 
