@@ -117,7 +117,7 @@ function gatherInfo() {
     else {
         //If we are at c100, then we didn't overkill at zone 99, and the assumption below must be nullified
         if (GraphsVars.lastOVKBuffer > 0 && getCurrentWorldCell() && getCurrentWorldCell().level == 100) GraphsVars.OVKcellsInWorld = graphs.lastOVKBuffer;
-        else GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("celColorOverkill").length;
+        else GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
 
         //At c99, it assumes that it will overkill
         if (getCurrentWorldCell() && getCurrentWorldCell().level == 99) GraphsVars.lastOVKBuffer = GraphsVars.OVKcellsInWorld++;
