@@ -492,7 +492,6 @@ function calcEnemyAttackCore(zone, map, cell, name, customAttack, minormax) {
     if      (game.global.challengeActive == "Meditate")   attack *= 1.5;
     else if (game.global.challengeActive == 'Life')       attack *= 6;
     else if (game.global.challengeActive == "Crushed")    attack *= 3;
-    else if (game.global.challengeActive == "Toxicity")   attack *= 5;
     else if (game.global.challengeActive == "Watch")      attack *= 1.25;
     else if (game.global.challengeActive == "Corrupted")  attack *= 3;
     else if (game.global.challengeActive == "Domination") attack *= 2.5;
@@ -524,7 +523,8 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     var healthy = !map && mutations.Healthy.active();
     
     //Challenges
-    if (game.global.challengeActive == "Lead") attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
+    if      (game.global.challengeActive == "Lead")     attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
+    else if (game.global.challengeActive == "Toxicity") attack *= 5;
 
     //Daily
     else attack = calcDailyAttackMod(attack);
