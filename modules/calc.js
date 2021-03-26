@@ -185,7 +185,7 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist, oldFormula) {
     if (game.global.challengeActive == "Lead" && !considerVoid && game.global.world%2 == 1) targetZone++;
 
     //Enemy Damage
-    enemyDamage = (oldFormula) ? calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true) : calcEnemyAttack(targetZone, false, 99, "Snimp");
+    enemyDamage = (oldFormula) ? calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true) : calcEnemyAttack(targetZone);
     
     //Enemy Damage on Void Maps (1.1x from being a Map + x9 because it's 450% difficulty * 2x attack on some maps)
     if (considerVoid) {
@@ -283,7 +283,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (Fluffy.isActive()) number *= Fluffy.getDamageModifier();
 
     //Gamma Burst
-    if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcEnemyAttack(game.global.world, false, 50, "Snimp") >= 5))
+    if (getHeirloomBonus("Shield", "gammaBurst") > 0 && calcOurHealth() / calcEnemyAttack() >= 5)
         number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
     
     //Challenges
