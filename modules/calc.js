@@ -544,11 +544,7 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
         attack *= 1.15;
     }
     
-    //Fluctuations
-    var min = Math.floor(attack * 0.8);
-    var max = Math.ceil(attack * 1.2);
-    
-    return minormax ? min : max;
+    return attack;
 }
 
 function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
