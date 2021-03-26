@@ -734,9 +734,11 @@ function calcEnemyBaseHealth(zone, cell, name, map) {
     //Before Breaking the Planet
     else if (zone < 60) {
         health = (health * 0.4) + ((health * 0.4) * (cell / 110));
-        health *= 0.75;
     }
     
+    //Also before Breaking the Planet
+    if (zone < 60) health *= 0.75;
+
     //After Breaking the Planet
     else {
         health = (health * 0.5) + ((health * 0.8) * (cell / 100));
