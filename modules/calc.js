@@ -551,7 +551,7 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     return minormax ? min : max;
 }
 
-function calcSpecificEnemyAttack(critPower, customBlock, customHealth) {
+function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     //Init
     var enemy = getCurrentEnemy();
     if (!enemy) return 1;
@@ -559,7 +559,7 @@ function calcSpecificEnemyAttack(critPower, customBlock, customHealth) {
     //Init
     var corrupt = enemy.hasOwnProperty("corrupted");
     var healthy = enemy.hasOwnProperty("healthy");
-    var attack = calcEnemyHealthCore(undefined, undefined, undefined, undefined, enemy.attack) * badGuyCritMult(enemy, critPower, customBlock, customHealth);
+    var attack = calcEnemyAttackCore(undefined, undefined, undefined, undefined, enemy.attack) * badGuyCritMult(enemy, critPower, customBlock, customHealth);
     
     /*//Map Corruption
     var corruptionScale = calcCorruptionScale(world, 10);
