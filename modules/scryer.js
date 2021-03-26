@@ -91,8 +91,10 @@ function useScryerStance() {
     if (useoverkill && getCurrentEnemy()) {
         //Switches to S if it has enough damage to secure an overkill
         var HS = oneShootPower("S");
+        var HSD = oneShootPower("D", false, 0, true);
         var HSnext = oneShootPower("S", false, 1);
-        if (oktoswitch && HS == maxOneShootPower() && (HS > 1 || HSnext > 0)) {
+        var HSDnext = oneShootPower("D", false, 1, true);
+        if (oktoswitch && HS > 0 && HS >= HSD && (HS > 1 || HSnext > 0 && HSnext >= HSDnext)) {
             setFormation(4);
             return;
         }
