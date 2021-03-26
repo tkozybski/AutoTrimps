@@ -212,7 +212,7 @@ function buyBuildings() {
         if (getPageSetting('DynamicGyms')) {
 	    var nextGym = game.upgrades.Gymystic.modifier;
             var currentEnemyDamageOK = (calcOurBlock(true) > nextGym * calcBadGuyDmg(getCurrentEnemy(), null, true,true));
-            var zoneDamage = calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 99, 'Snimp', 1.0), true, true);
+            var zoneDamage = calcEnemyAttack();
             var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > nextGym * zoneDamage);
             
             //Stop buying Gyms if we already have enough block for our current enemy, and are not lacking in health to progress
