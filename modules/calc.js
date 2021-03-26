@@ -432,7 +432,7 @@ function calcSpire(what, cell, name) {
     return base;
 }
 
-function calcEnemyBaseAttack(zone, map, cell=99, name="Snimp") {
+function calcEnemyBaseAttack(zone, cell = 99, name = "Snimp", map) {
     var attack = 0;
     
     attack += 50 * Math.sqrt(zone) * Math.pow(3.27, zone/2);
@@ -483,7 +483,7 @@ function calcEnemyAttackCore(zone, map, cell, name, customAttack, minormax) {
     if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
     
     //Init
-    var attack = calcEnemyBaseAttack(zone, map, cell, name);
+    var attack = calcEnemyBaseAttack(zone, cell, name, map);
 
     //Spire - Overrides the base health number
     if (!map && game.global.spireActive) attack = calcSpire("attack");
@@ -719,7 +719,7 @@ function calcCorruptionScale(world, base) {
     return base;
 }
 
-function calcEnemyBaseHealth(zone, cell, name, map) {
+function calcEnemyBaseHealth(zone, cell = 99, name = "Dragimp", map) {
     //Init
     var health = 0;
     health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2);
