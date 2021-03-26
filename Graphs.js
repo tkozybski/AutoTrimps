@@ -659,8 +659,7 @@ function setGraphData(graph) {
                 }
                 if (currentZone < allSaveData[i].world && currentZone != -1) {
                     var num = allSaveData[i].overkill;
-                    if (num)
-                        graphData[graphData.length - 1].data.push(num);
+                    if (num || num == 0) graphData[graphData.length - 1].data.push(num);
                 }
                 currentZone = allSaveData[i].world;
             }
