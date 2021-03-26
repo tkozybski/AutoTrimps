@@ -171,7 +171,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHealthRatio(stance, considerVoid, fullGeneticist) {
+function calcHealthRatio(stance, considerVoid, fullGeneticist, oldFormula) {
     //Init
     var enemyDamage, voidDamage=0;
     var targetZone = game.global.world;
@@ -185,18 +185,18 @@ function calcHealthRatio(stance, considerVoid, fullGeneticist) {
     if (game.global.challengeActive == "Lead" && !considerVoid && game.global.world%2 == 1) targetZone++;
 
     //Enemy Damage
-    enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true);
-
-    //Enemy Damage on Void Maps (x9 damage because it's 450% difficulty * 2x attack on some maps)
+    enemyDamage = (oldFormula) ? calcBadGuyDmg(null, getEnemyMaxAttack(targetZone, 99, 'Snimp', 1.0), true, true) : calcEnemyAttack(targetZone, false, 99, "Snimp");
+    
+    //Enemy Damage on Void Maps (1.1x from being a Map + x9 because it's 450% difficulty * 2x attack on some maps)
     if (considerVoid) {
-        voidDamage = 9 * enemyDamage;
+        voidDamage = 1.1 * 9 * enemyDamage;
         if (mutations.Magma.active()) voidDamage *= calcCorruptionScale(game.global.world, 3);
         else if (mutations.Corruption.active()) voidDamage *= calcCorruptionScale(game.global.world, 3)/2;
     }    
 
     //Pierce & Voids
     var pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
-    if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+    if (!stance && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //The Resulting Ratio
     var finalDmg = Math.max(enemyDamage - block, voidDamage - block, enemyDamage * pierce, 0);
@@ -283,7 +283,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (Fluffy.isActive()) number *= Fluffy.getDamageModifier();
 
     //Gamma Burst
-    if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0))) >= 5))
+    if (getHeirloomBonus("Shield", "gammaBurst") > 0 && (calcOurHealth() / (calcEnemyAttack(game.global.world, false, 50, "Snimp") >= 5))
         number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
     
     //Challenges
