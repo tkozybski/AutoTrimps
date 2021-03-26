@@ -432,15 +432,124 @@ function calcSpire(what, cell, name) {
     return base;
 }
 
+function calcEnemyBaseAttack(zone, map, cell=99, name="Snimp") {
+    var attack = 0;
+    
+    attack += 50 * Math.sqrt(zone) * Math.pow(3.27, zone/2);
+    attack -= 10;
+    
+    //Zone 1
+    if (zone == 1) {
+        attack *= 0.35;
+        attack = (0.2 * attack) + (0.75 * attack * (cell / 100));
+    }
+    
+    //Zone 2
+    else if (zone == 2) {
+        attack *= 0.5;
+        attack = (0.32 * attack) + (0.68 * attack * (cell / 100));
+    }
+    
+    //Before Breaking the Planet
+    else if (zone < 60) {
+        attack = (0.375 * attack) + (0.7 * attack * (cell / 100));
+    }
+
+    //After Breaking the Planet
+    else {
+        attack = (0.4 * attack) + (0.9 * attack * (cell / 100));
+        attack *= Math.pow(1.15, zone - 59);
+    }
+    
+    //Maps
+    if (zone > 5 && map) {
+        attack *= 1.1;
+        attack *= getCurrentMapObject().difficulty;
+    }
+
+    //Specific Imp
+    if (name) attack *= game.badGuys[name].attack;
+
+    return Math.floor(attack);
+}
+
+function calcEnemyAttackCore(zone, map, cell, name) {
+    //Pre-Init
+    if (!zone) zone = (!map) ? game.global.world : getCurrentMapObject().level;
+    if (!cell) cell = (!map) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
+    
+    //Init
+    var attack = calcEnemyBaseAttack(zone, map, cell, name);
+
+    //Spire - Overrides the base health number
+    if (!map && game.global.spireActive) health = calcSpire("attack");
+
+    //WARNING! Something is afoot!
+    //A few challenges
+    if      (game.global.challengeActive == "Meditate")   attack *= 1.5;
+    else if (game.global.challengeActive == 'Life')       attack *= 6;
+    else if (game.global.challengeActive == "Crushed")    attack *= 3;
+    else if (game.global.challengeActive == "Toxicity")   attack *= 5;
+    else if (game.global.challengeActive == "Watch")      attack *= 1.25;
+    else if (game.global.challengeActive == "Corrupted")  attack *= 3;
+    else if (game.global.challengeActive == "Domination") attack *= 2.5;
+    else if (game.global.challengeActive == "Coordinate") attack *= getBadCoordLevel();
+    else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) attack *= 10;
+
+    //Obliterated and Eradicated
+    else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
+        var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
+        var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
+        oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
+        attack *= oblitMult
+    }
+
+    return attack;
+}
+
+function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
+    //Pre-Init
+    if (!zone) zone = game.global.world;
+    
+    //Init
+    var attack = calcEnemyAttackCore(zone, map, cell, name, map);
+    var corrupt = !map && zone >= mutations.Corruption.start();
+    var healthy = !map && mutations.Healthy.active();
+    
+    //Challenges
+    if (game.global.challengeActive == "Lead") attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
+    
+    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+    else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
+        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+        var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
+        attack *= corruptionWeight/100;
+    }
+    
+    //Healthy -- DEBUG
+    if (healthy && !game.global.spireActive) {
+        var scales = Math.floor((zone - 150) / 6);
+        attack *= 14 * Math.pow(1.05, scales);
+        attack *= 1.15;
+    }
+    
+    //Fluctuations
+    var min = Math.floor(attack * 0.8);
+    var max = Math.ceil(attack * 1.2);
+    
+    return minormax ? min : max;
+}
+
 function badGuyChallengeMult() {
     var number=1;
 
     //WARNING! Something is afoot!
     //A few challenges
     if      (game.global.challengeActive == "Meditate")   number *= 1.5;
+    else if (game.global.challengeActive == "Crushed")    number *= 3;
     else if (game.global.challengeActive == "Watch")      number *= 1.25;
     else if (game.global.challengeActive == "Corrupted")  number *= 3;
-    else if (game.global.challengeActive == "Crushed")    number *= 3;
     else if (game.global.challengeActive == "Domination") number *= 2.5;
     else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
     else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
@@ -559,27 +668,27 @@ function calcCorruptionScale(world, base) {
     return base;
 }
 
-function calcEnemyBaseHealth(zone, level, name, map) {
+function calcEnemyBaseHealth(zone, cell, name, map) {
     //Init
     var health = 0;
     health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2);
     health -= 110;
 
     //First Two Zones
-    if (zone == 1 || zone == 2 && level < 10) {
+    if (zone == 1 || zone == 2 && cell < 10) {
         health *= 0.6;
-        health = (health * 0.25) + ((health * 0.72) * (level / 100));
+        health = (health * 0.25) + ((health * 0.72) * (cell / 100));
     }
 
-    //Before Breaking the World
+    //Before Breaking the Planet
     else if (zone < 60) {
-        health = (health * 0.4) + ((health * 0.4) * (level / 110));
+        health = (health * 0.4) + ((health * 0.4) * (cell / 110));
         health *= 0.75;
     }
     
-    //After Breaking the World
+    //After Breaking the Planet
     else {
-        health = (health * 0.5) + ((health * 0.8) * (level / 100));
+        health = (health * 0.5) + ((health * 0.8) * (cell / 100));
         health *= Math.pow(1.1, zone - 59);
     }
     
@@ -648,7 +757,7 @@ function calcEnemyHealth(world, map, cell = 99, name = "Dragimp") {
     //Healthy -- DEBUG
     if (healthy && !game.global.spireActive) {
         var scales = Math.floor((world - 150) / 6);
-        health *= 14*Math.pow(1.05, scales);
+        health *= 14 * Math.pow(1.05, scales);
         health *= 1.15;
     }
 
