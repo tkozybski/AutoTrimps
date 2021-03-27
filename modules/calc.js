@@ -485,7 +485,7 @@ function calcEnemyAttackCore(zone, map, cell, name, customAttack, minormax) {
     //Init
     var attack = calcEnemyBaseAttack(zone, cell, name, map);
 
-    //Spire - Overrides the base health number
+    //Spire - Overrides the base attack number
     if (!map && game.global.spireActive) attack = calcSpire("attack");
     
     //Use custom values instead
@@ -535,7 +535,7 @@ function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
-        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+        //Calculates the impact of the corruption on the average attack on that map (kinda like a crit)
         var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
         attack *= corruptionWeight/100;
@@ -563,27 +563,27 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     
     /*//Map Corruption
     var corruptionScale = calcCorruptionScale(world, 10);
-    if (map && mutations.Magma.active()) health *= corruptionScale / (isVoid ? 1 : 2);
-    else if (map && isVoid && mutations.Corruption.active()) health *= corruptionScale / 2;*/
+    if (map && mutations.Magma.active()) attack *= corruptionScale / (isVoid ? 1 : 2);
+    else if (map && isVoid && mutations.Corruption.active()) attack *= corruptionScale / 2;*/
     
     //Challenges - considers the actual scenario for this enemy
-    if (game.global.challengeActive == "Lead") health *= 1 + (0.04 * game.challenges.Lead.stacks);
+    if (game.global.challengeActive == "Lead") attack *= 1 + (0.04 * game.challenges.Lead.stacks);
     /*if (game.global.challengeActive == 'Domination') {
-        if (!map && !game.global.spireActive && cell != 100) health /= 10;
-        if (map && cell != game.global.mapGridArray.length) health /= 10;
+        if (!map && !game.global.spireActive && cell != 100) attack /= 10;
+        if (map && cell != game.global.mapGridArray.length) attack /= 10;
     }*/
 
     /*//Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (corrupt && !healthy) {
-        health *= calcCorruptionScale(world, 10);
-        if (enemy.corrupted == "corruptTough") health *= 5;
+        attack *= calcCorruptionScale(world, 3);
+        if (enemy.corrupted == "corruptTough") attack *= 5;
     }
 
     //Healthy -- DEBUG
     if (healthy) {
         var scales = Math.floor((world - 150) / 6);
-        health *= 14*Math.pow(1.05, scales);
-        health *= 1.15;
+        attack *= 14*Math.pow(1.05, scales);
+        attack *= 1.15;
     }*/
 
     /*//Ice
@@ -632,7 +632,7 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
 
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
-        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
+        //Calculates the impact of the corruption on the average attack on that map (kinda like a crit)
         var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
         number *= corruptionWeight/100;
