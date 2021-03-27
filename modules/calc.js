@@ -433,10 +433,11 @@ function calcSpire(what, cell, name) {
 }
 
 function calcEnemyBaseAttack(zone, cell = 99, name = "Snimp", map) {
-    var attack = 0;
+    //Pre Init
+    if (!zone) zone = game.global.world;
     
-    attack += 50 * Math.sqrt(zone) * Math.pow(3.27, zone/2);
-    attack -= 10;
+    //Init
+    var attack = 50 * Math.sqrt(zone) * Math.pow(3.27, zone/2) - 10;
     
     //Zone 1
     if (zone == 1) {
@@ -520,6 +521,9 @@ function calcEnemyAttackCore(zone, map, cell, name, minormax, customAttack) {
 function calcEnemyAttack(zone, map, cell = 99, name = "Snimp", minormax) {
     //Pre-Init
     if (!zone) zone = game.global.world;
+
+    //Lead farms on odd zones
+    if (game.global.challengeActive == "Lead" && zone%2 == 1) zone++;
     
     //Init
     var attack = calcEnemyAttackCore(zone, map, cell, name, minormax);
@@ -720,10 +724,11 @@ function calcCorruptionScale(world, base) {
 }
 
 function calcEnemyBaseHealth(zone, cell = 99, name = "Dragimp", map) {
+    //Pre Init
+    if (!zone) zone = game.global.world;
+
     //Init
-    var health = 0;
-    health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2);
-    health -= 110;
+    var health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2) - 110;
 
     //First Two Zones
     if (zone == 1 || zone == 2 && cell < 10) {
@@ -792,6 +797,9 @@ function calcEnemyHealthCore(zone, map, cell, name, customHealth) {
 function calcEnemyHealth(zone, map, cell = 99, name = "Dragimp") {
     //Pre-Init
     if (!zone) zone = game.global.world;
+
+    //Lead farms on odd zones
+    if (game.global.challengeActive == "Lead" && zone%2 == 1) zone++;
 
     //Init
     var health = calcEnemyHealthCore(zone, map, cell, name);
