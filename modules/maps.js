@@ -107,27 +107,34 @@ function testMapSpecialModController() {
         var p = mapSpecialModifierConfig[o];
         game.global.highestLevelCleared + 1 >= p.unlocksAt && a.push(p.abv.toLowerCase());
     }), !(1 > a.length)) {
-    var c = document.getElementById("advSpecialSelect");
-    if (c) {
-        if (game.global.highestLevelCleared >= 59) {
-            if (shouldFarm || !enoughHealth || preSpireFarming) {
-                c.value = a.includes("lmc") ? "lmc" : a.includes("hc") ? "hc" : a.includes("smc") ? "smc" : "lc";
-            } else if (needPrestige && a.includes("p")) {
-                c.value = "p";
-            } else c.value = "fa";
+        var c = document.getElementById("advSpecialSelect");
+        if (c) {
+            if (game.global.highestLevelCleared >= 59) {
+                //Select Map Modifier
+                if (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming) {
+                    c.value = a.includes("lmc") ? "lmc" : a.includes("hc") ? "hc" : a.includes("smc") ? "smc" : "lc";
+                } else if (needPrestige && a.includes("p")) {
+                    c.value = "p";
+                } else c.value = "fa";
+                
+                //Check if we can afford it
                 for (var d = updateMapCost(!0), e = game.resources.fragments.owned, f = 100 * (d / e); 0 < c.selectedIndex && d > e;) {
-                    c.selectedIndex -= 1;
-                    "0" != c.value && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
-                }
+                        c.selectedIndex -= 1;
+                        "0" != c.value && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
+                    }
                 var d = updateMapCost(!0), e = game.resources.fragments.owned;
                 "0" != c.value && debug("Set the map special modifier to: " + mapSpecialModifierConfig[c.value].name + ". Cost: " + (100 * (d / e)).toFixed(2) + "% of your fragments.");
             }
+            
+            //Check what Modifiers should be available to us
             var g = getSpecialModifierSetting(),
                 h = 109 <= game.global.highestLevelCleared,
                 i = checkPerfectChecked(),
                 j = document.getElementById("advPerfectCheckbox"),
                 k = getPageSetting("AdvMapSpecialModifier") ? getExtraMapLevels() : 0,
                 l = 209 <= game.global.highestLevelCleared;
+
+            //Extra Map levels
             if (l) {
                 var m = document.getElementById("advExtraMapLevelselect");
                 if (!m)
