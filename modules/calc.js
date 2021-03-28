@@ -20,7 +20,7 @@ function calcEquipment(type = "attack") {
         if (equip.locked !== 0) continue;
 
         //Get the bonus
-        bonus = equip.level * (type == "attack" ? equip.attackCalculated : equip.healthCalculated);
+        bonus += equip.level * (type == "attack" ? equip.attackCalculated : equip.healthCalculated);
     }
 
     return bonus;
