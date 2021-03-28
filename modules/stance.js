@@ -54,8 +54,8 @@ function oneShootPower(stance, worstCase, offset=0, maxOrMin) {
         if (!worstCase && !getCurrentEnemy(power+offset)) return power+offset-1;
         
         //Enemy Health: current enemy, his neighbours, or a C99 Dragimp (worstCase)
-        if (worstCase) damageLeft -= calcSpecificEnemyHealth(undefined, false, 99-maxOneShootPower()+power, preVoidCheck, "Dragimp");
-        else if (power+offset > 1) damageLeft -= calcSpecificEnemyHealth(undefined, game.global.mapsActive, getCurrentEnemy(power+offset).level);
+        if (worstCase) damageLeft -= calcEnemyHealth(undefined, undefined, 99-maxOneShootPower()+power);
+        else if (power+offset > 1) damageLeft -= calcSpecificEnemyHealth(undefined, undefined, getCurrentEnemy(power+offset).level);
         else damageLeft -= getCurrentEnemy().health;
         
         //Check if we can oneshoot the next enemy
@@ -72,7 +72,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
-    var enemyDamage = calcSpecificBadGuyDmg(enemy, critPower);
+    var enemyDamage = calcSpecificEnemyAttack(critPower);
 
     //Active Challenges
     var leadChallenge = game.global.challengeActive == 'Lead';
