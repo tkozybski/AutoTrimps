@@ -721,7 +721,7 @@ function calcEnemyBaseHealth(type, zone, cell, name) {
     if (!name) name = getCurrentEnemy() ? getCurrentEnemy().name : "Dragimp";
 
     //Init
-    var health += 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2) - 110;
+    var health = 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2) - 110;
 
     //First Two Zones
     if (zone == 1 || zone == 2 && cell < 10) {
