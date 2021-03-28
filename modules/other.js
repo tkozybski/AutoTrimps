@@ -670,7 +670,7 @@ function pcheck1() {
 	go = true;
     }
     else if (HD > 0) {
-	go = (HD >= calcHDratio(game.global.world + plusMapToRun1(), true));
+	go = (HD >= calcHDRatio(game.global.world + plusMapToRun1(), true));
     }
     if (P > 0 && getEmpowerment() == "Poison") {
 	go = (P >= plusMapToRun1());
@@ -704,7 +704,7 @@ function pcheck2() {
 	go = true;
     }
     else if (HD > 0) {
-	go = (HD >= calcHDratio(game.global.world + plusMapToRun2()));
+	go = (HD >= calcHDRatio(game.global.world + plusMapToRun2()));
     }
     if (P > 0 && getEmpowerment() == "Poison") {
 	go = (P >= plusMapToRun2());
@@ -738,7 +738,7 @@ function pcheck3() {
 	go = true;
     }
     else if (HD > 0) {
-	go = (HD >= calcHDratio(game.global.world + plusMapToRun3()));
+	go = (HD >= calcHDRatio(game.global.world + plusMapToRun3()));
     }
     if (P > 0 && getEmpowerment() == "Poison") {
 	go = (P >= plusMapToRun3());
@@ -772,7 +772,7 @@ function pcheck4() {
 	go = true;
     }
     else if (HD > 0) {
-	go = (HD >= calcHDratio(game.global.world + plusMapToRun4()));
+	go = (HD >= calcHDRatio(game.global.world + plusMapToRun4()));
     }
     if (P > 0 && getEmpowerment() == "Poison") {
 	go = (P >= plusMapToRun4());
@@ -806,7 +806,7 @@ function pcheck5() {
 	go = true;
     }
     else if (HD > 0) {
-	go = (HD >= calcHDratio(game.global.world + plusMapToRun5(), "map"));
+	go = (HD >= calcHDRatio(game.global.world + plusMapToRun5(), "map"));
     }
     if (P > 0 && getEmpowerment() == "Poison") {
 	go = (P >= plusMapToRun5());
@@ -1826,7 +1826,7 @@ function fightalways() {
 
 function armormagic() {
 	var armormagicworld =  Math.floor((game.global.highestLevelCleared + 1) * 0.8);
-	if (((getPageSetting('carmormagic') == 1 || getPageSetting('darmormagic') == 1) && game.global.world >= armormagicworld && (game.global.soldierHealth <= game.global.soldierHealthMax*0.4)) || ((getPageSetting('carmormagic') == 2 || getPageSetting('darmormagic') == 2) && calcHDratio() >= MODULES["maps"].enoughDamageCutoff && (game.global.soldierHealth <= game.global.soldierHealthMax*0.4)) || ((getPageSetting('carmormagic') == 3 || getPageSetting('darmormagic') == 3) && (game.global.soldierHealth <= game.global.soldierHealthMax*0.4)))
+	if (((getPageSetting('carmormagic') == 1 || getPageSetting('darmormagic') == 1) && game.global.world >= armormagicworld && (game.global.soldierHealth <= game.global.soldierHealthMax*0.4)) || ((getPageSetting('carmormagic') == 2 || getPageSetting('darmormagic') == 2) && calcHDRatio() >= MODULES["maps"].enoughDamageCutoff && (game.global.soldierHealth <= game.global.soldierHealthMax*0.4)) || ((getPageSetting('carmormagic') == 3 || getPageSetting('darmormagic') == 3) && (game.global.soldierHealth <= game.global.soldierHealthMax*0.4)))
 	 buyArms();
 }
 

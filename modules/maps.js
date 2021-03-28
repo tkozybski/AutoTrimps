@@ -45,8 +45,8 @@ function updateAutoMapsStatus(get) {
     var status;
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
     var wantedHealth = getMapHealthCutOff() / calcHealthRatio(false, preVoidCheck, true);
-    var wantedDamage = calcHDratio() / getMapCutOff();
-    var wantedFarmDmg = calcHDratio() / (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
+    var wantedDamage = calcHDRatio() / getMapCutOff();
+    var wantedFarmDmg = calcHDRatio() / (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
 
     //Fail Safes
     if (getPageSetting('AutoMaps') == 0) status = 'Off';
@@ -325,7 +325,7 @@ function autoMap() {
 
     //Check for Health & Damage
     enoughHealth = calcHealthRatio(false, preVoidCheck, true) > getMapHealthCutOff();
-    enoughDamage = calcHDratio() < getMapCutOff();
+    enoughDamage = calcHDRatio() < getMapCutOff();
     updateAutoMapsStatus();
 
     //Farming
@@ -334,7 +334,7 @@ function autoMap() {
 
     //Farm Flags
     shouldFarm = false;
-    shouldFarmDamage = calcHDratio() >= (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
+    shouldFarmDamage = calcHDRatio() >= (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
     
     //Only actually trigger farming after doing map bonuses
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
@@ -366,15 +366,15 @@ function autoMap() {
                 shouldDoMaps = true;
         }
         if (game.global.gridArray[99].nomStacks == customVars.NomFarmStacksCutoff[1]) {
-            shouldFarm = (calcHDratio() > customVars.NomfarmingCutoff);
+            shouldFarm = (calcHDRatio() > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
         }
         if (!game.global.mapsActive && game.global.gridArray[game.global.lastClearedCell + 1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
-            shouldFarm = (calcHDratio() > customVars.NomfarmingCutoff);
+            shouldFarm = (calcHDRatio() > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
         }
         if (game.global.mapsActive && game.global.mapGridArray[game.global.lastClearedMapCell + 1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
-            shouldFarm = (calcHDratio() > customVars.NomfarmingCutoff);
+            shouldFarm = (calcHDRatio() > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
             restartVoidMap = true;
         }
@@ -436,7 +436,7 @@ function autoMap() {
         //For each Map Level we can go below our current zone...
         for (siphlvl; siphlvl < maxlvl; siphlvl++) {
             //Calc our Damage on this map
-            var ratio = calcHDratio(siphlvl, "map");
+            var ratio = calcHDRatio(siphlvl, "map");
             if (game.unlocks.imps.Titimp) ratio *= 2;
 
             //Farms on Scrier if available, or Dominance, or just X

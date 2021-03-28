@@ -71,9 +71,9 @@ function advancedNurseries() {
     //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C&D) Has max Map Stacks E) Has at least 1 Map Stack F) Not farming Spire or advN is off
     //Also, it requires less health during spire
     var a = calcHealthRatio(false, preVoidCheck, true) < getMapHealthCutOff();
-    var b = calcHDratio() < getPageSetting("DisableFarm");
+    var b = calcHDRatio() < getPageSetting("DisableFarm");
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
-    var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDratio() < getPageSetting("mapcuntoff");
+    var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getPageSetting("mapcuntoff");
     var e = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || getPageSetting('MaxMapBonushealth') == 0;
     var f = !preSpireFarming || !MODULES.buildings.advancedNurseries;
     var off = !MODULES["buildings"].advancedNurseries || game.stats.highestLevel.valueTotal() < 230;
@@ -83,9 +83,9 @@ function advancedNurseries() {
 function buyFoodEfficientHousing() {
     var foodHousing = ["Hut", "House", "Mansion", "Hotel", "Resort"];
     var unlockedHousing = [];
-    for (var house in foodHousing) {
-        if (game.buildings[foodHousing[house]].locked === 0) {
-            unlockedHousing.push(foodHousing[house]);
+    for (var foodHouse in foodHousing) {
+        if (game.buildings[foodHousing[foodHouse]].locked === 0) {
+            unlockedHousing.push(foodHousing[foodHouse]);
         }
     }
     var buildorder = [];

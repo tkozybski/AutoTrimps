@@ -4,25 +4,34 @@ var trimpAA = 1;
 
 //Helium
 
-function getTrimpAttack(realDamage) {
+function calcEquipment(type = "attack") {
     //Init
-    var dmg = 6;
-    var equipmentList = ["Dagger", "Mace", "Polearm", "Battleaxe", "Greatsword", "Arbalest"];
-    
-    //This is actual damage of the army in combat ATM, disconsidering itens bought, but not yet in use
-    if (realDamage) game.global.soldierCurrentAttack;
-	
-    //For each weapon...
+    var bonus = 0;
+    var equipmentList;
+
+    //Equipment names
+    if (type == "attack") equipmentList = ["Dagger", "Mace", "Polearm", "Battleaxe", "Greatsword", "Arbalest"];
+    else equipmentList = ["Shield", "Boots", "Helmet", "Pants", "Shoulderguards", "Breastplate", "Gambeson"];
+
+    //For each equipment
     for(var i = 0; i < equipmentList.length; i++) {
-	//If unlocked, adds up it's damage
-        if(game.equipment[equipmentList[i]].locked !== 0) continue;
-        var attackBonus = game.equipment[equipmentList[i]].attackCalculated;
-        var level       = game.equipment[equipmentList[i]].level;
-        dmg += attackBonus * level;
+        //Check if it's unlocked
+        var equip = game.equipment[equipmentList[i]];
+        if (equip.locked !== 0) continue;
+
+        //Get the bonus
+        bonus = equip.level * (type == "attack" ? equip.attackCalculated : equip.healthCalculated);
     }
-    
-    //Coordinations
-    dmg *= game.resources.trimps.maxSoldiers;
+
+    return bonus;
+}
+
+function getTrimpAttack(realDamage) {
+    //This is actual damage of the army in combat ATM, without considering items bought, but not yet in use
+    if (realDamage) return game.global.soldierCurrentAttack;
+
+    //Damage from equipments and Coordinations
+    var dmg = calcEquipment("attack") * game.resources.trimps.maxSoldiers;
     
     //Magma
     if (mutations.Magma.active()) dmg *= mutations.Magma.getTrimpDecay();
@@ -40,24 +49,11 @@ function getTrimpAttack(realDamage) {
 }
 
 function getTrimpHealth(realHealth) {
-    var health = 50;
-    
-    //This is the actual health of the army ATM, disconsidering itens bought, but not yet in use
+    //This is the actual health of the army ATM, without considering items bought, but not yet in use
     if (realHealth) return game.global.soldierHealthMax;
-    
-    //For each armor...
-    if (game.resources.trimps.maxSoldiers > 0) {
-        var equipmentList = ["Shield", "Boots", "Helmet", "Pants", "Shoulderguards", "Breastplate", "Gambeson"];
-        for(var i = 0; i < equipmentList.length; i++){
-            if(game.equipment[equipmentList[i]].locked !== 0) continue;
-            var healthBonus = game.equipment[equipmentList[i]].healthCalculated;
-            var level       = game.equipment[equipmentList[i]].level;
-            health += healthBonus*level;
-        }
-    }
-    
-    //Coordinations
-    health *= game.resources.trimps.maxSoldiers;
+
+    //Health from equipments and coordination
+    var health = 50 + calcEquipment("health") * game.resources.trimps.maxSoldiers;
     
     //Toughness
     if (game.portal.Toughness.level > 0)
@@ -128,7 +124,7 @@ function calcOurBlock(stance, realBlock) {
     if (heirloomBonus > 0) block *= ((heirloomBonus / 100) + 1);
     
     //Radio Stacks
-    if (game.global.radioStacks > 0) block *= (1 - (game.global.radioStacks * 0.1));
+    //if (game.global.radioStacks > 0) block *= (1 - (game.global.radioStacks * 0.1));
     
     return block;
 }
@@ -152,12 +148,12 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     //Magma
     if (mutations.Magma.active()) {
         var mult = mutations.Magma.getTrimpDecay();
-        var lvls = game.global.world - mutations.Magma.start() + 1;
+        //var zoneDiff = game.global.world - mutations.Magma.start() + 1; DEBUG
         health *= mult;
     }
     
     //Radio
-    if (game.global.radioStacks > 0) health *= (1 - (game.global.radioStacks * 0.1));
+    //if (game.global.radioStacks > 0) health *= (1 - (game.global.radioStacks * 0.1));
     
     //Amalgamator
     if (game.jobs.Amalgamator.owned > 0) health *= game.jobs.Amalgamator.getHealthMult();
@@ -176,7 +172,7 @@ function calcHealthRatio(stance, fullGeneticist, type) {
     if (!type) type = preVoidCheck ? "void" : "world";
 
     //Init
-    var enemyDamage, voidDamage=0;
+    var voidDamage=0;
     var targetZone = game.global.world;
     const formationMod = (game.upgrades.Dominance.done && !stance) ? 2 : 1;
 
@@ -198,17 +194,17 @@ function calcHealthRatio(stance, fullGeneticist, type) {
     if (!stance && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //The Resulting Ratio
-    var finalDmg = Math.max(enemyDamage - block, voidDamage - block, enemyDamage * pierce, 0);
+    var finalDmg = Math.max(worldDamage - block, voidDamage - block, worldDamage * pierce, 0);
     return health / finalDmg;
 }
 
 function highDamageShield() {
-    if (game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name == getPageSetting('highdmg')) {
+    if (game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name == getPageSetting("highdmg")) {
         critCC = getPlayerCritChance();
         critDD = getPlayerCritDamageMult();
         trimpAA = (calcHeirloomBonus("Shield", "trimpAttack", 1, true)/100);
     }
-    if (game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name == getPageSetting('dhighdmg')) {
+    if (game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name == getPageSetting("dhighdmg")) {
         critCC = getPlayerCritChance();
         critDD = getPlayerCritDamageMult();
         trimpAA = (calcHeirloomBonus("Shield", "trimpAttack", 1, true)/100);
@@ -217,8 +213,9 @@ function highDamageShield() {
 
 function getCritMulti(high, crit) {
     var critChance = getPlayerCritChance();
-    var CritD = getPlayerCritDamageMult();
-	
+    var critD = getPlayerCritDamageMult();
+	var critDHModifier;
+
     if (crit == "never") critChance = Math.floor(critChance);
     else if (crit == "force") critChance = Math.ceil(critChance);
 
@@ -226,15 +223,15 @@ function getCritMulti(high, crit) {
         (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily")) {
             highDamageShield();
             critChance = critCC;
-        CritD = critDD;
+        critD = critDD;
     }
 
-    if      (critChance < 0) CritDHModifier = (1+critChance - critChance/5);
-    else if (critChance < 1) CritDHModifier = (1-critChance + critChance * CritD);
-    else if (critChance < 2) CritDHModifier = ((critChance-1) * getMegaCritDamageMult(2) * CritD + (2-critChance) * CritD);
-    else                     CritDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * CritD + (3-critChance) * getMegaCritDamageMult(2) * CritD);
+    if      (critChance < 0) critDHModifier = (1+critChance - critChance/5);
+    else if (critChance < 1) critDHModifier = (1-critChance + critChance * critD);
+    else if (critChance < 2) critDHModifier = ((critChance-1) * getMegaCritDamageMult(2) * critD + (2-critChance) * critD);
+    else                     critDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * critD + (3-critChance) * getMegaCritDamageMult(2) * critD);
 
-    return CritDHModifier;
+    return critDHModifier;
 }
 
 function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, realDamage) {
@@ -308,7 +305,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
         if (typeof game.global.dailyChallenge.minDamage !== 'undefined') minFluct = dailyModifiers.minDamage.getMult(game.global.dailyChallenge.minDamage.strength);
         if (typeof game.global.dailyChallenge.maxDamage !== 'undefined') maxFluct = dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
         
-	//Even-Odd Dailies
+	    //Even-Odd Dailies
         if (typeof game.global.dailyChallenge.oddTrimpNerf !== 'undefined' && ((game.global.world % 2) == 1))
             number *= dailyModifiers.oddTrimpNerf.getMult(game.global.dailyChallenge.oddTrimpNerf.strength);
         if (typeof game.global.dailyChallenge.evenTrimpBuff !== 'undefined' && ((game.global.world % 2) == 0))
@@ -323,7 +320,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (game.goldenUpgrades.Battle.currentBonus > 0) number *= game.goldenUpgrades.Battle.currentBonus + 1;
 
     //Empowerments
-    if (getPageSetting('fullice') == true && getEmpowerment() == "Ice") number *= (Fluffy.isRewardActive('naturesWrath') ? 3 : 2);
+    if (getPageSetting("fullice") == true && getEmpowerment() == "Ice") number *= (Fluffy.isRewardActive('naturesWrath') ? 3 : 2);
     if (getPageSetting('fullice') == false && getEmpowerment() == "Ice") number *= (game.empowerments.Ice.getDamageModifier()+1);
     if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
         number *= (1 + game.empowerments.Poison.getModifier());
@@ -349,7 +346,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (incStance && game.talents.scry.purchased && game.global.formation == 4 && (mutations.Healthy.active() || mutations.Corruption.active()))
         number *= 2;
 
-    //Spire Strengh Trap
+    //Spire Strength Trap
     if (playerSpireTraps.Strength.owned) {
         var strBonus = playerSpireTraps.Strength.getWorldBonus();
         number *= (1 + (strBonus / 100));
@@ -458,7 +455,7 @@ function calcEnemyBaseAttack(type, zone, cell, name) {
         attack = (0.375 * attack) + (0.7 * attack * (cell / 100));
     }
     
-    //Also Befor Breaking the Planet
+    //Also Before Breaking the Planet
     if (zone < 60) attack *= 0.85;
     
 
@@ -477,7 +474,7 @@ function calcEnemyBaseAttack(type, zone, cell, name) {
     return Math.floor(attack);
 }
 
-function calcEnemyAttackCore(type, zone, cell, name, minormax, customAttack) {
+function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
     //Pre-Init
     if (!type) type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
     if (!zone) zone = (type == "world" || !game.global.mapsActive) ? game.global.world : getCurrentMapObject().level;
@@ -494,8 +491,8 @@ function calcEnemyAttackCore(type, zone, cell, name, minormax, customAttack) {
     if (type != "world") {
         //Corruption
         var corruptionScale = calcCorruptionScale(zone, 3);
-        if (mutations.Magma.active()) health *= corruptionScale / (type == "void" ? 1 : 2);
-        else if (type == "void" && mutations.Corruption.active()) health *= corruptionScale / 2;
+        if (mutations.Magma.active()) attack *= corruptionScale / (type == "void" ? 1 : 2);
+        else if (type == "void" && mutations.Corruption.active()) attack *= corruptionScale / 2;
     }
     
     //Use custom values instead
@@ -523,18 +520,18 @@ function calcEnemyAttackCore(type, zone, cell, name, minormax, customAttack) {
     var min = attack * 0.8;
     var max = attack * 1.2;
     
-    return minormax ? min : max;
+    return minOrMax ? min : max;
 }
 
-function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minormax) {
+function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     //Pre-Init
-    if (!type) type = preVoidCheck ? "void" : world;
+    if (!type) type = preVoidCheck ? "void" : "world";
     if (!zone) zone = game.global.world;
     
     //Init
-    var attack = calcEnemyAttackCore(zone, map, cell, name, minormax);
-    var corrupt = !map && zone >= mutations.Corruption.start();
-    var healthy = !map && mutations.Healthy.active();
+    var attack = calcEnemyAttackCore(type, zone, cell, name, minOrMax);
+    var corrupt = zone >= mutations.Corruption.start();
+    var healthy = mutations.Healthy.active();
     
     //Challenges
     if      (game.global.challengeActive == "Lead")       attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
@@ -544,19 +541,19 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minormax) {
     //Daily
     else attack = calcDailyAttackMod(attack);
 
-    //Void Map Difficulty (implict 100% difficulty on regular maps)
+    //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;
     
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
+    if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
         //Calculates the impact of the corruption on the average attack on that map (kinda like a crit)
         var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 2; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptScale(zone, 3);
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
         attack *= corruptionWeight/100;
     }
     
     //Healthy -- DEBUG
-    if (healthy && !game.global.spireActive) {
+    else if (type == "world" && healthy && !game.global.spireActive) {
         var scales = Math.floor((zone - 150) / 6);
         attack *= 14 * Math.pow(1.05, scales);
         attack *= 1.15;
@@ -567,14 +564,12 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minormax) {
 
 function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     //Init
-    var type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
-    var cell = (type == "world" || !game.global.mapsActive) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
     var enemy = getCurrentEnemy();
     if (!enemy) return 1;
     
     //Init
-    var corrupt = enemy.hasOwnProperty("corrupted");
-    var healthy = enemy.hasOwnProperty("healthy");
+    //var corrupt = enemy.hasOwnProperty("corrupted");
+    //var healthy = enemy.hasOwnProperty("healthy");
     var attack = calcEnemyAttackCore(undefined, undefined, undefined, undefined, undefined, enemy.attack) * badGuyCritMult(enemy, critPower, customBlock, customHealth);
     
     //Challenges - considers the actual scenario for this enemy
@@ -610,7 +605,7 @@ function badGuyChallengeMult() {
     return number;
 }
 
-function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
+function calcBadGuyDmg(enemy, attack, daily, maxOrMin, disableFlucts) {
     //Init
     var number = (enemy) ? enemy.attack : attack;
     var fluctuation = .2;
@@ -652,7 +647,7 @@ function calcBadGuyDmg(enemy, attack, daily, maxormin, disableFlucts) {
         if (minFluct == -1) minFluct = fluctuation;
         var min = Math.floor(number * (1 - minFluct));
         var max = Math.ceil(number + (number * maxFluct));
-        return maxormin ? max : min;
+        return maxOrMin ? max : min;
     }
 
     return number;
@@ -687,7 +682,7 @@ function badGuyCritMult(enemy, critPower=2, block, health) {
     else return Math.max(regular, challenge);
 }
 
-function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts, customBlock, customHealth) {
+function calcSpecificBadGuyDmg(enemy, critPower=2, minOrMax, disableFlucts, customBlock, customHealth) {
     //Pre-Init
     if (!enemy) enemy = getCurrentEnemy();
     if (!enemy) return 1;
@@ -703,7 +698,7 @@ function calcSpecificBadGuyDmg(enemy, critPower=2, minormax, disableFlucts, cust
 
     //Fluctuations
     if (disableFlucts) return number;
-    return minormax ? Math.floor(0.8 * number) : Math.ceil(1.2 * number);
+    return minOrMax ? Math.floor(0.8 * number) : Math.ceil(1.2 * number);
 }
 
 function calcCorruptionScale(world, base) {
@@ -796,7 +791,7 @@ function calcEnemyHealthCore(type = "world", zone, cell, name, customHealth) {
 
 function calcEnemyHealth(type, zone, cell = 99, name = "Dragimp") {
     //Pre-Init
-    if (!type) type = preVoidCheck ? "void" : world;
+    if (!type) type = preVoidCheck ? "void" : "world";
     if (!zone) zone = game.global.world;
 
     //Init
@@ -808,7 +803,7 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Dragimp") {
     if (game.global.challengeActive == "Domination") health *= 7.5 * (type != "map" ? 4 : 1);
     if (game.global.challengeActive == "Lead") health *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
 
-    //Void Map Difficulty (implict 100% difficulty on regular maps)
+    //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") health *= (zone >= 60) ? 4.5 : 2.5;
 
     //Average corrupt impact on World
@@ -872,10 +867,10 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
     return health;
 }
 
-function calcHDratio(targetZone, type) {
+function calcHDRatio(targetZone, type) {
     //Pre-Init
     if (!targetZone) targetZone = game.global.world;
-    if (!type) preVoidCheck ? "void" : "world";
+    if (!type) type = preVoidCheck ? "void" : "world";
 
     //Init
     var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", type != "world");
@@ -901,69 +896,69 @@ function calcHDratio(targetZone, type) {
 
 function calcCurrentStance() {
     if (game.global.uberNature == "Wind" && getEmpowerment() == "Wind" && !game.global.mapsActive &&
-        (((game.global.challengeActive != "Daily" && calcHDratio() < getPageSetting('WindStackingMinHD'))
-            || (game.global.challengeActive == "Daily" && calcHDratio() < getPageSetting('dWindStackingMinHD')))
+        (((game.global.challengeActive != "Daily" && calcHDRatio() < getPageSetting('WindStackingMinHD'))
+            || (game.global.challengeActive == "Daily" && calcHDRatio() < getPageSetting('dWindStackingMinHD')))
                 && ((game.global.challengeActive != "Daily" && game.global.world >= getPageSetting('WindStackingMin'))
                     || (game.global.challengeActive == "Daily" && game.global.world >= getPageSetting('dWindStackingMin'))))
                         || (game.global.uberNature == "Wind" && getEmpowerment() == "Wind" && !game.global.mapsActive && checkIfLiquidZone() && getPageSetting('liqstack') == true))
                             return 15;
     else {
         //Base Calc
-        var ehealth = 1;
-        if (game.global.fighting) ehealth = (getCurrentEnemy().maxHealth - getCurrentEnemy().health);
-        var attacklow = calcOurDmg("max", false, true);
-        var attackhigh = calcOurDmg("max", false, true);
+        var eHealth = 1;
+        if (game.global.fighting) eHealth = (getCurrentEnemy().maxHealth - getCurrentEnemy().health);
+        var attackLow = calcOurDmg("max", false, true);
+        var attackHigh = calcOurDmg("max", false, true);
 
         //Heirloom Calc
         highDamageShield();
         if (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg')) {
-            attackhigh *= trimpAA;
-            attackhigh *= getCritMulti(true);
+            attackHigh *= trimpAA;
+            attackHigh *= getCritMulti(true);
         }
         if (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg')) {
-            attackhigh *= trimpAA;
-            attackhigh *= getCritMulti(true);
+            attackHigh *= trimpAA;
+            attackHigh *= getCritMulti(true);
         }
 
         //Heirloom Switch
-        if (ehealth > 0) {
-            var hitslow = (ehealth / attacklow);
-            var hitshigh = (ehealth / attackhigh);
+        if (eHealth > 0) {
+            var hitsLow = (eHealth / attackLow);
+            var hitsHigh = (eHealth / attackHigh);
             var stacks = 190;
-            var usehigh = false;
-            var stacksleft = 1;
+            var useHigh = false;
+            var stacksLeft = 1;
 
             if (game.global.challengeActive != "Daily" && getPageSetting('WindStackingMax') > 0) stacks = getPageSetting('WindStackingMax');
             if (game.global.challengeActive == "Daily" && getPageSetting('dWindStackingMax') > 0) stacks = getPageSetting('dWindStackingMax');
             if (game.global.uberNature == "Wind") stacks += 100;
-            if (getEmpowerment() == "Wind") stacksleft = (stacks - game.empowerments.Wind.currentDebuffPower);
+            if (getEmpowerment() == "Wind") stacksLeft = (stacks - game.empowerments.Wind.currentDebuffPower);
 
             //Use High
-            if ((getEmpowerment() != "Wind") || (game.empowerments.Wind.currentDebuffPower >= stacks) || (hitshigh >= stacksleft)
+            if ((getEmpowerment() != "Wind") || (game.empowerments.Wind.currentDebuffPower >= stacks) || (hitsHigh >= stacksLeft)
                 || (game.global.mapsActive) || (game.global.challengeActive != "Daily" && game.global.world < getPageSetting('WindStackingMin'))
                     || (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin')))
-                        usehigh = true;
+                        useHigh = true;
 
-            if ((getPageSetting('wsmax') > 0 && game.global.world >= getPageSetting('wsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive != "Daily" && getPageSetting('wsmaxhd') > 0 && calcHDratio() < getPageSetting('wsmaxhd'))
-                || (getPageSetting('dwsmax') > 0 && game.global.world >= getPageSetting('dwsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive == "Daily" && getPageSetting('dwsmaxhd') > 0 && calcHDratio() < getPageSetting('dwsmaxhd')))
-                    usehigh = false;
+            if ((getPageSetting('wsmax') > 0 && game.global.world >= getPageSetting('wsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive != "Daily" && getPageSetting('wsmaxhd') > 0 && calcHDRatio() < getPageSetting('wsmaxhd'))
+                || (getPageSetting('dwsmax') > 0 && game.global.world >= getPageSetting('dwsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive == "Daily" && getPageSetting('dwsmaxhd') > 0 && calcHDRatio() < getPageSetting('dwsmaxhd')))
+                    useHigh = false;
 
             //Low
-            if (!usehigh) {
-                if ((game.empowerments.Wind.currentDebuffPower >= stacks) || ((hitslow * 4) > stacksleft)) return 2;
-                else if ((hitslow) > stacksleft) return 0;
+            if (!useHigh) {
+                if ((game.empowerments.Wind.currentDebuffPower >= stacks) || ((hitsLow * 4) > stacksLeft)) return 2;
+                else if ((hitsLow) > stacksLeft) return 0;
                 else return 1;
             }
 
             //High
-            else if (usehigh) {
+            else if (useHigh) {
                 if (game.global.mapsActive || getEmpowerment() != "Wind"
-                    || game.empowerments.Wind.currentDebuffPower >= stacks || (hitshigh * 4) > stacksleft
+                    || game.empowerments.Wind.currentDebuffPower >= stacks || (hitsHigh * 4) > stacksLeft
                         || (game.global.challengeActive != "Daily" && game.global.world < getPageSetting('WindStackingMin'))
                             || (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin')))
                                 return 12;
 
-                else if (hitshigh > stacksleft) return 10;
+                else if (hitsHigh > stacksLeft) return 10;
                 else return 11;
             }
         }
@@ -974,18 +969,19 @@ function calcCurrentStance() {
 function RgetCritMulti() {
 
 	var critChance = getPlayerCritChance();
-	var CritD = getPlayerCritDamageMult();
+	var critD = getPlayerCritDamageMult();
+	var critDHModifier;
 
 	if (critChance < 0)
-		CritDHModifier = (1+critChance - critChance/5);
+		critDHModifier = (1+critChance - critChance/5);
 	if (critChance >= 0 && critChance < 1)
-		CritDHModifier = (1-critChance + critChance * CritD);
+		critDHModifier = (1-critChance + critChance * critD);
 	if (critChance >= 1 && critChance < 2)
-		CritDHModifier = ((critChance-1) * getMegaCritDamageMult(2) * CritD + (2-critChance) * CritD);
+		critDHModifier = ((critChance-1) * getMegaCritDamageMult(2) * critD + (2-critChance) * critD);
 	if (critChance >= 2)
-		CritDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * CritD + (3-critChance) * getMegaCritDamageMult(2) * CritD);
+		critDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * critD + (3-critChance) * getMegaCritDamageMult(2) * critD);
 
-  return CritDHModifier;
+  return critDHModifier;
 }
 
 function RcalcOurDmg(minMaxAvg, incStance, incFlucts) {
@@ -1281,7 +1277,7 @@ function RcalcEnemyHealth(world) {
 }
 
 function RcalcHDratio() {
-    var ratio = 0;
+    var ratio;
     var ourBaseDamage = RcalcOurDmg("avg", false, true);
 
     ratio = RcalcEnemyHealth(game.global.world) / ourBaseDamage;
