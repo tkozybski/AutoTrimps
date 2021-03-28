@@ -70,7 +70,7 @@ function safeBuyBuilding(building) {
 function advancedNurseries() {
     //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C&D) Has max Map Stacks E) Has at least 1 Map Stack F) Not farming Spire or advN is off
     //Also, it requires less health during spire
-    var a = calcHealthRatio(false, preVoidCheck, true) < getMapHealthCutOff();
+    var a = calcHealthRatio(false, true) < getMapHealthCutOff();
     var b = calcHDRatio() < getPageSetting("DisableFarm");
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getPageSetting("mapcuntoff");

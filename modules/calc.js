@@ -405,7 +405,7 @@ function calcSpire(what, cell, name) {
 
     //Enemy on the Target Cell
     var enemy = (name) ? name : game.global.gridArray[cell-1].name;
-    var base = (what == "attack") ? getEnemyMaxAttack(game.global.world, cell, 'Chimp') : calcEnemyBaseHealth(game.global.world, cell) * 2;
+    var base = (what == "attack") ? getEnemyMaxAttack(game.global.world, cell, 'Chimp') : calcEnemyBaseHealth("world", game.global.world, cell) * 2;
     var mod = (what == "attack") ? 1.17 : 1.14;
 
     //Spire Num

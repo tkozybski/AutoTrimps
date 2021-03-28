@@ -44,7 +44,7 @@ var additionalCritMulti = 2 < getPlayerCritChance() ? 25 : 5;
 function updateAutoMapsStatus(get) {
     var status;
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
-    var wantedHealth = getMapHealthCutOff() / calcHealthRatio(false, preVoidCheck, true);
+    var wantedHealth = getMapHealthCutOff() / calcHealthRatio(false, true);
     var wantedDamage = calcHDRatio() / getMapCutOff();
     var wantedFarmDmg = calcHDRatio() / (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
 
@@ -324,7 +324,7 @@ function autoMap() {
         ourBaseDamage *= trimpAA;
 
     //Check for Health & Damage
-    enoughHealth = calcHealthRatio(false, preVoidCheck, true) > getMapHealthCutOff();
+    enoughHealth = calcHealthRatio(false, true) > getMapHealthCutOff();
     enoughDamage = calcHDRatio() < getMapCutOff();
     updateAutoMapsStatus();
 
