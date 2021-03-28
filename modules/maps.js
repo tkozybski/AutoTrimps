@@ -435,31 +435,21 @@ function autoMap() {
     if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone) {
         //For each Map Level we can go below our current zone...
         for (siphlvl; siphlvl < maxlvl; siphlvl++) {
-            //Finds Maximum Enemy HP on this map
-            var maphp = getEnemyMaxHealth(siphlvl) * 1.1;
-            
-            //Apply "Coordinate" (challenge)
-            if (game.global.challengeActive == "Coordinate") maphp *= getBadCoordLevel();
-			
-            //Applies Corrupt Scale + Magma
-            var cpthlth = getCorruptScale("health") / 2;
-            if (mutations.Magma.active()) maphp *= cpthlth;
-		
-            //Applies Titimp
-            var mapdmg = ourBaseDamage2;
-            if (game.unlocks.imps.Titimp) mapdmg *= 2;
+            //Calc our Damage on this map
+            var ratio = calcHDratio(siphlvl, "map");
+            if (game.unlocks.imps.Titimp) ratio *= 2;
 
             //Farms on Scrier if available, or Dominance, or just X
-            if (game.global.world >= 60 && getHighestLevelCleared() >= 180) mapdmg /= 2;
-            else if (game.upgrades.Dominance.done) mapdmg *= 4;
+            if (game.global.world >= 60 && getHighestLevelCleared() >= 180) ratio /= 2;
+            else if (game.upgrades.Dominance.done) ratio *= 4;
 
             //Stop increasing map level if we can't one hit on it
-            if (mapdmg < maphp) break;
+            if (ratio < 1) break;
         }
     }
     
-    //Farms on "Oneshoot Zone + 1"
-    if (shouldFarmLowerZone && siphlvl < maxlvl) siphlvl++;
+    //Farms on "Oneshoot Zone + 1" DEBUG
+    //if (shouldFarmLowerZone && siphlvl < maxlvl) siphlvl++;
     
     var obj = {};
     var siphonMap = -1;
