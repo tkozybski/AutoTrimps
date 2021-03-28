@@ -54,7 +54,7 @@ function getTrimpHealth(realHealth) {
 
     //Health from equipments and coordination
     var health = 50 + calcEquipment("health") * game.resources.trimps.maxSoldiers;
-    
+
     //Toughness
     if (game.portal.Toughness.level > 0)
         health *= ((game.portal.Toughness.level * game.portal.Toughness.modifier) + 1);
