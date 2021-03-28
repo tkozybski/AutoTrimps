@@ -1,5 +1,5 @@
 function calcBaseDamageinX() {
-    baseDamage = calcOurDmg("avg", false, true);
+    baseDamage = calcOurDmg("avg", false, true, "never", game.global.mapsActive, true);
     baseBlock = game.global.soldierCurrentBlock;
     baseHealth = game.global.soldierHealthMax;
 }
@@ -42,7 +42,7 @@ function maxOneShootPower() {
 
 function oneShootPower(stance, worstCase, offset=0, maxOrMin) {
     //Calculates our minimum damage
-    var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", !game.global.mapsActive, true);
+    var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", game.global.mapsActive, true);
     if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
     
     //The worst case don't need any offset
