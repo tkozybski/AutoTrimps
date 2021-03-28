@@ -581,7 +581,7 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     if (game.global.challengeActive == "Lead") attack *= 1 + (0.04 * game.challenges.Lead.stacks);
 
     //Ice
-    if (getEmpowerment() == "Ice") attack *= game.empowerments.Ice.getCombatModifier();*/
+    if (getEmpowerment() == "Ice") attack *= game.empowerments.Ice.getCombatModifier();
 
     return Math.floor(attack);
 }
