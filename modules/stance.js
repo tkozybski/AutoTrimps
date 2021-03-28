@@ -131,7 +131,7 @@ function directDamage(formation, block, currentHealth, minDamage, critPower=2) {
     //Enemy
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
-    var enemyDamage = calcSpecificBadGuyDmg(enemy, critPower, false, false, block, currentHealth);
+    var enemyDamage = calcSpecificEnemyAttack(critPower, block, currentHealth);
 
     //Calculates block and pierce
     var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
