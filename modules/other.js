@@ -806,7 +806,7 @@ function pcheck5() {
 	go = true;
     }
     else if (HD > 0) {
-	go = (HD >= calcHDratio(game.global.world + plusMapToRun5()));
+	go = (HD >= calcHDratio(game.global.world + plusMapToRun5(), "map"));
     }
     if (P > 0 && getEmpowerment() == "Poison") {
 	go = (P >= plusMapToRun5());
