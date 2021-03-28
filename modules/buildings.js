@@ -210,10 +210,11 @@ function buyBuildings() {
 	
 	//Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
+            var pierce = getPierceAmt() * (game.global.formation == 3 ? 2 : 1);
 	    var nextGym = game.upgrades.Gymystic.modifier;
             var currentEnemyDamageOK = (calcOurBlock(true) > nextGym * calcSpecificEnemyAttack());
             var zoneDamage = calcEnemyAttack();
-            var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > nextGym * zoneDamage);
+            var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > zoneDamage * (1 - pierce));
             
             //Stop buying Gyms if we already have enough block for our current enemy, and are not lacking in health to progress
             //Or if we are on world and have enough block to defeat an C99 Snimp
