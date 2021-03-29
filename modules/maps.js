@@ -1,7 +1,6 @@
 //Helium
 
 MODULES.maps={};
-MODULES.maps.LeadfarmingCutoff=10;
 MODULES.maps.NomfarmingCutoff=10;
 MODULES.maps.NomFarmStacksCutoff=[7,30,100];
 MODULES.maps.MapTierZone=[72,47,16];
@@ -11,7 +10,7 @@ MODULES.maps.MapTier2Sliders=[9,9,9,"Random"];
 MODULES.maps.MapTier3Sliders=[9,9,9,"Random"];
 MODULES.maps.preferGardens=!getPageSetting("PreferMetal");
 MODULES.maps.SpireFarm199Maps=!0;
-MODULES.maps.shouldFarmCell=1;
+MODULES.maps.shouldFarmCell=80;
 MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 

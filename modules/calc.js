@@ -885,14 +885,14 @@ function calcHDRatio(targetZone, type) {
     //Shield
     highDamageShield();
     if (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg')) {
-	ourBaseDamage /= getCritMulti(false);
+        ourBaseDamage /= getCritMulti(false);
         ourBaseDamage *= trimpAA;
-	ourBaseDamage *= getCritMulti(true);
+	    ourBaseDamage *= getCritMulti(true);
     }
     if (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg')) {
-	ourBaseDamage /= getCritMulti(false);
+	    ourBaseDamage /= getCritMulti(false);
         ourBaseDamage *= trimpAA;
-	ourBaseDamage *= getCritMulti(true);
+	    ourBaseDamage *= getCritMulti(true);
     }
 
     return calcEnemyHealth(type, targetZone) / ourBaseDamage;
