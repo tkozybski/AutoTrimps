@@ -876,8 +876,11 @@ function calcHDRatio(targetZone, type) {
     var ignoreMapBonus = type != "world" || (game.global.challengeActive == "Lead" && targetZone%2 == 1);
     var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", ignoreMapBonus);
 
-    //Lead farms on odd zones
-    if (game.global.challengeActive == "Lead" && targetZone%2 == 1 && type == "world") targetZone++;
+    //Lead farms on odd zones, and loses it's attack buff on even zones, so they shouldn't be accounted for either
+    if (game.global.challengeActive == "Lead" && targetZone%2 == 1 && type == "world") {
+        targetZone++;
+        ourBaseDamage /= 1.5;
+    }
 
     //Shield
     highDamageShield();
