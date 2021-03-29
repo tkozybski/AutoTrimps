@@ -309,22 +309,13 @@ function autoLevelEquipment() {
                 var BuyWeaponUpgrades = ((getPageSetting('BuyWeaponsNew') == 1) || (getPageSetting('BuyWeaponsNew') == 2));
                 var BuyArmorUpgrades = ((getPageSetting('BuyArmorNew') == 1) || (getPageSetting('BuyArmorNew') == 2));
                 var DelayArmorWhenNeeded = getPageSetting('DelayArmorWhenNeeded');
+                var equipStat = equipmentList[equipName].Stat;
 
-                if (
-                    (BuyWeaponUpgrades && equipmentList[equipName].Stat == 'attack') ||
-                    (BuyWeaponUpgrades && equipmentList[equipName].Stat == 'block') ||
-                    (BuyArmorUpgrades && equipmentList[equipName].Stat == 'health' &&
-                        (
-                            (DelayArmorWhenNeeded && !shouldFarm) ||
-                            (DelayArmorWhenNeeded && enoughDamageE) ||
-                            (DelayArmorWhenNeeded && !enoughDamageE && !enoughHealthE) ||
-                            (DelayArmorWhenNeeded && equipmentList[equipName].Resource == 'wood') ||
-                            (!DelayArmorWhenNeeded)
-                        )
-                    )
-                )
+                //Only delay armor Prestiges if lacking health or not lacking damage to advance
+                BuyArmorUpgrades &= DelayArmorWhenNeeded || !enoughHealth || enoughDamage || equipmentList[equipName].Resource == "wood";
 
-                {
+                //Buy Prestiges
+                if (BuyWeaponUpgrades && equipStat == "attack" || BuyArmorUpgrades && equipStat == "block") {
                     var upgrade = equipmentList[equipName].Upgrade;
                     if (upgrade != "Gymystic")
                         debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, "equips", '*upload');
@@ -356,7 +347,7 @@ function autoLevelEquipment() {
                 $eqName.style.border = '2px solid red';
             }
             var maxmap = getPageSetting('MaxMapBonusAfterZone') && doMaxMapBonus;
-            if (BuyArmorLevels && (DaThing.Stat == 'health' || DaThing.Stat == 'block') && (!enoughHealthE || maxmap)) {
+            if (BuyArmorLevels && (DaThing.Stat == 'health' || DaThing.Stat == 'block') && (!enoughHealth || !enoughHealthE && enoughDamage || maxmap)) {
                 game.global.buyAmt = gearamounttobuy;
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
                     debug('Leveling equipment ' + eqName, "equips", '*upload3');
