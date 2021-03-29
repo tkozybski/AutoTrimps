@@ -886,8 +886,25 @@ function calcHDRatio(targetZone, type) {
     var ignoreMapBonus = type != "world" || (game.global.challengeActive == "Lead" && targetZone%2 == 1);
     var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", ignoreMapBonus);
 
+    //Shield
+    highDamageShield();
+    if (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg')) {
+        ourBaseDamage /= getCritMulti(false);
+        ourBaseDamage *= trimpAA;
+        ourBaseDamage *= getCritMulti(true);
+    }
+    if (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg')) {
+        ourBaseDamage /= getCritMulti(false);
+        ourBaseDamage *= trimpAA;
+        ourBaseDamage *= getCritMulti(true);
+    }
+
     //Lead Challenge
-    if (game.global.challengeActive == "Lead" && targetZone%2 == 1 && type == "world") {
+    if (game.global.challengeActive == "Lead" && targetZone%2 == 1 && type != "map") {
+        //Stats for void maps
+        var voidDamage = ourBaseDamage;
+        var voidHealth = type == "void" ? calcEnemyHealth("void", targetZone) : 0;
+
         //Farms on odd zones, and ignores the odd zone attack buff
         targetZone++;
         ourBaseDamage /= 1.5;
@@ -897,21 +914,12 @@ function calcHDRatio(targetZone, type) {
             ourBaseDamage /= getAnticipationBonus(game.global.antiStacks);
             ourBaseDamage *= getAnticipationBonus(19);
         }
+
+        //Return whatever gives the worst H:D ratio, an odd zone void map or farming for the next even zone
+        return Math.max(voidHealth / voidDamage, calcEnemyHealth(type, targetZone) / ourBaseDamage);
     }
 
-    //Shield
-    highDamageShield();
-    if (getPageSetting('AutoStance') == 3 && getPageSetting('highdmg') != undefined && game.global.challengeActive != "Daily" && game.global.ShieldEquipped.name != getPageSetting('highdmg')) {
-        ourBaseDamage /= getCritMulti(false);
-        ourBaseDamage *= trimpAA;
-	    ourBaseDamage *= getCritMulti(true);
-    }
-    if (getPageSetting('use3daily') == true && getPageSetting('dhighdmg') != undefined && game.global.challengeActive == "Daily" && game.global.ShieldEquipped.name != getPageSetting('dhighdmg')) {
-	    ourBaseDamage /= getCritMulti(false);
-        ourBaseDamage *= trimpAA;
-	    ourBaseDamage *= getCritMulti(true);
-    }
-
+    //Return H:D for a regular, sane, not f-ing Lead zone (sorry, Lead just took a lot of me)
     return calcEnemyHealth(type, targetZone) / ourBaseDamage;
 }
 
