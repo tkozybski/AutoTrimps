@@ -314,7 +314,6 @@ function autoMap() {
 
     //H:D Calc
     var ourBaseDamage = calcOurDmg("avg", false, true);
-    var ourBaseDamage2 = calcOurDmg("avg", false, true, "maybe", true);
     
     //Shield Calc
     highDamageShield();

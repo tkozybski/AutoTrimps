@@ -873,7 +873,8 @@ function calcHDRatio(targetZone, type) {
     if (!type) type = preVoidCheck ? "void" : "world";
 
     //Init
-    var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", type != "world");
+    var ignoreMapBonus = type != "world" || (game.global.challengeActive == "Lead" && targetZone%2 == 1);
+    var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", ignoreMapBonus);
 
     //Lead farms on odd zones
     if (game.global.challengeActive == "Lead" && targetZone%2 == 1 && type == "world") targetZone++;
