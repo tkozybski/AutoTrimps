@@ -240,7 +240,7 @@ function getAnticipationBonus(stacks) {
 
     //Init
     var perkMult = game.portal.Anticipation.level * game.portal.Anticipation.modifier;
-    var stacks45 = getPageSetting('45stacks') == false || getPageSetting('45stacks') == "false";
+    var stacks45 = getPageSetting('45stacks') != false && getPageSetting('45stacks') != "false";
 
     //Regular anticipation
     if (!stacks45) return 1 + stacks * perkMult;
