@@ -233,7 +233,6 @@ function postBuy3() {
 }
 
 function autoLevelEquipment() {
-
     var gearamounttobuy = (getPageSetting('gearamounttobuy') > 0) ? getPageSetting('gearamounttobuy') : 1;
 
     //WS

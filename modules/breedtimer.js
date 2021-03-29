@@ -7,7 +7,8 @@ var missingTrimps = new DecimalBreed(0);
 //Lowers breed timer proportionally to the amount of Momentum during Lead
 function customLeadTimer() {
     //If instakilling, timer = 30
-    if (calcHDRatio() <= 1) return 30;
+    var formation = game.upgrades.Dominance.done ? "D" : "X";
+    if (oneShootPower(formation) > 0) return 30;
 
     //Timer = 10 to 30, according to the number of stacks. Or from 5-30 if Scrying
     if (game.global.formation != 4) return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);

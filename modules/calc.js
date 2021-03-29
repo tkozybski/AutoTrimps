@@ -234,6 +234,21 @@ function getCritMulti(high, crit) {
     return critDHModifier;
 }
 
+function getAnticipationBonus(stacks) {
+    //Pre-Init
+    if (stacks == undefined) stacks = game.global.antiStacks;
+
+    //Init
+    var perkMult = game.portal.Anticipation.level * game.portal.Anticipation.modifier;
+    var stacks45 = getPageSetting('45stacks') == false || getPageSetting('45stacks') == "false";
+
+    //Regular anticipation
+    if (!stacks45) return 1 + stacks * perkMult;
+
+    //45 stacks (??)
+    return 1 + 45 * perkMult;
+}
+
 function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, realDamage) {
     //Init
     var number = getTrimpAttack(realDamage);
@@ -259,12 +274,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (game.global.achievementBonus > 0) number *= (1 + (game.global.achievementBonus / 100));
 
     //Anticipation
-    if ((getPageSetting('45stacks') == false || getPageSetting('45stacks') == "false")  && game.global.antiStacks > 0) {
-        number *= ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
-    }
-    else if (game.global.antiStacks > 0) {
-        number *= ((45 * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1);
-    }
+    if (game.global.antiStacks > 0) number *= getAnticipationBonus();
 
     //Formation
     if (!incStance && game.global.formation != 0) number /= (game.global.formation == 2) ? 4 : 0.5;
@@ -876,10 +886,17 @@ function calcHDRatio(targetZone, type) {
     var ignoreMapBonus = type != "world" || (game.global.challengeActive == "Lead" && targetZone%2 == 1);
     var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", ignoreMapBonus);
 
-    //Lead farms on odd zones, and loses it's attack buff on even zones, so they shouldn't be accounted for either
+    //Lead Challenge
     if (game.global.challengeActive == "Lead" && targetZone%2 == 1 && type == "world") {
+        //Farms on odd zones, and ignores the odd zone attack buff
         targetZone++;
         ourBaseDamage /= 1.5;
+
+        //Custom Anticipation Stacks
+        if (game.global.antiStacks > 19) {
+            ourBaseDamage /= getAnticipationBonus(game.global.antiStacks);
+            ourBaseDamage *= getAnticipationBonus(19);
+        }
     }
 
     //Shield
