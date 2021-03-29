@@ -916,7 +916,7 @@ function calcHDRatio(targetZone, type) {
         }
 
         //Return whatever gives the worst H:D ratio, an odd zone void map or farming for the next even zone
-        return Math.max(voidHealth / voidDamage, calcEnemyHealth(type, targetZone) / ourBaseDamage);
+        return Math.max(voidHealth / voidDamage, calcEnemyHealth("world", targetZone) / ourBaseDamage);
     }
 
     //Return H:D for a regular, sane, not f-ing Lead zone (sorry, Lead just took a lot of me)
