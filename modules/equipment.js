@@ -262,7 +262,7 @@ function autoLevelEquipment() {
     }
 
     //Check for H & D
-    var enoughHealthE = calcHealthRatio(false, true) > numHits * getMapHealthCutOff();
+    var enoughHealthE = calcHealthRatio(false, true) > getMapHealthCutOff() * MODULES.equipment.numHitsMult;
     var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
     var enoughDamageE = oneShootPower(formation, true) >= 1;
     
