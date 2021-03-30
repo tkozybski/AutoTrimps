@@ -440,7 +440,7 @@ function autoMap() {
             else if (game.upgrades.Dominance.done) ratio *= 4;
 
             //Stop increasing map level if we can't one hit on it
-            if (ratio < 1) break;
+            if (ratio > 1) break;
         }
     }
     
