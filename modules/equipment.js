@@ -313,7 +313,7 @@ function autoLevelEquipment() {
                 BuyArmorUpgrades &= DelayArmorWhenNeeded || !enoughHealth || enoughDamage || equipmentList[equipName].Resource == "wood";
 
                 //Buy Prestiges
-                if (BuyWeaponUpgrades && equipStat == "attack" || BuyArmorUpgrades && (equipStat == "block" || equipStat == "block")) {
+                if (BuyWeaponUpgrades && equipStat == "attack" || BuyArmorUpgrades && (equipStat == "health" || equipStat == "block")) {
                     var upgrade = equipmentList[equipName].Upgrade;
                     if (upgrade != "Gymystic")
                         debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, "equips", '*upload');
