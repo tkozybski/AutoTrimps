@@ -552,9 +552,9 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
-        //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 4.
-        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 6; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
+        //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 1.
+        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 3; //Integer division
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3) * calcCorruptionScale(zone, 10);
         attack *= corruptionWeight/100;
     }
     
@@ -576,7 +576,8 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     //Init
     //var corrupt = enemy.hasOwnProperty("corrupted");
     //var healthy = enemy.hasOwnProperty("healthy");
-    var attack = calcEnemyAttackCore(undefined, undefined, undefined, undefined, undefined, enemy.attack) * badGuyCritMult(enemy, critPower, customBlock, customHealth);
+    var attack  = calcEnemyAttackCore(undefined, undefined, undefined, undefined, undefined, enemy.attack);
+        attack *= badGuyCritMult(enemy, critPower, customBlock, customHealth);
     
     //Challenges - considers the actual scenario for this enemy
     if (game.global.challengeActive == "Lead") attack *= 1 + (0.04 * game.challenges.Lead.stacks);
