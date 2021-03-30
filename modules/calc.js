@@ -556,8 +556,8 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     
     //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
     if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
-        //Calculates the impact of the corruption on the average attack on that map (kinda like a crit)
-        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 2; //Integer division
+        //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 4.
+        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 6; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
         attack *= corruptionWeight/100;
     }
@@ -818,8 +818,8 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Dragimp") {
 
     //Average corrupt impact on World
     else if (corrupt && !healthy && !game.global.spireActive) {
-        //Calculates the impact of the corruption on the average health on that map (kinda like a crit)
-        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 2; //Integer division
+        //Calculates the impact of the corruption on the average health on that map. Improbabilities count as 4.
+        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 6; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 10);
         health *= corruptionWeight/100;
     }
@@ -862,7 +862,7 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
     if (type != "world") health *= getCurrentMapObject().difficulty;
 
     //Corruption - May be slightly smaller than it should be, if "zone" is different than your current zone
-    else if (corrupt && !healthy) {
+    else if (!healthy && (corrupt || name == "Improbability")) {
         health *= calcCorruptionScale(zone, 10);
         if (enemy.corrupted == "corruptTough") health *= 5;
     }
