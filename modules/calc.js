@@ -723,7 +723,8 @@ function calcEnemyBaseHealth(type, zone, cell, name) {
     if (!name) name = getCurrentEnemy() ? getCurrentEnemy().name : "Dragimp";
 
     //Init
-    var health = 130 * Math.sqrt(zone) * Math.pow(3.265, zone / 2) - 110;
+    var base = (game.global.universe == 2) ? 10e7 : 130;
+    var health = base * Math.sqrt(zone) * Math.pow(3.265, zone / 2) - 110;
 
     //First Two Zones
     if (zone == 1 || zone == 2 && cell < 10) {
@@ -746,7 +747,7 @@ function calcEnemyBaseHealth(type, zone, cell, name) {
     }
     
     //Maps
-    if (zone > 5 && type == "map") health *= 1.1;
+    if (zone > 5 && type != "world") health *= 1.1;
 
     //Specific Imp
     if (name) health *= game.badGuys[name].health;
@@ -754,7 +755,7 @@ function calcEnemyBaseHealth(type, zone, cell, name) {
     return Math.floor(health);
 }
 
-function calcEnemyHealthCore(type = "world", zone, cell, name, customHealth) {
+function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
     //Pre-Init
     if (!type) type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
     if (!zone) zone = (type == "world" || !game.global.mapsActive) ? game.global.world : getCurrentMapObject().level;
