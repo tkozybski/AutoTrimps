@@ -445,7 +445,7 @@ function autoMap() {
     }
     
     //Farms on "Oneshoot Zone + 1" DEBUG
-    //if (shouldFarmLowerZone && siphlvl < maxlvl) siphlvl++;
+    if (shouldFarmLowerZone && siphlvl < maxlvl) siphlvl++;
     
     var obj = {};
     var siphonMap = -1;
