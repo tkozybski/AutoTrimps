@@ -525,12 +525,8 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
         oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
         attack *= oblitMult
     }
-
-    //Fluctuations
-    var min = attack * 0.8;
-    var max = attack * 1.2;
     
-    return minOrMax ? min : max;
+    return minOrMax ? Math.floor(attack * 0.8) : Math.ceil(attack * 1.2);
 }
 
 function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
