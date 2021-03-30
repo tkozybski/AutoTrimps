@@ -4,7 +4,7 @@ function scryingCorruption() {
     var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && game.global.world < getPageSetting('ScryerMaxZone');
     var scryCorrupt = scryZone && game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
     var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
-    if (scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true)
+    if (scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true) return true;
 }
 
 function useScryerStance() {

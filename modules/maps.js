@@ -187,10 +187,8 @@ function getMapHealthCutOff() {
     //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
     if (preVoidCheck) return base * MODULES.maps.voidHitsMult;
 
-    //Scryer (only if scrying)
-    var scryCorrupt = game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
-    var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
-    if (scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true) return base * MODULES.maps.scryerHitsMult;
+    //Scryer Multiplier (only if scrying on corrupted)
+    if (scryingCorruption()) return base * MODULES.maps.scryerHitsMult;
 
     return base;
 }

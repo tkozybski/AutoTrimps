@@ -6,7 +6,6 @@ MODULES["equipment"].equipHealthDebugMessage = false;
 
 //Psycho
 MODULES["equipment"].numHitsMult = 2;
-MODULES["equipment"].scryMult = 4; //Multiplies the above value by this when scrying on corrupted is on
 
 var equipmentList = {
     'Dagger': {
@@ -262,12 +261,8 @@ function autoLevelEquipment() {
         };
     }
 
-    //Calculates how many hits we want to buy armor for (it still buys more if it doesn't need more damage)
-    var numHits = MODULES["maps"].numHitsSurvived * MODULES["equipment"].numHitsMult;
-     return base * MODULES.maps.scryerHitsMult;
-
     //Check for H & D
-    var enoughHealthE = calcHealthRatio(false, true) > numHits;
+    var enoughHealthE = calcHealthRatio(false, true) > numHits * getMapHealthCutOff();
     var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
     var enoughDamageE = oneShootPower(formation, true) >= 1;
     
