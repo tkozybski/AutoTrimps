@@ -526,7 +526,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
         attack *= oblitMult
     }
     
-    return minOrMax ? Math.floor(attack * 0.8) : Math.ceil(attack * 1.2);
+    return minOrMax ? 0.8 * attack : 1.2 * attack;
 }
 
 function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
@@ -565,7 +565,7 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
         attack *= 1.15;
     }
     
-    return Math.floor(attack);
+    return minOrMax ? Math.floor(attack) : Math.ceil(attack);
 }
 
 function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
@@ -584,7 +584,7 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     //Ice
     if (getEmpowerment() == "Ice") attack *= game.empowerments.Ice.getCombatModifier();
 
-    return Math.floor(attack);
+    return Math.ceil(attack);
 }
 
 function badGuyChallengeMult() {
