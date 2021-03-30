@@ -31,7 +31,7 @@ function getTrimpAttack(realDamage) {
     if (realDamage) return game.global.soldierCurrentAttack;
 
     //Damage from equipments and Coordinations
-    var dmg = calcEquipment("attack") * game.resources.trimps.maxSoldiers;
+    var dmg = (6 + calcEquipment("attack")) * game.resources.trimps.maxSoldiers;
     
     //Magma
     if (mutations.Magma.active()) dmg *= mutations.Magma.getTrimpDecay();
@@ -53,7 +53,7 @@ function getTrimpHealth(realHealth) {
     if (realHealth) return game.global.soldierHealthMax;
 
     //Health from equipments and coordination
-    var health = 50 + calcEquipment("health") * game.resources.trimps.maxSoldiers;
+    var health = (50 + calcEquipment("health")) * game.resources.trimps.maxSoldiers;
 
     //Toughness
     if (game.portal.Toughness.level > 0)
