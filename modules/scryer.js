@@ -34,10 +34,10 @@ function useScryerStance() {
         never_scry |= USS && !MA && (getEmpowerment() == "Poison" && (getPageSetting('ScryUseinPoison') == 0 || (getPageSetting('ScryUseinPoison') > 0 && game.global.world >= getPageSetting('ScryUseinPoison')))) || (getEmpowerment() == "Wind" && (getPageSetting('ScryUseinWind') == 0 || (getPageSetting('ScryUseinWind') > 0 && game.global.world >= getPageSetting('ScryUseinWind')))) || (getEmpowerment() == "Ice" && (getPageSetting('ScryUseinIce') == 0 || (getPageSetting('ScryUseinIce') > 0 && game.global.world >= getPageSetting('ScryUseinIce'))));
 
     //check Corrupted Never
-    var curEnemy = getCurrentEnemy(1);
-    var iscorrupt = curEnemy && curEnemy.mutation == "Corruption";
-    var scryNext = oneShootPower("D", false, 0, true) || oneShootPower("X", false, 0, true);
-    if (never_scry || !scryNext && USS && !MA && iscorrupt && SC) {
+    var iscorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).mutation == "Corruption";
+    var nextIsCorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).mutation == "Corruption"
+    var scryNext = !nextIsCorrupt && (oneShootPower("D", false, 0, true) || oneShootPower("X", false, 0, true));
+    if (never_scry || USS && !MA && SC && iscorrupt && !scryNext) {
         autostancefunction();
         wantToScry = false;
         return;
