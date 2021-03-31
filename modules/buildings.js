@@ -115,7 +115,7 @@ function buyFoodEfficientHousing() {
 }
 
 function buyGemEfficientHousing() {
-    var gemHousing = ["Hotel", "Resort", "Gateway", "Collector", "Warpstation"];
+    var gemHousing = ["Mansion", "Hotel", "Resort", "Gateway", "Collector", "Warpstation"]; //DEBUG Mansions were added here. Beware!
     var unlockedHousing = [];
     for (var house in gemHousing) {
         if (game.buildings[gemHousing[house]].locked === 0) {
