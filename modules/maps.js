@@ -537,6 +537,13 @@ function autoMap() {
                     break;
                 }
 
+                //Bionic Wonderland II+ (Unlocks)
+                if (theMap.location == "Bionic" && game.global.roboTrimpLevel <= (theMap.level - 125) / 15) {
+                    if (getMapRatio(theMap) > 1) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
+
                 //Imploding Star (Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Devastation");
                 if (theMap.name == 'Imploding Star' && (challengeRequireMap || shouldSpeedRun(game.achievements.starTimed))) {
