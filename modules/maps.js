@@ -476,8 +476,9 @@ function autoMap() {
     //Uniques
     var runUniques = (getPageSetting('AutoMaps') == 1);
     if (runUniques) {
+        //Init
         var runningC2 = game.global.runningChallengeSquared;
-        var challengeRequireMap, challenge = game.global.challengeActive;
+        var challengeRequireMap, speedRun, challenge = game.global.challengeActive;
 
         //For each owned map..
         for (var map in game.global.mapsOwnedArray) {
@@ -486,7 +487,8 @@ function autoMap() {
             //Check if it's unique
             if (theMap.noRecycle) {
                 //The Wall (Bounty or Speed Achievement)
-                if (theMap.name == 'The Wall' && (game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased || game.achievements.wallTimed.finished < 4)) {
+                speedRun = achievement.finished == achievement.tiers.length;
+                if (theMap.name == 'The Wall' && (game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased || shouldSpeedRun(game.achievements.wallTimed))) {
                     if (game.global.world < 15 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
@@ -495,7 +497,7 @@ function autoMap() {
                 //Dimension of Anger (Portal, Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Discipline" || challenge == "Metal" || challenge == "Size" || challenge == "Frugal" || challenge == "Coordinate");
                 var needToPortal = !game.talents.portal.purchased && document.getElementById("portalBtn").style.display == "none";
-                if (theMap.name == 'Dimension of Anger' && (challengeRequireMap || needToPortal || game.achievements.angerTimed.finished < 5)) {
+                if (theMap.name == 'Dimension of Anger' && (challengeRequireMap || needToPortal || shouldSpeedRun(game.achievements.angerTimed))) {
                     if (game.global.world < 20 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
@@ -504,7 +506,7 @@ function autoMap() {
                 //The Block (Shieldblock, Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Scientist" || challenge == "Trimp");
                 var getShieldblock = !game.upgrades.Shieldblock.allowed && getPageSetting('BuyShieldblock');
-                if (theMap.name == 'The Block' &&  (challengeRequireMap || getShieldblock || game.achievements.blockTimed.finished < 4)) {
+                if (theMap.name == 'The Block' &&  (challengeRequireMap || getShieldblock || shouldSpeedRun(game.achievements.blockTimed))) {
                     if (game.global.world < 11 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
@@ -513,7 +515,7 @@ function autoMap() {
                 //Trimple of Doom (Treasure, Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Meditate" || challenge == "Trapper");
                 var treasure = game.mapUnlocks.AncientTreasure.canRunOnce && Math.abs(getPageSetting('TrimpleZ')) >= 33;
-                if (theMap.name == 'Trimple Of Doom' && (challengeRequireMap || treasure || game.achievements.doomTimed.finished < 4)) {
+                if (theMap.name == 'Trimple Of Doom' && (challengeRequireMap || treasure || shouldSpeedRun(game.achievements.doomTimed.finished))) {
                     if (game.global.world < Math.abs(getPageSetting('TrimpleZ')) || getMapRatio(theMap) > 1) continue;
                     if (treasure < 0) setPageSetting('TrimpleZ', 0);
                     selectedMap = theMap.id;
@@ -522,7 +524,7 @@ function autoMap() {
 
                 //The Prison (Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Electricity" || challenge == "Mapocalypse");
-                if (theMap.name == 'The Prison' && (challengeRequireMap || game.achievements.doomTimed.finished < 9)) {
+                if (theMap.name == 'The Prison' && (challengeRequireMap || shouldSpeedRun(game.achievements.doomTimed))) {
                     if (game.global.world < 80 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
@@ -530,7 +532,7 @@ function autoMap() {
 
                 //Bionic Wonderland (Challenges, Unlocks and Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Crushed");
-                if (theMap.name == 'Bionic Wonderland' && (!bwRewardUnlocked("Foremany") || game.global.challengeActive == "Crushed")) {
+                if (theMap.name == 'Bionic Wonderland' && (challengeRequireMap || shouldSpeedRun(game.achievements.bionicTimed))) {
                     if (game.global.world < 125 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
