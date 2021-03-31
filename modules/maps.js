@@ -478,7 +478,7 @@ function autoMap() {
     if (runUniques) {
         //Init
         var runningC2 = game.global.runningChallengeSquared;
-        var challengeRequireMap, speedRun, challenge = game.global.challengeActive;
+        var challengeRequireMap, challenge = game.global.challengeActive;
 
         //For each owned map..
         for (var map in game.global.mapsOwnedArray) {
@@ -496,7 +496,6 @@ function autoMap() {
                 }
 
                 //The Wall (Bounty or Speed Achievement)
-                speedRun = achievement.finished == achievement.tiers.length;
                 if (theMap.name == 'The Wall' && (game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased || shouldSpeedRun(game.achievements.wallTimed))) {
                     if (game.global.world < 15 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
