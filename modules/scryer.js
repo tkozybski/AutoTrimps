@@ -36,7 +36,7 @@ function useScryerStance() {
     //check Corrupted Never
     var iscorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).mutation == "Corruption";
     var nextIsCorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).mutation == "Corruption"
-    var scryNext = !nextIsCorrupt && oneShootPower(undefined, false, 0, true);
+    var scryNext = !nextIsCorrupt && (game.global.formation != 4 || oneShootPower(undefined, false, 0, true));
     if (never_scry || USS && !MA && SC && iscorrupt && !scryNext) {
         autostancefunction();
         wantToScry = false;
