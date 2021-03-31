@@ -83,6 +83,12 @@ function manualLabor2() {
 		setGather('science');
 		return;
 	}
+
+	//Pre Miners metal gathering
+	if (game.resources.metal.owned < 100 && game.global.challengeActive != "Metal" && !game.upgrades.Miners.done) {
+		setGather('metal');
+		return;
+	}
 	
 	//Build if we don't have foremany, there are 2+ buildings in the queue, or if we can speed up something other than a trap
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1'))) {
