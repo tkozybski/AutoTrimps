@@ -193,6 +193,12 @@ function getMapHealthCutOff() {
     return base;
 }
 
+function getMapRatio(map) {
+    var mapDmg = calcHDRatio(map.level, "map") / getMapCutOff();
+    var mapHp = getMapHealthCutOff() / calcHealthRatio(false, true, "map", map.level);
+    return map.difficulty * Math.max(mapDmg, mapHp);
+}
+
 function autoMap() {
     //Failsafes
     if (!game.global.mapsUnlocked || calcOurDmg("avg", false, true) <= 0) {
@@ -470,50 +476,64 @@ function autoMap() {
     //Uniques
     var runUniques = (getPageSetting('AutoMaps') == 1);
     if (runUniques) {
+        var runningC2 = game.global.runningChallengeSquared;
+        var challengeRequireMap, challenge = game.global.challengeActive;
+
+        //For each owned map..
         for (var map in game.global.mapsOwnedArray) {
             var theMap = game.global.mapsOwnedArray[map];
+
+            //Check if it's unique
             if (theMap.noRecycle) {
-                if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased) {
-                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                    if (game.global.world < 15 + theMapDifficulty) continue;
+                //The Wall (Bounty or Speed Achievement)
+                if (theMap.name == 'The Wall' && (game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased || game.achievements.wallTimed.finished < 4)) {
+                    if (game.global.world < 15 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
                 }
-                if (theMap.name == 'Dimension of Anger' && document.getElementById("portalBtn").style.display == "none" && !game.talents.portal.purchased) {
-                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                    if (game.global.world < 20 + theMapDifficulty) continue;
+
+                //Dimension of Anger (Portal, Challenges or Speed Achievement)
+                challengeRequireMap = !runningC2 && (challenge == "Discipline" || challenge == "Metal" || challenge == "Size" || challenge == "Frugal" || challenge == "Coordinate");
+                var needToPortal = !game.talents.portal.purchased && document.getElementById("portalBtn").style.display == "none";
+                if (theMap.name == 'Dimension of Anger' && (challengeRequireMap || needToPortal || game.achievements.angerTimed.finished < 5)) {
+                    if (game.global.world < 20 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
                 }
-                var runningC2 = game.global.runningChallengeSquared;
-                if (theMap.name == 'The Block' && !game.upgrades.Shieldblock.allowed && ((game.global.challengeActive == "Scientist" || game.global.challengeActive == "Trimp") && !runningC2 || getPageSetting('BuyShieldblock'))) {
-                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                    if (game.global.world < 11 + theMapDifficulty) continue;
+
+                //The Block (Shieldblock, Challenges or Speed Achievement)
+                challengeRequireMap = !runningC2 && (challenge == "Scientist" || challenge == "Trimp");
+                var getShieldblock = !game.upgrades.Shieldblock.allowed && getPageSetting('BuyShieldblock');
+                if (theMap.name == 'The Block' &&  (challengeRequireMap || getShieldblock || game.achievements.blockTimed.finished < 4)) {
+                    if (game.global.world < 11 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
                 }
-                var treasure = getPageSetting('TrimpleZ');
-                if (theMap.name == 'Trimple Of Doom' && (game.portal.Relentlessness.locked || game.mapUnlocks.AncientTreasure.canRunOnce && game.global.world >= treasure)) {
-                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                    if ((game.global.world < 33 + theMapDifficulty) || treasure > -33 && treasure < 33) continue;
+
+                //Trimple of Doom (Treasure, Challenges or Speed Achievement)
+                challengeRequireMap = !runningC2 && (challenge == "Meditate" || challenge == "Trapper");
+                var treasure = game.mapUnlocks.AncientTreasure.canRunOnce && Math.abs(getPageSetting('TrimpleZ')) >= 33;
+                if (theMap.name == 'Trimple Of Doom' && (challengeRequireMap || treasure || game.achievements.doomTimed.finished < 4)) {
+                    if (game.global.world < Math.abs(getPageSetting('TrimpleZ')) || getMapRatio(theMap) > 1) continue;
+                    if (treasure < 0) setPageSetting('TrimpleZ', 0);
                     selectedMap = theMap.id;
-                    if (treasure < 0)
-                        setPageSetting('TrimpleZ', 0);
                     break;
                 }
-                if (!runningC2) {
-                    if (theMap.name == 'The Prison' && (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse")) {
-                        var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                        if (game.global.world < 80 + theMapDifficulty) continue;
-                        selectedMap = theMap.id;
-                        break;
-                    }
-                    if (theMap.name == 'Bionic Wonderland' && (!bwRewardUnlocked("Foremany") || game.global.challengeActive == "Crushed")) {
-                        var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                        if (game.global.world < 125 + theMapDifficulty) continue;
-                        selectedMap = theMap.id;
-                        break;
-                    }
+
+                //The Prison (Challenges or Speed Achievement)
+                challengeRequireMap = !runningC2 && (challenge == "Electricity" || challenge == "Mapocalypse");
+                if (theMap.name == 'The Prison' && (challengeRequireMap || game.achievements.doomTimed.finished < 9)) {
+                    if (game.global.world < 80 || getMapRatio(theMap) > 1) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
+
+                //Bionic Wonderland (Challenges, Unlocks and Speed Achievement)
+                challengeRequireMap = !runningC2 && (challenge == "Crushed");
+                if (theMap.name == 'Bionic Wonderland' && (!bwRewardUnlocked("Foremany") || game.global.challengeActive == "Crushed")) {
+                    if (game.global.world < 125 || getMapRatio(theMap) > 1) continue;
+                    selectedMap = theMap.id;
+                    break;
                 }
             }
         }

@@ -167,13 +167,13 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHealthRatio(stance, fullGeneticist, type) {
+function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
     //Pre Init
     if (!type) type = preVoidCheck ? "void" : "world";
+    if (!targetZone) targetZone = game.global.world;
 
     //Init
-    var voidDamage=0;
-    var targetZone = game.global.world;
+    var voidDamage = 0;
     const formationMod = (game.upgrades.Dominance.done && !stance) ? 2 : 1;
 
     //Our Health and Block
