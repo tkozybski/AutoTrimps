@@ -1136,7 +1136,7 @@ function settingChanged(id) {
     }
     if (btn.type == 'dropdown') {
         btn.selected = document.getElementById(id).value;
-        if (id == "Prestige")
+        if (id == "Prestige" && autoTrimpSettings["PrestigeBackup"])
             autoTrimpSettings["PrestigeBackup"].selected = document.getElementById(id).value;
     }
     updateCustomButtons();
