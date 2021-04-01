@@ -24,4 +24,7 @@ function betterAutoFight3() {
         pauseFight();
         if (game.global.gridArray.length === 0 || game.global.preMapsActive || !game.upgrades.Battle.done || game.global.fighting || game.global.spireActive)
             return;
+        if (game.global.world == 1 && !game.global.fighting && game.resources.trimps.owned >= game.resources.trimps.realMax()) {
+            fightManual();
+        }
 }
