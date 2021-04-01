@@ -550,12 +550,12 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;
     
-    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
+    //Corruption - Calculates the impact of the corruption on the average attack on that map times two. Improbabilities count as 1.
     if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
-        //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 1.
-        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 3; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
-        attack *= corruptionWeight/100;
+        //It uses the average times two for damage because otherwise trimps would be full pop half of the time, but dead in the other half
+        var corruptionAmount = Math.max(50, ~~((zone - mutations.Corruption.start())/3) + 3); //Integer division
+        var corruptionWeight = (50 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
+        attack *= corruptionWeight/50;
     }
     
     //Healthy -- DEBUG
@@ -607,54 +607,6 @@ function badGuyChallengeMult() {
         var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
         oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
         number *= oblitMult
-    }
-
-    return number;
-}
-
-function calcBadGuyDmg(enemy, attack, daily, maxOrMin, disableFlucts) {
-    //Init
-    var number = (enemy) ? enemy.attack : attack;
-    var fluctuation = .2;
-    var maxFluct = -1;
-    var minFluct = -1;
-    var corrupt = mutations.Corruption.active();
-    var healthy = mutations.Healthy.active();
-
-    if (enemy) return calcSpecificBadGuyDmg(enemy);
-
-    //Spire
-    if (game.global.spireActive) number = calcSpire("attack");
-
-    //Corruption - May be slightly smaller than it should be, if "world" is different than your current zone
-    else if (corrupt && !healthy && !(game.global.mapsActive && getCurrentMapObject().location == "Void")) {
-        //Calculates the impact of the corruption on the average attack on that map (kinda like a crit)
-        var corruptionAmount = ~~((game.global.world - mutations.Corruption.start())/3) + 2; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * getCorruptScale("attack");
-        number *= corruptionWeight/100;
-    }
-
-    //Challenge buffs & nerfs
-    number *= badGuyChallengeMult();
-    if (game.global.challengeActive == "Lead") number *= 9; //Assume max stacks
-    else if (game.global.challengeActive == 'Life') number *= 6; //For some reason, Life is buggy and needs to be fixed here
-    else if (game.global.challengeActive == "Toxicity") number *= 5;
-    
-
-    //RoboTrimp
-    if (game.global.usingShriek) number *= game.mapUnlocks.roboTrimp.getShriekValue();
-
-    //Daily
-    if (daily) number = calcDailyAttackMod(number);
-
-    //Fluctuations
-    if (!disableFlucts) {
-        if (minFluct > 1) minFluct = 1;
-        if (maxFluct == -1) maxFluct = fluctuation;
-        if (minFluct == -1) minFluct = fluctuation;
-        var min = Math.floor(number * (1 - minFluct));
-        var max = Math.ceil(number + (number * maxFluct));
-        return maxOrMin ? max : min;
     }
 
     return number;
