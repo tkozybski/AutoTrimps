@@ -84,9 +84,9 @@ function manualLabor2() {
 		return;
 	}
 
-	//Pre Miners metal gathering
-	if (game.resources.metal.owned < 100 && game.global.challengeActive != "Metal" && !game.upgrades.Miners.done) {
-		setGather('metal');
+	//Gather resources for Miner
+	if (!game.upgrades.Miners.done && game.global.challengeActive != "Metal" && (game.resources.metal.owned < 100 || game.resources.wood.owned < 300)) {
+		setGather(game.resources.metal.owned < 100 ? "metal" : "wood");
 		return;
 	}
 	
