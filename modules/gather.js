@@ -1,7 +1,7 @@
 //updated
 MODULES["gather"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["gather"].minScienceAmount = 100;
+MODULES["gather"].minScienceAmount = 60;
 MODULES["gather"].minScienceSeconds = 60;
 
 //Global flags
