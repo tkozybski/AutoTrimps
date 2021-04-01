@@ -554,7 +554,7 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
         //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 1.
         var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 3; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3) * calcCorruptionScale(zone, 10);
+        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
         attack *= corruptionWeight/100;
     }
     
