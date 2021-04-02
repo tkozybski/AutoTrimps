@@ -4,6 +4,32 @@ var trimpAA = 1;
 
 //Helium
 
+function debugCalc() {
+    //Pre-Init
+    var type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
+    var zone = (type == "world" || !game.global.mapsActive) ? game.global.world : getCurrentMapObject().level;
+    var cell = (type == "world" || !game.global.mapsActive) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
+    var name = getCurrentEnemy() ? getCurrentEnemy().name : "Chimp";
+
+    //Init
+    var displayedMin = calcOurDmg("min", true, true, "never", type != "world", true).toFixed(1);
+    var displayedMax = calcOurDmg("max", true, true, "never", type != "world", true).toFixed(1);
+
+    //Trimp Stats
+    debug("Our Stats")
+    debug("Our attack: " + displayedMin + "-" + displayedMax);
+    debug("Our crit: " + (getPlayerCritChance()*100).toFixed(2) + "for " + getPlayerCritDamageMult().toFixed(2) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(4));
+    debug("Our block: " + calcOurBlock(true, true).toFixed(1));
+    debug("Our Health: " + calcOurHealth(true, false, true).toFixed(1));
+
+    //Enemy stats
+    debug("Enemy Stats");
+    debug("Enemy Attack: " + calcEnemyAttack(type, zone, cell, name, true).toFixed(1) + "-" + calcEnemyAttack(type, zone, cell, name).toFixed(1));
+    debug("Enemy Health: " + calcEnemyHealth(type, zone, cell, name).toFixed(1));
+    debug("Specific Enemy Attack: " + calcSpecificEnemyAttack().toFixed(1));
+    debug("Specific Enemy Health: " + calcSpecificEnemyHealth().toFixed(1));
+}
+
 function calcEquipment(type = "attack") {
     //Init
     var bonus = 0;
@@ -639,25 +665,6 @@ function badGuyCritMult(enemy, critPower=2, block, health) {
     //Result -- Yep. Crits may crit! Yey!
     if (critPower == 2) return regular * challenge;
     else return Math.max(regular, challenge);
-}
-
-function calcSpecificBadGuyDmg(enemy, critPower=2, minOrMax, disableFlucts, customBlock, customHealth) {
-    //Pre-Init
-    if (!enemy) enemy = getCurrentEnemy();
-    if (!enemy) return 1;
-
-    //Crit
-    var number = enemy.attack * badGuyCritMult(enemy, critPower, customBlock, customHealth) * badGuyChallengeMult(game.global.mapsActive);
-    
-    //Other Challenges
-    if (game.global.challengeActive == "Lead") number *= 1 + 0.04 * game.challenges.Lead.stacks;
-    
-    //Ice
-    if (getEmpowerment() == "Ice") number *= game.empowerments.Ice.getCombatModifier();
-
-    //Fluctuations
-    if (disableFlucts) return number;
-    return minOrMax ? Math.floor(0.8 * number) : Math.ceil(1.2 * number);
 }
 
 function calcCorruptionScale(world, base) {
