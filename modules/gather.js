@@ -1,7 +1,6 @@
 //updated
 MODULES["gather"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["gather"].minScienceAmount = 60;
 MODULES["gather"].minScienceSeconds = 60;
 
 //Global flags
@@ -47,7 +46,6 @@ function manualLabor2() {
 	//Init - Others
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
-	var targetBreed = getPageSetting('GeneticistTimer');
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
@@ -79,7 +77,7 @@ function manualLabor2() {
 	}
 	
 	//Highest Priority Science gathering if we have less science than minScience
-	if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
+	if (getPageSetting('ManualGather2') != 2 && game.upgrades.Scientists.allowed && game.upgrades.Scientists.done && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
 		setGather('science');
 		return;
 	}
