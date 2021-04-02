@@ -76,8 +76,8 @@ function manualLabor2() {
 		}
 	}
 	
-	//Highest Priority Science gathering if we have less science than minScience
-	if (getPageSetting('ManualGather2') != 2 && game.upgrades.Scientists.allowed && game.upgrades.Scientists.done && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
+	//Highest Priority Science gathering if we have less science than needed to buy scientists
+	if (getPageSetting('ManualGather2') != 2 && game.upgrades.Scientists.allowed && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
 		setGather('science');
 		return;
 	}
