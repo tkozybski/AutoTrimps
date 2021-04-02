@@ -101,6 +101,7 @@ function updateAutoMapsStatus(get) {
 MODULES["maps"].advSpecialMapMod_numZones = 3;
 var advExtraMapLevels = 0;
 function testMapSpecialModController() {
+    var success = true;
     var a = [];
     if (Object.keys(mapSpecialModifierConfig).forEach(function(o) {
         var p = mapSpecialModifierConfig[o];
@@ -118,9 +119,10 @@ function testMapSpecialModController() {
                 
                 //Check if we can afford it
                 for (var d = updateMapCost(!0), e = game.resources.fragments.owned, f = 100 * (d / e); 0 < c.selectedIndex && d > e;) {
-                        c.selectedIndex -= 1;
-                        "0" != c.value && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
-                    }
+                    c.selectedIndex -= 1;
+                    "0" != c.value && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
+                    success = false;
+                }
                 var d = updateMapCost(!0), e = game.resources.fragments.owned;
                 "0" != c.value && debug("Set the map special modifier to: " + mapSpecialModifierConfig[c.value].name + ". Cost: " + (100 * (d / e)).toFixed(2) + "% of your fragments.");
             }
@@ -136,14 +138,15 @@ function testMapSpecialModController() {
             //Extra Map levels
             if (l) {
                 var m = document.getElementById("advExtraMapLevelselect");
-                if (!m)
-                    return;
+                if (!m) return success;
                 var n = document.getElementById("mapLevelInput").value;
                 for (m.selectedIndex = n == game.global.world ? MODULES.maps.advSpecialMapMod_numZones : 0; 0 < m.selectedIndex && updateMapCost(!0) > game.resources.fragments.owned;)
                     m.selectedIndex -= 1;
             }
         }
     }
+
+    return success;
 }
 
 function getMapCutOff() {
@@ -430,18 +433,19 @@ function autoMap() {
     }
     
     //Calculates Siphonology and Extra Map Levels
-    var siphlvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level);
-    var maxlvl = extraMapLevels + game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
+    var minLvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level);
+    var maxLvl = extraMapLevels + game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
+    var siphLvl = minLvl;
 	
     //If enabled, then
     if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone) {
         //For each Map Level we can go below our current zone...
-        for (siphlvl; siphlvl < maxlvl; siphlvl++) {
+        for (siphLvl; siphLvl < maxLvl; siphLvl++) {
             //Calc our Damage on this map
-            var ratio = calcHDRatio(siphlvl, "map");
+            var ratio = calcHDRatio(siphLvl, "map");
             if (game.unlocks.imps.Titimp) ratio *= 2;
 
-            //Farms on Scrier if available, or Dominance, or just X
+            //Farms on Scryer if available, or Dominance, or just X
             if (game.global.world >= 60 && getHighestLevelCleared() >= 180) ratio /= 2;
             else if (game.upgrades.Dominance.done) ratio *= 4;
 
@@ -451,17 +455,24 @@ function autoMap() {
     }
     
     //Farms on "Oneshoot Zone + 1" DEBUG
-    if (shouldFarmLowerZone && siphlvl < maxlvl) siphlvl++;
+    if (shouldFarmLowerZone && siphLvl < maxLvl) siphLvl++;
 
     //Register the level of every regular map we have
     var obj = {};
-    var siphonMap = -1;
-    for (var map in game.global.mapsOwnedArray) {
-        if (!game.global.mapsOwnedArray[map].noRecycle) {
-            var mapAux = game.global.mapsOwnedArray[map];
-            obj[map] = mapAux.level;
-            if (mapAux.level == siphlvl) //TODO -- Should prefer Special Maps?
-                siphonMap = map;
+    var siphonMap = -1, altSiphLevel = -1, altSiphMap = -1;
+    var tryBetterMod = false, gotBetterMod = false;
+    for (var index in game.global.mapsOwnedArray) {
+        if (!game.global.mapsOwnedArray[index].noRecycle) {
+            var mapAux = game.global.mapsOwnedArray[index];
+            obj[index] = mapAux.level;
+            if (mapAux.level == siphLvl) siphonMap = index; //TODO -- Should prefer Special Maps
+
+            //Also grabs the highest level within our range that has a modifier on it
+            if (mapAux.level >= Math.min(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= Math.max(siphLvl+1, maxLvl)) {
+                if (!mapAux.hasOwnProperty(bonus) || mapAux.bonus == "p") continue;
+                altSiphLevel = mapAux.level;
+                altSiphMap = index;
+            }
         }
     }
 
@@ -665,8 +676,10 @@ function autoMap() {
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";
-            } else if (siphonMap != -1)
+            } else if (siphonMap != -1) {
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
+                if (!game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
+            }
             else
                 selectedMap = "create";
         }
@@ -728,9 +741,9 @@ function autoMap() {
     } else if (game.global.preMapsActive) {
         if (selectedMap == "world") {
             mapsClicked();
-        } else if (selectedMap == "create") {
+        } else if (selectedMap == "create" || tryBetterMod) {
             var $mapLevelInput = document.getElementById("mapLevelInput");
-            $mapLevelInput.value = needPrestige ? game.global.world : siphlvl;
+            $mapLevelInput.value = needPrestige ? game.global.world : siphLvl;
             if (preSpireFarming && MODULES["maps"].SpireFarm199Maps)
                 $mapLevelInput.value = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
             var decrement;
@@ -783,8 +796,29 @@ function autoMap() {
                 sizeAdvMapsRange.value -= 1;
             }
             if (getPageSetting('AdvMapSpecialModifier'))
-                testMapSpecialModController();
+                gotBetterMod = testMapSpecialModController();
             var maplvlpicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
+
+            //Recycle our target map to add a modifier to it
+            if (tryBetterMod) {
+                if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
+                    debug("Recreating map level #" + maplvlpicked + " to include a modifier", "maps", '*happy2');
+                    recycleMap(siphonMap);
+                    return;
+                }
+                else if (altSiphMap != -1) {
+                    selectedMap = game.global.mapsOwnedArray[altSiphMap].id;
+                    selectMap(selectedMap);
+                    var mapObject = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
+                    var lvlText = " Level: " + mapObject.level;
+                    debug("Running alternative map " + selectedMap + lvlText + " Name: " + mapObject.name, "maps", 'th-large');
+                    runMap();
+                    lastMapWeWereIn = getCurrentMapObject();
+                    return;
+                }
+            }
+
+            //No fragments to create a map
             if (updateMapCost(true) > game.resources.fragments.owned) {
                 selectMap(game.global.mapsOwnedArray[highestMap].id);
                 debug("Can't afford the map we designed, #" + maplvlpicked, "maps", '*crying2');
