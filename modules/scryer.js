@@ -127,10 +127,10 @@ function useScryerStance() {
     if (USS && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true)) {
         //Smooth transition out of D/X before killing the target
         if (transitionRequired) {
-            if      (survive("XB") && !oneShootPower("X", false, 1, true)) {setFormation("0"); return;}
-            else if (survive("B")  && !oneShootPower("B", false, 1, true)) {setFormation( 3 ); return;}
-            else if (survive("X")  && !oneShootPower("X", false, 1, true)) {setFormation("0"); return;}
-            else if (survive("H")  && !oneShootPower("H", false, 1, true)) {setFormation( 1 ); return;}
+            if      (survive("XB") && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
+            else if (survive("B")  && !oneShootPower("B", false, 0, true)) {setFormation( 3 ); return;}
+            else if (survive("X")  && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
+            else if (survive("H")  && !oneShootPower("H", false, 0, true)) {setFormation( 1 ); return;}
         }
 
         //Finally, set formation to Scry
