@@ -1,10 +1,26 @@
 var wantToScry = false;
+var transitionRequired = false;
 
 function scryingCorruption() {
     var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && game.global.world < getPageSetting('ScryerMaxZone');
     var scryCorrupt = scryZone && game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
     var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
     if (scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true) return true;
+}
+
+function readyToSwitch(stance = "S") {
+    //Suicide to Scry
+    var die = (getPageSetting('ScryerDieZ') != -1 && game.global.world >= getPageSetting('ScryerDieZ')) ;
+    var willSuicide = getPageSetting('ScryerDieZ');
+
+    //Check if we are allowed to suicide in our current cell and zone
+    if (die && willSuicide >= 0) {
+        var [dieZ, dieC] = willSuicide.toString().split(".");
+        if (dieC && dieC.length == 1) dieC = dieC + "0";
+        die = game.global.world >= dieZ && (!dieC || (game.global.lastClearedCell + 1 >= dieC));
+    }
+
+    return die || survive(stance, 2);
 }
 
 function useScryerStance() {
@@ -33,20 +49,20 @@ function useScryerStance() {
         never_scry |= USS && !MA && getPageSetting('ScryerSkipBoss2') == 0 && game.global.lastClearedCell == 98;
         never_scry |= USS && !MA && (getEmpowerment() == "Poison" && (getPageSetting('ScryUseinPoison') == 0 || (getPageSetting('ScryUseinPoison') > 0 && game.global.world >= getPageSetting('ScryUseinPoison')))) || (getEmpowerment() == "Wind" && (getPageSetting('ScryUseinWind') == 0 || (getPageSetting('ScryUseinWind') > 0 && game.global.world >= getPageSetting('ScryUseinWind')))) || (getEmpowerment() == "Ice" && (getPageSetting('ScryUseinIce') == 0 || (getPageSetting('ScryUseinIce') > 0 && game.global.world >= getPageSetting('ScryUseinIce'))));
 
-    //check Corrupted Never
-    var iscorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).mutation == "Corruption";
-    var nextIsCorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).mutation == "Corruption"
-    var scryNext = !nextIsCorrupt && (game.global.formation == 4 || oneShootPower(undefined, false, 0, true));
-    if (never_scry || USS && !MA && SC && iscorrupt && !scryNext) {
-        autostancefunction();
-        wantToScry = false;
-        return;
+    //Check Corrupted Never
+    var isCorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).mutation == "Corruption";
+    var nextIsCorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).mutation == "Corruption";
+    var scryNext = !nextIsCorrupt && (transitionRequired || oneShootPower(undefined, false, 0, true));
+    if (USS && !MA && SC && isCorrupt) {
+        transitionRequired = scryNext;
+        never_scry |= !scryNext;
     }
+    else transitionRequired = false;
     
-    //check Healthy never
-    var curEnemyhealth = getCurrentEnemy(1);
-    var ishealthy = curEnemyhealth && curEnemyhealth.mutation == "Healthy";
-    if (((never_scry) || getPageSetting('UseScryerStance') == true && !game.global.mapsActive && (ishealthy && getPageSetting('ScryerSkipHealthy') == 0))) {
+    //check Healthy never -- TODO
+    var curEnemyHealth = getCurrentEnemy(1);
+    var isHealthy = curEnemyHealth && curEnemyHealth.mutation == "Healthy";
+    if (never_scry || getPageSetting('UseScryerStance') == true && !game.global.mapsActive && (isHealthy && getPageSetting('ScryerSkipHealthy') == 0)) {
         autostancefunction();
         wantToScry = false;
         return;
@@ -63,13 +79,13 @@ function useScryerStance() {
         use_scryer |= game.global.mapsActive && getCurrentMapObject().location != "Void" && isFarming; //DEBUG
 
     //check Corrupted Force
-    if ((iscorrupt && getPageSetting('ScryerSkipCorrupteds2') == 1 && getPageSetting('UseScryerStance') == true) || (use_scryer)) {
+    if ((isCorrupt && getPageSetting('ScryerSkipCorrupteds2') == 1 && getPageSetting('UseScryerStance') == true) || (use_scryer)) {
         setFormation(scry);
         wantToScry = true;
         return;
     }
     //check healthy force
-    if ((ishealthy && getPageSetting('ScryerSkipHealthy') == 1 && getPageSetting('UseScryerStance') == true) || (use_scryer)) {
+    if ((isHealthy && getPageSetting('ScryerSkipHealthy') == 1 && getPageSetting('UseScryerStance') == true) || (use_scryer)) {
         setFormation(scry);
         wantToScry = true;
         return;
@@ -77,32 +93,19 @@ function useScryerStance() {
 
     //Calc Damage
     if (AutoStance>=1) calcBaseDamageinX2();
-    
-    //Suicide to Scry
-    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-    var oktoswitch = true;
-    var die = (getPageSetting('ScryerDieZ') != -1 && getPageSetting('ScryerDieZ') <= game.global.world) ;
-    var willSuicide = getPageSetting('ScryerDieZ');
-    if (die && willSuicide >= 0) {
-        var [dieZ, dieC] = willSuicide.toString().split(".");
-        if (dieC && dieC.length == 1) dieC = dieC + "0";
-        die = game.global.world >= dieZ && (!dieC || (game.global.lastClearedCell + 1 >= dieC));
-    }
-    oktoswitch = die || survive("S", 2);
 
     //Checks if Overkill is allowed
-    var useoverkill = getPageSetting('UseScryerStance') == true && getPageSetting('ScryerUseWhenOverkill');
-        useoverkill &= !(getPageSetting('ScryerUseinSpire2') == 0 && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()));
+    var useOverkill = getPageSetting('UseScryerStance') == true && getPageSetting('ScryerUseWhenOverkill');
+        useOverkill &= !(getPageSetting('ScryerUseinSpire2') == 0 && !game.global.mapsActive && (isActiveSpireAT() || disActiveSpireAT()));
 
     //Overkill
-    if (useoverkill && getCurrentEnemy()) {
+    if (useOverkill && getCurrentEnemy()) {
         //Switches to S if it has enough damage to secure an overkill
         var HS = oneShootPower("S");
         var HSD = oneShootPower("D", false, 0, true);
         var HSnext = oneShootPower("S", false, 1);
         var HSDnext = oneShootPower("D", false, 1, true);
-        if (oktoswitch && HS > 0 && HS >= HSD && (HS > 1 || HSnext > 0 && HSnext >= HSDnext)) {
+        if (readyToSwitch && HS > 0 && HS >= HSD && (HS > 1 || HSnext > 0 && HSnext >= HSDnext)) {
             setFormation(4);
             return;
         }
@@ -121,16 +124,22 @@ function useScryerStance() {
     var valid_min = game.global.world >= min_zone && game.global.world > 60;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
     
-    if (getPageSetting('UseScryerStance') == true && valid_min && valid_max && !(getPageSetting('onlyminmaxworld') == true && game.global.mapsActive)) {
-        if (oktoswitch) {
-            setFormation(scry);
-            wantToScry = true;
-            return;
+    if (uss && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true)) {
+        //Smooth transition out of D/X before killing the target
+        if (transitionRequired) {
+            if      (survive("XB") && !oneShootPower("X", false, 1, true)) {setFormation("0"); return;}
+            else if (survive("B")  && !oneShootPower("B", false, 1, true)) {setFormation( 3 ); return;}
+            else if (survive("X")  && !oneShootPower("X", false, 1, true)) {setFormation("0"); return;}
+            else if (survive("H")  && !oneShootPower("H", false, 1, true)) {setFormation( 1 ); return;}
         }
-    } 
-    else {
-        autostancefunction();
-        wantToScry = false;
+
+        //Finally, set formation to Scry
+        setFormation(scry);
+        wantToScry = true;
         return;
     }
+
+    //No reason to Scry
+    autostancefunction();
+    wantToScry = false;
 }
