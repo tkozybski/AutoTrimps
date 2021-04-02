@@ -458,8 +458,9 @@ function autoMap() {
     var siphonMap = -1;
     for (var map in game.global.mapsOwnedArray) {
         if (!game.global.mapsOwnedArray[map].noRecycle) {
-            obj[map] = game.global.mapsOwnedArray[map].level;
-            if (game.global.mapsOwnedArray[map].level == siphlvl)
+            var mapAux = game.global.mapsOwnedArray[map];
+            obj[map] = mapAux.level;
+            if (mapAux.level == siphlvl) //TODO -- Should prefer Special Maps?
                 siphonMap = map;
         }
     }
@@ -791,7 +792,7 @@ function autoMap() {
                 runMap();
                 lastMapWeWereIn = getCurrentMapObject();
             } else {
-                debug("Buying a Map, level: #" + maplvlpicked, "maps", 'th-large');
+                debug("Buying a Map, level: #" + maplvlpicked + " for " + updateMapCost(true) + " fragments", "maps", 'th-large');
                 var result = buyMap();
                 if (result == -2) {
                     debug("Too many maps, recycling now: ", "maps", 'th-large');
