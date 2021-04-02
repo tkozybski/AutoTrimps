@@ -112,7 +112,7 @@ function testMapSpecialModController() {
                 //Select Map Modifier
                 if (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming) {
                     c.value = a.includes("lmc") ? "lmc" : a.includes("hc") ? "hc" : a.includes("smc") ? "smc" : "lc";
-                } else if (needPrestige && a.includes("p")) {
+                } else if (needPrestige && enoughDamage && a.includes("p")) {
                     c.value = "p";
                 } else c.value = "fa";
                 
@@ -452,7 +452,8 @@ function autoMap() {
     
     //Farms on "Oneshoot Zone + 1" DEBUG
     if (shouldFarmLowerZone && siphlvl < maxlvl) siphlvl++;
-    
+
+    //Register the level of every regular map we have
     var obj = {};
     var siphonMap = -1;
     for (var map in game.global.mapsOwnedArray) {
@@ -462,9 +463,13 @@ function autoMap() {
                 siphonMap = map;
         }
     }
+
+    //Put those levels in ascending order
     var keysSorted = Object.keys(obj).sort(function(a, b) {
         return obj[b] - obj[a];
     });
+
+    //Register the highest and lowest level maps
     var highestMap;
     var lowestMap;
     if (keysSorted[0]) {
