@@ -18,7 +18,7 @@ function debugCalc() {
     //Trimp Stats
     debug("Our Stats")
     debug("Our attack: " + displayedMin + "-" + displayedMax);
-    debug("Our crit: " + (getPlayerCritChance()*100).toFixed(2) + "for " + getPlayerCritDamageMult().toFixed(2) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(4));
+    debug("Our crit: " + (getPlayerCritChance()*100).toFixed(2) + " for " + getPlayerCritDamageMult().toFixed(2) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(4));
     debug("Our block: " + calcOurBlock(true, true).toFixed(1));
     debug("Our Health: " + calcOurHealth(true, false, true).toFixed(1));
 
@@ -408,8 +408,8 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     }
 
     //Well, finally, huh?
-    if (minMaxAvg == "min") return min;
-    if (minMaxAvg == "max") return max;
+    if (minMaxAvg == "min") return Math.floor(min);
+    if (minMaxAvg == "max") return Math.ceil(max);
     
     return avg;
 }
