@@ -12,22 +12,22 @@ function debugCalc() {
     var name = getCurrentEnemy() ? getCurrentEnemy().name : "Chimp";
 
     //Init
-    var displayedMin = calcOurDmg("min", true, true, "never", type != "world", true).toFixed(1);
-    var displayedMax = calcOurDmg("max", true, true, "never", type != "world", true).toFixed(1);
+    var displayedMin = calcOurDmg("min", true, true, "never", type != "world", true);
+    var displayedMax = calcOurDmg("max", true, true, "never", type != "world", true);
 
     //Trimp Stats
     debug("Our Stats")
     debug("Our attack: " + displayedMin + "-" + displayedMax);
-    debug("Our crit: " + (getPlayerCritChance()*100).toFixed(2) + " for " + getPlayerCritDamageMult().toFixed(2) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(4));
-    debug("Our block: " + calcOurBlock(true, true).toFixed(1));
-    debug("Our Health: " + calcOurHealth(true, false, true).toFixed(1));
+    debug("Our crit: " + (getPlayerCritChance()*100) + " for " + getPlayerCritDamageMult().toFixed(2) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(4));
+    debug("Our block: " + calcOurBlock(true, true));
+    debug("Our Health: " + calcOurHealth(true, false, true));
 
     //Enemy stats
     debug("Enemy Stats");
-    debug("Enemy Attack: " + calcEnemyAttack(type, zone, cell, name, true).toFixed(1) + "-" + calcEnemyAttack(type, zone, cell, name).toFixed(1));
-    debug("Enemy Health: " + calcEnemyHealth(type, zone, cell, name).toFixed(1));
-    debug("Specific Enemy Attack: " + calcSpecificEnemyAttack().toFixed(1));
-    debug("Specific Enemy Health: " + calcSpecificEnemyHealth().toFixed(1));
+    debug("Enemy Attack: " + calcEnemyAttack(type, zone, cell, name, true) + "-" + calcEnemyAttack(type, zone, cell, name));
+    debug("Enemy Health: " + calcEnemyHealth(type, zone, cell, name));
+    debug("Specific Enemy Attack: " + calcSpecificEnemyAttack());
+    debug("Specific Enemy Health: " + calcSpecificEnemyHealth());
 }
 
 function calcEquipment(type = "attack") {
