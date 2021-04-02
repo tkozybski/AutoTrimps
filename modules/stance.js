@@ -224,7 +224,7 @@ function autoStance() {
         if (critPower < -2) {
             if (game.upgrades.Formations.done) setFormation(1);
             else setFormation("0");
-	}
+	    }
     }
 
     return true;

@@ -125,18 +125,23 @@ function useScryerStance() {
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
     
     if (USS && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true)) {
-        //Smooth transition out of D/X before killing the target
+        //Smooth transition to S before killing the target
         if (transitionRequired) {
-            if      (survive("XB") && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
-            else if (survive("B")  && !oneShootPower("B", false, 0, true)) {setFormation( 3 ); return;}
-            else if (survive("X")  && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
-            else if (survive("H")  && !oneShootPower("H", false, 0, true)) {setFormation( 1 ); return;}
+            for (var cp=2; cp >= -2; cp--) {
+                if      (survive("D",  cp) && !oneShootPower("D", false, 0, true)) {setFormation( 2 ); return;}
+                else if (survive("XB", cp) && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
+                else if (survive("B",  cp) && !oneShootPower("B", false, 0, true)) {setFormation( 3 ); return;}
+                else if (survive("X",  cp) && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
+                else if (survive("H",  cp) && !oneShootPower("H", false, 0, true)) {setFormation( 1 ); return;}
+            }
         }
 
-        //Finally, set formation to Scry
-        setFormation(scry);
-        wantToScry = true;
-        return;
+        //Set to scry if it won't kill us or we are willing to die for it
+        if (readyToSwitch()) {
+            setFormation(scry);
+            wantToScry = true;
+            return;
+        }
     }
 
     //No reason to Scry
