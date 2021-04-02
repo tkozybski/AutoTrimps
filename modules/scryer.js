@@ -31,7 +31,7 @@ function useScryerStance() {
     }
     
     var AutoStance = getPageSetting('AutoStance');
-    function autostancefunction() {
+    function autoStanceFunctionScryer() {
         if ((getPageSetting('AutoStance') == 3) || (getPageSetting('use3daily') == true && game.global.challengeActive == "Daily")) windStance();
         else if (AutoStance==1) autoStance();
         else if (AutoStance==2) autoStance2();
@@ -63,7 +63,7 @@ function useScryerStance() {
     var curEnemyHealth = getCurrentEnemy(1);
     var isHealthy = curEnemyHealth && curEnemyHealth.mutation == "Healthy";
     if (never_scry || getPageSetting('UseScryerStance') == true && !game.global.mapsActive && (isHealthy && getPageSetting('ScryerSkipHealthy') == 0)) {
-        autostancefunction();
+        autoStanceFunctionScryer();
         wantToScry = false;
         return;
     }
@@ -103,9 +103,9 @@ function useScryerStance() {
         //Switches to S if it has enough damage to secure an overkill
         var HS = oneShootPower("S");
         var HSD = oneShootPower("D", false, 0, true);
-        var HSnext = oneShootPower("S", false, 1);
-        var HSDnext = oneShootPower("D", false, 1, true);
-        if (readyToSwitch && HS > 0 && HS >= HSD && (HS > 1 || HSnext > 0 && HSnext >= HSDnext)) {
+        var HS_next = oneShootPower("S", false, 1);
+        var HSD_next = oneShootPower("D", false, 1, true);
+        if (readyToSwitch && HS > 0 && HS >= HSD && (HS > 1 || HS_next > 0 && HS_next >= HSD_next)) {
             setFormation(4);
             return;
         }
@@ -113,7 +113,7 @@ function useScryerStance() {
     
     //No Essence
     if (USS && !MA && getPageSetting('screwessence') == true && countRemainingEssenceDrops() < 1) {
-        autostancefunction();
+        autoStanceFunctionScryer();
         wantToScry = false;
         return;
     }
@@ -145,6 +145,6 @@ function useScryerStance() {
     }
 
     //No reason to Scry
-    autostancefunction();
+    autoStanceFunctionScryer();
     wantToScry = false;
 }

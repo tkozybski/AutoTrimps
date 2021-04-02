@@ -469,7 +469,7 @@ function autoMap() {
 
             //Also grabs the highest level within our range that has a modifier on it
             if (mapAux.level >= Math.min(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= Math.max(siphLvl+1, maxLvl)) {
-                if (!mapAux.hasOwnProperty(bonus) || mapAux.bonus == "p") continue;
+                if (!mapAux.hasOwnProperty("bonus") || mapAux.bonus == "p") continue;
                 altSiphLevel = mapAux.level;
                 altSiphMap = index;
             }
