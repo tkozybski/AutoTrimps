@@ -124,7 +124,7 @@ function useScryerStance() {
     var valid_min = game.global.world >= min_zone && game.global.world > 60;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
     
-    if (uss && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true)) {
+    if (USS && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true)) {
         //Smooth transition out of D/X before killing the target
         if (transitionRequired) {
             if      (survive("XB") && !oneShootPower("X", false, 1, true)) {setFormation("0"); return;}
