@@ -187,8 +187,9 @@ function survive(formation = "S", critPower = 2) {
     var maxHealth = health * (formation == "XB" ? 2 : 1);
 
     //Decides if the trimps can survive in this formation
+    var notSpire = game.global.mapsActive || !game.global.spireActive;
     var harm = directDamage(formation, block, health - missingHealth, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower);
-    return (newSquadRdy && health > harm) || (health - missingHealth > harm);
+    return (newSquadRdy && notSpire && health > harm) || (health - missingHealth > harm);
 }
 
 function autoStance() {
