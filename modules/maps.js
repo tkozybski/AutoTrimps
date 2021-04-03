@@ -23,7 +23,7 @@ MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived
 MODULES.maps.voidHitsMult = 1; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 MODULES.maps.voidHDMult = 2 / MODULES.maps.voidHitsMult; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
 MODULES.maps.spireHD = 32; //4 is actually 1 hit in D stance
-MODULES.maps.spireHitsSurvived = 2; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
+MODULES.maps.spireHitsSurvived = 5; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 
 var isFarming = false;
 var doVoids = false;
