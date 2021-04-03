@@ -679,7 +679,7 @@ function autoMap() {
                     selectedMap = "create";
             } else if (siphonMap != -1) {
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
-                if (MODULES.forceModifier && game.global.highestLevelCleared >= 60 && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
+                if (MODULES.maps.forceModifier && game.global.highestLevelCleared >= 60 && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
             }
             else
                 selectedMap = "create";
@@ -805,7 +805,6 @@ function autoMap() {
 
             //Recycle our target map to add a modifier to it
             if (tryBetterMod) {
-                console.log("Been here")
                 if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
                     debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
                     recycleMap(siphonMap);
@@ -821,7 +820,6 @@ function autoMap() {
                     lastMapWeWereIn = getCurrentMapObject();
                     return;
                 }
-                console.log("This... is mistake");
             }
 
             //No fragments to create a map
