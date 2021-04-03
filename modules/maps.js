@@ -800,7 +800,7 @@ function autoMap() {
                 sizeAdvMapsRange.value -= 1;
             }
             if (getPageSetting('AdvMapSpecialModifier'))
-                gotBetterMod = testMapSpecialModController(true);
+                gotBetterMod = testMapSpecialModController(tryBetterMod);
             var mapLvlPicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
 
             //Recycle our target map to add a modifier to it
