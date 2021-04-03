@@ -815,7 +815,7 @@ function autoMap() {
                     selectMap(selectedMap);
                     var mapObject = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
                     var lvlText = " Level: " + mapObject.level;
-                    debug("Running alternative map " + selectedMap + lvlText + " Name: " + mapObject.name, "maps", 'th-large');
+                    if (lastMapWeWereIn != getCurrentMapObject()) debug("Running alternative map " + selectedMap + lvlText + " Name: " + mapObject.name, "maps", 'th-large');
                     runMap();
                     lastMapWeWereIn = getCurrentMapObject();
                     return;
