@@ -1234,7 +1234,7 @@ function PraidHarder() {
     maxPraidZSetting = 'MaxPraidZone';
     farmFragments = getPageSetting('PraidFarmFragsZ').includes(game.global.world);
     praidBeforeFarm = getPageSetting('PraidBeforeFarmZ').includes(game.global.world);
-    cell = ((getPageSetting('Praidingcell') > 0) ? getPageSetting('Praidingcell') : 1);
+    cell = ((getPageSetting('Praidingcell') > 0) ? getPageSetting('Praidingcell') : 0);
   }
 
   pRaidIndex = getPageSetting(praidSetting).indexOf(game.global.world);
