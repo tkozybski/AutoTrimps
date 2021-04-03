@@ -208,10 +208,10 @@ function buyBuildings() {
     if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
         var skipGym = false;
 	
-	//Dynamic Gyms
+	    //Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
             var pierce = getPierceAmt() * (game.global.formation == 3 ? 2 : 1);
-	    var nextGym = game.upgrades.Gymystic.modifier;
+	        var nextGym = game.upgrades.Gymystic.modifier;
             var currentEnemyDamageOK = (calcOurBlock(true) > nextGym * calcSpecificEnemyAttack());
             var zoneDamage = calcEnemyAttack();
             var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > zoneDamage * (1 - pierce));
@@ -219,15 +219,15 @@ function buyBuildings() {
             //Stop buying Gyms if we already have enough block for our current enemy, and are not lacking in health to progress
             //Or if we are on world and have enough block to defeat an C99 Snimp
             if (!game.global.preMapsActive && !game.global.spireActive && enoughHealth && currentEnemyDamageOK && zoneEnemyDamageOK) skipGym = true;
-	}
+	    }
 	
-	//Gym Wall
+	    //Gym Wall
         var gymwallpct = getPageSetting('GymWall');
         if (gymwallpct > 1) {
             if (getBuildingItemPrice(game.buildings.Gym, "wood", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)
                 > (game.resources.wood.owned / gymwallpct))
                     skipGym = true;
-	}
+	    }
 
         //ShieldBlock cost Effectiveness:
         if (game.equipment['Shield'].blockNow) {
@@ -237,7 +237,7 @@ function buyBuildings() {
                 skipGym = true;
         }
 	
-	//Buy Gym
+	    //Buy Gym
         if (!needGymystic && !skipGym) safeBuyBuilding('Gym');
        	needGymystic = false;
     }

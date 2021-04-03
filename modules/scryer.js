@@ -77,8 +77,10 @@ function useScryerStance() {
         use_scryer |= !game.global.mapsActive && getPageSetting('UseScryerStance') == true && ((getEmpowerment() == "Poison" && getPageSetting('ScryUseinPoison') > 0 && game.global.world < getPageSetting('ScryUseinPoison')) || (getEmpowerment() == "Wind" && getPageSetting('ScryUseinWind') > 0 && game.global.world < getPageSetting('ScryUseinWind')) || (getEmpowerment() == "Ice" && getPageSetting('ScryUseinIce') > 0 && game.global.world < getPageSetting('ScryUseinIce')));
 
     //Farm easy maps on scryer
-    var mapRatio = calcHDRatio(getCurrentMapObject().level, "map") / (game.unlocks.imps.Titimp ? 2 : 1) <= 2.7; //2.6 is here because created maps are usually shorter and easier
-    use_scryer |= game.global.mapsActive && getCurrentMapObject().location != "Void" && isFarming && mapRatio; //Farm maps on scryer
+    if (game.global.mapsActive) {
+        var mapRatio = calcHDRatio(getCurrentMapObject().level, "map") / (game.unlocks.imps.Titimp ? 2 : 1) <= 2.7; //2.6 is here because created maps are usually shorter and easier
+        use_scryer |= getCurrentMapObject().location != "Void" && isFarming && mapRatio; //Farm maps on scryer
+    }
 
     //check Corrupted Force
     if ((isCorrupt && getPageSetting('ScryerSkipCorrupteds2') == 1 && getPageSetting('UseScryerStance') == true) || (use_scryer)) {
