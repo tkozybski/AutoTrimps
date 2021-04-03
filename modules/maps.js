@@ -17,6 +17,7 @@ MODULES.maps.UnearnedPrestigesRequired=2;
 //Psycho
 MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
+MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
 MODULES.maps.voidHitsMult = 1; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
@@ -465,7 +466,7 @@ function autoMap() {
         if (!game.global.mapsOwnedArray[index].noRecycle) {
             var mapAux = game.global.mapsOwnedArray[index];
             obj[index] = mapAux.level;
-            if (mapAux.level == siphLvl) siphonMap = index; //TODO -- Should prefer Special Maps
+            if (mapAux.level == siphLvl) siphonMap = index;
 
             //Also grabs the highest level within our range that has a modifier on it
             if (mapAux.level >= Math.min(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= Math.max(siphLvl+1, maxLvl)) {
@@ -678,7 +679,7 @@ function autoMap() {
                     selectedMap = "create";
             } else if (siphonMap != -1) {
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
-                if (!game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
+                if (MODULES.forceModifier && game.global.highestLevelCleared >= 60 && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
             }
             else
                 selectedMap = "create";
@@ -800,12 +801,12 @@ function autoMap() {
             }
             if (getPageSetting('AdvMapSpecialModifier'))
                 gotBetterMod = testMapSpecialModController(true);
-            var maplvlpicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
+            var mapLvlPicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
 
             //Recycle our target map to add a modifier to it
             if (tryBetterMod) {
                 if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
-                    debug("Recreating map level #" + maplvlpicked + " to include a modifier", "maps", '*happy2');
+                    debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
                     recycleMap(siphonMap);
                     return;
                 }
@@ -824,17 +825,17 @@ function autoMap() {
             //No fragments to create a map
             if (updateMapCost(true) > game.resources.fragments.owned) {
                 selectMap(game.global.mapsOwnedArray[highestMap].id);
-                debug("Can't afford the map we designed, #" + maplvlpicked, "maps", '*crying2');
+                debug("Can't afford the map we designed, #" + mapLvlPicked, "maps", '*crying2');
                 debug("...selected our highest map instead # " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, "maps", '*happy2');
                 runMap();
                 lastMapWeWereIn = getCurrentMapObject();
             } else {
-                debug("Buying a Map, level: #" + maplvlpicked + " for " + updateMapCost(true) + " fragments", "maps", 'th-large');
+                debug("Buying a Map, level: #" + mapLvlPicked + " for " + updateMapCost(true).toExponential() + " fragments", "maps", 'th-large');
                 var result = buyMap();
                 if (result == -2) {
                     debug("Too many maps, recycling now: ", "maps", 'th-large');
                     recycleBelow(true);
-                    debug("Retrying, Buying a Map, level: #" + maplvlpicked, "maps", 'th-large');
+                    debug("Retrying, Buying a Map, level: #" + mapLvlPicked, "maps", 'th-large');
                     result = buyMap();
                     if (result == -2) {
                         recycleMap(lowestMap);
