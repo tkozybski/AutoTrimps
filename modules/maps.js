@@ -805,6 +805,7 @@ function autoMap() {
 
             //Recycle our target map to add a modifier to it
             if (tryBetterMod) {
+                console.log("Been here")
                 if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
                     debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
                     recycleMap(siphonMap);
@@ -820,6 +821,7 @@ function autoMap() {
                     lastMapWeWereIn = getCurrentMapObject();
                     return;
                 }
+                console.log("This... is mistake");
             }
 
             //No fragments to create a map
