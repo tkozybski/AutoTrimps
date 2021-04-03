@@ -1,5 +1,6 @@
 MODULES["other"] = {};
 MODULES["other"].enableRoboTrimpSpam = true;
+MODULES["other"].psychoRaiding = true;
 var prestraid=!1,dprestraid=!1,failpraid=!1,dfailpraid=!1,bwraided=!1,dbwraided=!1,failbwraid=!1,dfailbwraid=!1,perked=!1,prestraidon=!1,dprestraidon=!1,mapbought=!1,dmapbought=!1,bwraidon=!1,dbwraidon=!1,presteps=null,minMaxMapCost,fMap,pMap,shouldFarmFrags=!1,praidDone=!1;
 function armydeath(){if(game.global.mapsActive)return!1;var e=game.global.lastClearedCell+1,l=game.global.gridArray[e].attack*dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength,game.global.dailyChallenge.empower.stacks),a=game.global.soldierHealth+game.global.soldierEnergyShield;"Ice"==getEmpowerment()&&(l*=game.empowerments.Ice.getCombatModifier());var g=game.global.soldierCurrentBlock;return 3==game.global.formation?g/=4:"0"!=game.global.formation&&(g*=2),g>game.global.gridArray[e].attack?l*=getPierceAmt():l-=g*(1-getPierceAmt()),"Daily"==game.global.challengeActive&&void 0!==game.global.dailyChallenge.crits&&(l*=dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength)),void 0!==game.global.dailyChallenge.bogged&&(a-=game.global.soldierHealthMax*dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength)),void 0!==game.global.dailyChallenge.plague&&(a-=game.global.soldierHealthMax*dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength,game.global.dailyChallenge.plague.stacks)),"Electricity"==game.global.challengeActive&&(a-=game.global.soldierHealth-=game.global.soldierHealthMax*(.1*game.challenges.Electricity.stacks)),"corruptCrit"==game.global.gridArray[e].corrupted?l*=5:"healthyCrit"==game.global.gridArray[e].corrupted?l*=7:"corruptBleed"==game.global.gridArray[e].corrupted?a*=.8:"healthyBleed"==game.global.gridArray[e].corrupted&&(a*=.7),(a-=l)<=1e3}
 function autoRoboTrimp(){if(!(0<game.global.roboTrimpCooldown)&&game.global.roboTrimpLevel){var a=parseInt(getPageSetting("AutoRoboTrimp"));0==a||game.global.world>=a&&!game.global.useShriek&&(magnetoShriek(),MODULES.other.enableRoboTrimpSpam&&debug("Activated Robotrimp MagnetoShriek Ability @ z"+game.global.world,"graphs","*podcast"))}}
@@ -11,7 +12,7 @@ function disActiveSpireAT(){return game.global.challengeActive=='Daily'&&game.gl
 function exitSpireCell(){isActiveSpireAT()&&game.global.lastClearedCell>=getPageSetting('ExitSpireCell')-1&&endSpire()}
 function dailyexitSpireCell(){disActiveSpireAT()&&game.global.lastClearedCell>=getPageSetting('dExitSpireCell')-1&&endSpire()}
 function plusPres(){document.getElementById("biomeAdvMapsSelect").value="Random",document.getElementById("advExtraLevelSelect").value=plusMapToRun(game.global.world),document.getElementById("advSpecialSelect").value="p",document.getElementById("lootAdvMapsRange").value=0,document.getElementById("difficultyAdvMapsRange").value=9,document.getElementById("sizeAdvMapsRange").value=9,document.getElementById("advPerfectCheckbox").checked=!1,document.getElementById("mapLevelInput").value=game.global.world,updateMapCost()}
-function plusMapToRun(a){return 9==a%10?6:5>a%10?5-a%10:11-a%10}
+function plusMapToRun(a){return (a%10 == 9) ? 6 : (a%10 < 5 ? 5-a%10 : 11-a%10)}
 function findLastBionic(){for(var a=game.global.mapsOwnedArray.length-1;0<=a;a--)if("Bionic"===game.global.mapsOwnedArray[a].location)return game.global.mapsOwnedArray[a]}
 function helptrimpsnotdie(){if(!game.global.preMapsActive&&!game.global.fighting)buyArms();}
 function usedaily3(){!0!=getPageSetting('use3daily')||'Daily'!=game.global.challengeActive||daily3||(daily3=!0),!1==getPageSetting('use3daily')&&'Daily'!=game.global.challengeActive&&daily3&&(daily3=!1),!0==getPageSetting('use3daily')&&'Daily'!=game.global.challengeActive&&daily3&&(daily3=!1)}
@@ -1251,7 +1252,8 @@ function PraidHarder() {
 
   // If we have any Praiding zones defined...
   if (getPageSetting(praidSetting).length) {
-    if (getPageSetting(praidSetting).includes(game.global.world) && ((game.global.lastClearedCell+1) >= cell) && !prestraid && !failpraid && !shouldFarmFrags) {
+  	var psychoRaidingTrigger = !MODULES.other.psychoRaiding || game.upgrades.Dagadder.done == game.upgrades.Dagadder.allowed || game.upgrades.Bootboost.done == game.upgrades.Dagadder.allowed;
+    if (getPageSetting(praidSetting).includes(game.global.world) && ((game.global.lastClearedCell+1) >= cell) && !prestraid && !failpraid && !shouldFarmFrags && psychoRaidingTrigger) {
       debug('Beginning Praiding');
       // Initialise shouldFarmFrags to false
       shouldFarmFrags = false;
@@ -1261,7 +1263,7 @@ function PraidHarder() {
       // Get into the preMaps screen
       if (!game.global.preMapsActive && !game.global.mapsActive) {
         mapsClicked();
-	if (!game.global.preMapsActive) {
+	  if (!game.global.preMapsActive) {
           mapsClicked();
         }
       }
