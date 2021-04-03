@@ -809,10 +809,12 @@ function autoMap() {
 
             //Recycle our target map to add a modifier to it
             if (tryBetterMod) {
-                if (siphonMap != -1 && gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
-                    debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
-                    recycleMap(siphonMap);
-                    return;
+                if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
+                    if (siphonMap != -1) {
+                        debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
+                        recycleMap(siphonMap);
+                        return;
+                    }
                 }
                 else if (altSiphMap != -1) {
                     selectedMap = game.global.mapsOwnedArray[altSiphMap].id;
