@@ -677,9 +677,13 @@ function autoMap() {
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";
-            } else if (siphonMap != -1 || altSiphMap != -1) {
-                selectedMap = (siphonMap != -1) ? game.global.mapsOwnedArray[siphonMap].id : "create";
-                if (MODULES.maps.forceModifier && game.global.highestLevelCleared >= 60 && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
+            } else if (siphonMap != -1) {
+                selectedMap = game.global.mapsOwnedArray[siphonMap].id;
+                if (MODULES.maps.forceModifier && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
+            }
+            else if (altSiphLevel != -1) {
+                selectedMap = "create";
+                tryBetterMod = MODULES.maps.forceModifier;
             }
             else
                 selectedMap = "create";
