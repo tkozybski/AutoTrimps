@@ -54,7 +54,7 @@ function oneShootPower(stance, worstCase, offset=0, maxOrMin) {
         if (!worstCase && !getCurrentEnemy(power+offset)) return power+offset-1;
         
         //Enemy Health: current enemy, his neighbours, or a C99 Dragimp (worstCase)
-        if (worstCase) damageLeft -= calcEnemyHealth(undefined, undefined, 99-maxOneShootPower()+power);
+        if (worstCase) damageLeft -= calcEnemyHealth(undefined, undefined, 99-maxOneShootPower()+power, "Dragimp");
         else if (power+offset > 1) damageLeft -= calcSpecificEnemyHealth(undefined, undefined, getCurrentEnemy(power+offset).level);
         else damageLeft -= getCurrentEnemy().health;
         

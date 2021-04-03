@@ -449,14 +449,14 @@ function autoMap() {
         for (siphLvl; siphLvl < maxLvl; siphLvl++) {
             //Calc our Damage on this map
             var ratio = calcHDRatio(siphLvl, "map");
-            if (game.unlocks.imps.Titimp) ratio *= 2;
+            if (game.unlocks.imps.Titimp) ratio /= 2;
 
             //Farms on Scryer if available, or Dominance, or just X
-            if (game.global.world >= 60 && getHighestLevelCleared() >= 180) ratio /= 2;
-            else if (game.upgrades.Dominance.done) ratio *= 4;
+            if (game.global.world >= 60 && getHighestLevelCleared() >= 180) ratio *= 2;
+            else if (game.upgrades.Dominance.done) ratio /= 4;
 
-            //Stop increasing map level if we can't one hit on it
-            if (ratio > 1) break;
+            //Stop increasing map level once we get to the right ratio. We use 1.3 here because created maps are usually shorter and easier
+            if (ratio > 1.3) break;
         }
     }
     

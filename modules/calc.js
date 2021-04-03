@@ -679,7 +679,7 @@ function calcEnemyBaseHealth(type, zone, cell, name) {
     if (!type) type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
     if (!zone) zone = (type == "world" || !game.global.mapsActive) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (type == "world" || !game.global.mapsActive) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
-    if (!name) name = getCurrentEnemy() ? getCurrentEnemy().name : "Dragimp";
+    if (!name) name = getCurrentEnemy() ? getCurrentEnemy().name : "Turtlimp";
 
     //Init
     var base = (game.global.universe == 2) ? 10e7 : 130;
@@ -719,7 +719,7 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
     if (!type) type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
     if (!zone) zone = (type == "world" || !game.global.mapsActive) ? game.global.world : getCurrentMapObject().level;
     if (!cell) cell = (type == "world" || !game.global.mapsActive) ? getCurrentWorldCell().level : (getCurrentMapCell() ? getCurrentMapCell().level : 1);
-    if (!name) name = getCurrentEnemy() ? getCurrentEnemy().name : "Dragimp";
+    if (!name) name = getCurrentEnemy() ? getCurrentEnemy().name : "Turtlimp";
 
     //Init
     var health = calcEnemyBaseHealth(type, zone, cell, name);
@@ -756,7 +756,7 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
     return health;
 }
 
-function calcEnemyHealth(type, zone, cell = 99, name = "Dragimp") {
+function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     //Pre-Init
     if (!type) type = preVoidCheck ? "void" : "world";
     if (!zone) zone = game.global.world;
@@ -766,8 +766,8 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Dragimp") {
     var corrupt = zone >= mutations.Corruption.start();
     var healthy = mutations.Healthy.active();
 
-    //Challenges - worst case for Lead and Domination (Improbabilities have 4x more than health than Dragimps)
-    if (game.global.challengeActive == "Domination") health *= 7.5 * (type != "map" ? 4 : 1);
+    //Challenges - worst case for Lead and Domination (Improbabilities have 5x more than health than Turtlimps)
+    if (game.global.challengeActive == "Domination") health *= 7.5 * (type != "map" ? 5 : 1);
     if (game.global.challengeActive == "Lead") health *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
 
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
@@ -775,8 +775,8 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Dragimp") {
 
     //Average corrupt impact on World
     else if (corrupt && !healthy && !game.global.spireActive) {
-        //Calculates the impact of the corruption on the average health on that map. Improbabilities count as 4.
-        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 6; //Integer division
+        //Calculates the impact of the corruption on the average health on that map. Improbabilities count as 5.
+        var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 7; //Integer division
         var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 10);
         health *= corruptionWeight/100;
     }
