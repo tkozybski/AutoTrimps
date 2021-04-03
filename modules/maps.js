@@ -100,7 +100,7 @@ function updateAutoMapsStatus(get) {
 
 MODULES["maps"].advSpecialMapMod_numZones = 3;
 var advExtraMapLevels = 0;
-function testMapSpecialModController() {
+function testMapSpecialModController(noLog) {
     var success = true;
     var a = [];
     if (Object.keys(mapSpecialModifierConfig).forEach(function(o) {
@@ -124,7 +124,7 @@ function testMapSpecialModController() {
                     success = false;
                 }
                 var d = updateMapCost(!0), e = game.resources.fragments.owned;
-                "0" != c.value && debug("Set the map special modifier to: " + mapSpecialModifierConfig[c.value].name + ". Cost: " + (100 * (d / e)).toFixed(2) + "% of your fragments.");
+                "0" != c.value && !noLog && debug("Set the map special modifier to: " + mapSpecialModifierConfig[c.value].name + ". Cost: " + (100 * (d / e)).toFixed(2) + "% of your fragments.");
             }
             
             //Check what Modifiers should be available to us
@@ -691,7 +691,7 @@ function autoMap() {
     }
     if (!game.global.preMapsActive && game.global.mapsActive) {
         var doDefaultMapBonus = game.global.mapBonus < getPageSetting('MaxMapBonuslimit') - 1;
-        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (doDefaultMapBonus || vanillaMapatZone || doMaxMapBonus || shouldFarm || needPrestige || shouldDoSpireMaps))) {
+        if (selectedMap == game.global.currentMapId && !getCurrentMapObject().noRecycle && (doDefaultMapBonus || vanillaMapatZone || doMaxMapBonus || shouldFarm || needPrestige || shouldDoSpireMaps)) {
             var targetPrestige = autoTrimpSettings.Prestige.selected;
             if (!game.global.repeatMap) {
                 repeatClicked();
@@ -706,6 +706,9 @@ function autoMap() {
             if (doMaxMapBonus && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') - 1) {
                 repeatClicked();
                 doMaxMapBonus = false;
+            }
+            if (tryBetterMod) {
+                repeatClicked();
             }
         } else {
             if (game.global.repeatMap) {
@@ -796,7 +799,7 @@ function autoMap() {
                 sizeAdvMapsRange.value -= 1;
             }
             if (getPageSetting('AdvMapSpecialModifier'))
-                gotBetterMod = testMapSpecialModController();
+                gotBetterMod = testMapSpecialModController(true);
             var maplvlpicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
 
             //Recycle our target map to add a modifier to it
