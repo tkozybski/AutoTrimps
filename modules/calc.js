@@ -17,17 +17,17 @@ function debugCalc() {
 
     //Trimp Stats
     debug("Our Stats")
-    debug("Our attack: " + displayedMin + "-" + displayedMax);
-    debug("Our crit: " + (getPlayerCritChance()*100) + " for " + getPlayerCritDamageMult().toFixed(2) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(4));
-    debug("Our block: " + calcOurBlock(true, true));
-    debug("Our Health: " + calcOurHealth(true, false, true));
+    debug("Our attack: " + displayedMin.toExponential(1) + "-" + displayedMax).toExponential(2);
+    debug("Our crit: " + (getPlayerCritChance()*100) + "% for " + getPlayerCritDamageMult().toFixed(1) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(2) + "x");
+    debug("Our block: " + calcOurBlock(true, true).toExponential(2));
+    debug("Our Health: " + calcOurHealth(true, false, true).toExponential(2));
 
     //Enemy stats
     debug("Enemy Stats");
-    debug("Enemy Attack: " + calcEnemyAttack(type, zone, cell, name, true) + "-" + calcEnemyAttack(type, zone, cell, name));
-    debug("Enemy Health: " + calcEnemyHealth(type, zone, cell, name));
-    debug("Specific Enemy Attack: " + calcSpecificEnemyAttack());
-    debug("Specific Enemy Health: " + calcSpecificEnemyHealth());
+    debug("Enemy Attack: " + calcEnemyAttack(type, zone, cell, name, true).toExponential(2) + "-" + calcEnemyAttack(type, zone, cell, name).toExponential(2));
+    debug("Enemy Health: " + calcEnemyHealth(type, zone, cell, name).toExponential(2));
+    debug("Specific Enemy Attack: " + calcSpecificEnemyAttack().toExponential(2));
+    debug("Specific Enemy Health: " + calcSpecificEnemyHealth().toExponential(2));
 }
 
 function calcEquipment(type = "attack") {
@@ -441,7 +441,7 @@ function calcSpire(what, cell, name) {
 
     //Enemy on the Target Cell
     var enemy = (name) ? name : game.global.gridArray[cell-1].name;
-    var base = (what == "attack") ? getEnemyMaxAttack(game.global.world, cell, 'Chimp') : calcEnemyBaseHealth("world", game.global.world, cell) * 2;
+    var base = (what == "attack") ? calcEnemyBaseAttack("world", game.global.world, cell, enemy) : calcEnemyBaseHealth("world", game.global.world, cell, enemy) * 2;
     var mod = (what == "attack") ? 1.17 : 1.14;
 
     //Spire Num
