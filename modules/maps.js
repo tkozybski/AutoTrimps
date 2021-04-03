@@ -15,13 +15,15 @@ MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 
 //Psycho
+//Psycho
 MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
-MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
 MODULES.maps.voidHitsMult = 1; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 MODULES.maps.voidHDMult = 2 / MODULES.maps.voidHitsMult; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
+MODULES.maps.spireHD = 32; //4 is actually 1 hit in D stance
+MODULES.maps.spireHitsSurvived = 2; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 
 var isFarming = false;
 var doVoids = false;
@@ -156,6 +158,9 @@ function getMapCutOff() {
     var mapology = game.global.challengeActive == "Mapology";
     var daily = game.global.challengeActive == "Daily";
     var c2 = game.global.runningChallengeSquared;
+
+    //Spire
+    if (game.global.spireActive) return MODULES.maps.spireHD;
 
     //Mapology
     if (getPageSetting("mapc2hd") > 0 && mapology) cut = getPageSetting("mapc2hd");
