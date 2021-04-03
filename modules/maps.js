@@ -19,9 +19,10 @@ MODULES.maps.UnearnedPrestigesRequired=2;
 MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
+MODULES.maps.scryerHDMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
 MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
+MODULES.maps.voidHDMult = 2; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
 MODULES.maps.voidHitsMult = 1; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
-MODULES.maps.voidHDMult = 2 / MODULES.maps.voidHitsMult; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
 MODULES.maps.spireHD = 32; //4 is actually 1 hit in D stance
 MODULES.maps.spireHitsSurvived = 5; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 
@@ -48,7 +49,7 @@ function updateAutoMapsStatus(get) {
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
     var wantedHealth = getMapHealthCutOff() / calcHealthRatio(false, true);
     var wantedDamage = calcHDRatio() / getMapCutOff();
-    var wantedFarmDmg = calcHDRatio() / (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
+    var wantedFarmDmg = calcHDRatio() / getFarmCutOff();
 
     //Fail Safes
     if (getPageSetting('AutoMaps') == 0) status = 'Off';
@@ -152,12 +153,32 @@ function testMapSpecialModController(noLog) {
     return success;
 }
 
-function getMapCutOff() {
+function getMapHealthCutOff(pure) {
+    //Base and Spire cutOffs
+    var cut = MODULES.maps.numHitsSurvived;
+    if (pure) return cut;
+
+    //Spire
+    if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
+
+    //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
+    if (preVoidCheck) return cut * MODULES.maps.voidHitsMult;
+
+    //Scryer Multiplier (only if scrying on corrupted)
+    if (scryingCorruption()) return cut * MODULES.maps.scryerHitsMult;
+
+    return cut;
+}
+
+function getMapCutOff(pure) {
     //Init
     var cut = getPageSetting("mapcuntoff");
     var mapology = game.global.challengeActive == "Mapology";
     var daily = game.global.challengeActive == "Daily";
     var c2 = game.global.runningChallengeSquared;
+
+    //Unaltered mapCutOff
+    if (pure) return cut;
 
     //Spire
     if (game.global.spireActive) return MODULES.maps.spireHD;
@@ -182,29 +203,24 @@ function getMapCutOff() {
     //Windstack
     if (wind && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
     
-    //Void Map cut off
-    if (preVoidCheck) cut *= MODULES.maps.voidHDMult;
+    //Void and Scry cut off
+    if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
+    if (scryingCorruption()) return cut * MODULES.maps.scryerHDMult;
 
     return cut;
 }
 
-function getMapHealthCutOff() {
-    //Base and Spire cutOffs
-    var base = MODULES.maps.numHitsSurvived;
-    if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
-
-    //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
-    if (preVoidCheck) return base * MODULES.maps.voidHitsMult;
-
-    //Scryer Multiplier (only if scrying on corrupted)
-    if (scryingCorruption()) return base * MODULES.maps.scryerHitsMult;
-
-    return base;
+function getFarmCutOff() {
+    //Return either
+    var cut = getPageSetting("DisableFarm");
+    if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
+    if (scryingCorruption()) return cut * MODULES.maps.scryerHDMult;
+    return cut;
 }
 
 function getMapRatio(map) {
-    var mapDmg = calcHDRatio(map.level, "map") / getMapCutOff();
-    var mapHp = getMapHealthCutOff() / calcHealthRatio(false, true, "map", map.level);
+    var mapDmg = calcHDRatio(map.level, "map") / getMapCutOff(true);
+    var mapHp = getMapHealthCutOff(true) / calcHealthRatio(false, true, "map", map.level);
     return map.difficulty * Math.max(mapDmg, mapHp);
 }
 
@@ -345,7 +361,7 @@ function autoMap() {
 
     //Farm Flags
     shouldFarm = false;
-    shouldFarmDamage = calcHDRatio() >= (getPageSetting("DisableFarm") * (preVoidCheck ? MODULES.maps.voidHDMult : 1));
+    shouldFarmDamage = calcHDRatio() >= getFarmCutOff();
     
     //Only actually trigger farming after doing map bonuses
     if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
