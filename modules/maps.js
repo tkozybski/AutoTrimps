@@ -809,7 +809,7 @@ function autoMap() {
 
             //Recycle our target map to add a modifier to it
             if (tryBetterMod) {
-                if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
+                if (siphonMap != -1 && gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
                     debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
                     recycleMap(siphonMap);
                     return;
