@@ -15,7 +15,6 @@ MODULES.maps.SkipNumUnboughtPrestiges=2;
 MODULES.maps.UnearnedPrestigesRequired=2;
 
 //Psycho
-//Psycho
 MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
@@ -211,10 +210,16 @@ function getMapCutOff(pure) {
 }
 
 function getFarmCutOff() {
-    //Return either
+    //Int
     var cut = getPageSetting("DisableFarm");
+
+    //Spire
+    if (game.global.spireActive) return MODULES.maps.spireHD;
+
+    //Void and Scry
     if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
     if (scryingCorruption()) return cut * MODULES.maps.scryerHDMult;
+
     return cut;
 }
 
