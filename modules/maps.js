@@ -126,6 +126,7 @@ function testMapSpecialModController(noLog) {
                     "0" != c.value && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
                     success = false;
                 }
+
                 var d = updateMapCost(!0), e = game.resources.fragments.owned;
                 "0" != c.value && !noLog && debug("Set the map special modifier to: " + mapSpecialModifierConfig[c.value].name + ". Cost: " + (100 * (d / e)).toFixed(2) + "% of your fragments.");
             }
@@ -495,7 +496,7 @@ function autoMap() {
             if (mapAux.level == siphLvl) siphonMap = index;
 
             //Also grabs the highest level within our range that has a modifier on it
-            if (mapAux.level >= Math.min(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= Math.max(siphLvl+1, maxLvl)) {
+            if (mapAux.level >= Math.max(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= Math.min(siphLvl+1, maxLvl)) {
                 if (!mapAux.hasOwnProperty("bonus") || mapAux.bonus == "p") continue;
                 altSiphLevel = mapAux.level;
                 altSiphMap = index;
@@ -707,7 +708,7 @@ function autoMap() {
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
                 if (MODULES.maps.forceModifier && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
             }
-            else if (altSiphLevel != -1) {
+            else if (altSiphMap != -1) {
                 selectedMap = "create";
                 tryBetterMod = MODULES.maps.forceModifier;
             }
