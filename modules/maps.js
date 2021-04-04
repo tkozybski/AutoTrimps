@@ -834,7 +834,7 @@ function autoMap() {
                 gotBetterMod = testMapSpecialModController(tryBetterMod);
             var mapLvlPicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
 
-            //Recycle our target map to add a modifier to it
+            //Sorry for the mess, this whole thing needs a rework
             if (tryBetterMod) {
                 if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
                     if (siphonMap != -1) {
@@ -850,6 +850,16 @@ function autoMap() {
                     var lvlText = " Level: " + mapObject.level;
                     runMap();
                     if (lastMapWeWereIn != getCurrentMapObject()) debug("Running alternative map " + selectedMap + lvlText + " Name: " + mapObject.name, "maps", 'th-large');
+                    lastMapWeWereIn = getCurrentMapObject();
+                    return;
+                }
+                else if (siphonMap != -1) {
+                    selectMap(selectedMap);
+                    var themapobj = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
+                    var levelText = " Level: " + themapobj.level;
+                    var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
+                    debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
+                    runMap();
                     lastMapWeWereIn = getCurrentMapObject();
                     return;
                 }
