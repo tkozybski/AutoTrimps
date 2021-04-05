@@ -42,6 +42,7 @@ var spireTime = 0;
 var doMaxMapBonus = false;
 var vanillaMapatZone = false;
 var additionalCritMulti = 2 < getPlayerCritChance() ? 25 : 5;
+var fragmentsNeeded = 0;
 
 function updateAutoMapsStatus(get) {
     var status;
@@ -124,6 +125,7 @@ function testMapSpecialModController(noLog) {
                 for (var d = updateMapCost(!0), e = game.resources.fragments.owned, f = 100 * (d / e); 0 < c.selectedIndex && d > e;) {
                     c.selectedIndex -= 1;
                     "0" != c.value && !noLog && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
+                    fragmentsNeeded = Math.max(fragmentsNeeded, d);
                     success = false;
                 }
 
@@ -754,7 +756,7 @@ function autoMap() {
             }
 
             //Want to recreate the map
-            if (tryBetterMod) {
+            if (tryBetterMod && game.resources.fragments.owned > fragmentsNeeded) {
                 repeatClicked();
             }
         } else {
@@ -852,6 +854,7 @@ function autoMap() {
             //Sorry for the mess, this whole thing needs a rework
             if (tryBetterMod) {
                 if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
+                    fragmentsNeeded = 0;
                     if (siphonMap != -1) {
                         debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
                         recycleMap(siphonMap);
