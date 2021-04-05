@@ -581,7 +581,7 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
         //It uses the average times two for damage because otherwise trimps would be full pop half of the time, but dead in the other half
         var corruptionAmount = Math.max(50, ~~((zone - mutations.Corruption.start())/3) + 7); //Integer division
         var corruptionWeight = (104 - corruptionAmount) + 2 * corruptionAmount * calcCorruptionScale(zone, 3);
-        attack *= corruptionWeight/50;
+        attack *= corruptionWeight/100;
     }
     
     //Healthy -- DEBUG
