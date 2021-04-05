@@ -773,7 +773,7 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") health *= (zone >= 60) ? 4.5 : 2.5;
 
-    //Average corrupt impact on World times two - this is to compensate a bit for Corrupted buffs
+    //Average corrupt impact on World
     else if (corrupt && !healthy && !game.global.spireActive) {
         //Calculates the impact of the corruption on the average health on that map. Improbabilities count as 5.
         var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 7; //Integer division
