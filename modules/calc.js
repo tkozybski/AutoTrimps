@@ -568,7 +568,6 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     //Challenges
     if      (game.global.challengeActive == "Lead")       attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
     else if (game.global.challengeActive == "Toxicity")   attack *= 5;
-    else if (game.global.challengeActive == "Corrupted")  attack *= 3;
     else if (game.global.challengeActive == "Domination") attack *= 2.5;
 
     //Daily
