@@ -873,8 +873,8 @@ function autoMap() {
                     var themapobj = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
                     var levelText = " Level: " + themapobj.level;
                     var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
-                    if (lastMapWeWereIn != getCurrentMapObject()) debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
                     runMap();
+                    if (lastMapWeWereIn != getCurrentMapObject()) debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
                     lastMapWeWereIn = getCurrentMapObject();
                     return;
                 }
@@ -910,8 +910,8 @@ function autoMap() {
             var themapobj = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
             var levelText = " Level: " + themapobj.level;
             var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
-            debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
             runMap();
+            if (lastMapWeWereIn != getCurrentMapObject()) debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
             lastMapWeWereIn = getCurrentMapObject();
         }
     }
