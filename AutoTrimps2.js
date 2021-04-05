@@ -199,7 +199,7 @@ function mainLoop() {
         if (getPageSetting('BetterAutoFight') == 2) betterAutoFight3();
         var forcePrecZ = (getPageSetting('ForcePresZ') < 0) || (game.global.world < getPageSetting('ForcePresZ'));
         if (getPageSetting('DynamicPrestige2') > 0 && forcePrecZ) prestigeChanging2();
-        else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value;
+        else autoTrimpSettings.Prestige.selected = (document.getElementById('Prestige').value) ? document.getElementById('Prestige').value : "Daggader";
         var RforcePrecZ = (getPageSetting('RForcePresZ') < 0) || (game.global.world < getPageSetting('RForcePresZ'));
         if (getPageSetting('RDynamicPrestige2') > 0 && RforcePrecZ) RprestigeChanging2();
         else autoTrimpSettings.RPrestige.selected = document.getElementById('RPrestige').value;

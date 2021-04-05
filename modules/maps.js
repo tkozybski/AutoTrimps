@@ -733,7 +733,7 @@ function autoMap() {
 
             //End Prestige Init
             var targetPrestige = autoTrimpSettings.Prestige.selected;
-            var lastPrestige = game.mapUnlocks[targetPrestige].last;
+            var lastPrestige = (targetPrestige) ? game.mapUnlocks[targetPrestige].last : undefined;
             var lastCellPrestige = game.global.mapGridArray[game.global.mapGridArray.length - 1].special;
             var nextToLastCellPrestige = game.global.mapGridArray[game.global.mapGridArray.length - 2].special;
             var endPrestige = lastCellPrestige == targetPrestige || nextToLastCellPrestige == targetPrestige;
