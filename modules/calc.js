@@ -575,12 +575,12 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
 
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;
-    
-    //Corruption - Calculates the impact of the corruption on the average attack on that map times two. Improbabilities count as 1.
+
+    //Average corrupt impact on World times two - this is to compensate a bit for Corrupted buffs. Improbabilities count as 5.
     if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
         //It uses the average times two for damage because otherwise trimps would be full pop half of the time, but dead in the other half
-        var corruptionAmount = Math.max(50, ~~((zone - mutations.Corruption.start())/3) + 3); //Integer division
-        var corruptionWeight = (50 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
+        var corruptionAmount = Math.max(50, ~~((zone - mutations.Corruption.start())/3) + 7); //Integer division
+        var corruptionWeight = (104 - corruptionAmount) + 2 * corruptionAmount * calcCorruptionScale(zone, 3);
         attack *= corruptionWeight/50;
     }
     
@@ -773,11 +773,11 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") health *= (zone >= 60) ? 4.5 : 2.5;
 
-    //Average corrupt impact on World
+    //Average corrupt impact on World times two - this is to compensate a bit for Corrupted buffs
     else if (corrupt && !healthy && !game.global.spireActive) {
         //Calculates the impact of the corruption on the average health on that map. Improbabilities count as 5.
         var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 7; //Integer division
-        var corruptionWeight = (100 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 10);
+        var corruptionWeight = (104 - corruptionAmount) + 2 * corruptionAmount * calcCorruptionScale(zone, 10);
         health *= corruptionWeight/100;
     }
 
