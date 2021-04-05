@@ -724,22 +724,36 @@ function autoMap() {
     if (!game.global.preMapsActive && game.global.mapsActive) {
         var doDefaultMapBonus = game.global.mapBonus < getPageSetting('MaxMapBonuslimit') - 1;
         if (selectedMap == game.global.currentMapId && !getCurrentMapObject().noRecycle && (doDefaultMapBonus || vanillaMapatZone || doMaxMapBonus || shouldFarm || needPrestige || shouldDoSpireMaps)) {
-            var targetPrestige = autoTrimpSettings.Prestige.selected;
-            var lastPrestige = game.mapUnlocks[targetPrestige].last;
+            //Start with Repeat on
             if (!game.global.repeatMap) {
                 repeatClicked();
             }
-            if (!shouldDoMaps && (game.global.mapGridArray[game.global.mapGridArray.length - 1].special == targetPrestige && (game.global.world + extraMapLevels) <= lastPrestige + (getScientistLevel() >= 4 && lastPrestige%10 < 6 ? 14 : 9))) {
+
+            //End Prestige Init
+            var targetPrestige = autoTrimpSettings.Prestige.selected;
+            var lastPrestige = game.mapUnlocks[targetPrestige].last;
+            var lastCellPrestige = game.global.mapGridArray[game.global.mapGridArray.length - 1].special;
+            var nextToLastCellPrestige = game.global.mapGridArray[game.global.mapGridArray.length - 2].special;
+            var endPrestige = lastCellPrestige == targetPrestige || nextToLastCellPrestige == targetPrestige;
+
+            //End Prestige
+            if (!shouldDoMaps && endPrestige && (game.global.world + extraMapLevels) <= lastPrestige + (getScientistLevel() >= 4 && lastPrestige%10 < 6 ? 14 : 9)) {
                 repeatClicked();
             }
+
+            //Health Farming
             if (shouldDoHealthMaps && game.global.mapBonus >= getPageSetting('MaxMapBonushealth') - 1) {
                 repeatClicked();
                 shouldDoHealthMaps = false;
             }
+
+            //Damage Farming
             if (doMaxMapBonus && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') - 1) {
                 repeatClicked();
                 doMaxMapBonus = false;
             }
+
+            //Want to recreate the map
             if (tryBetterMod) {
                 repeatClicked();
             }
