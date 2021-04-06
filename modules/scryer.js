@@ -78,8 +78,8 @@ function useScryerStance() {
 
     //Farm easy maps on scryer
     if (game.global.mapsActive) {
-        var farmScry = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming);
-        var mapRatio = calcHDRatio(getCurrentMapObject().level, "map") / (game.unlocks.imps.Titimp ? 2 : 1) <= 2.7; //2.7 is here because created maps are usually shorter and easier
+        var farmScry = shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming;
+        var mapRatio = calcHDRatio(getCurrentMapObject().level, "map") / (game.unlocks.imps.Titimp ? 2 : 1) <= 2.6; //2.6 is here because created maps are usually shorter and easier
         use_scryer |= getCurrentMapObject().location != "Void" && farmScry && mapRatio; //Farm maps on scryer
     }
 
