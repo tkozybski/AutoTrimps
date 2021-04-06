@@ -782,7 +782,7 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     }
 
     //Healthy -- DEBUG
-    else if (healthy && !game.global.spireActive) {
+    else if (type == "world" && healthy && !game.global.spireActive) {
         var scales = Math.floor((zone - 150) / 6);
         health *= 14 * Math.pow(1.05, scales);
         health *= 1.15;
