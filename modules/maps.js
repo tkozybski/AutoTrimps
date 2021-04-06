@@ -472,7 +472,7 @@ function autoMap() {
         //For each Map Level we can go below our current zone...
         for (siphLvl; siphLvl < maxLvl; siphLvl++) {
             //Calc our Damage on this map
-            var ratio = calcHDRatio(siphLvl-1, "map");
+            var ratio = calcHDRatio(siphLvl, "map");
             if (game.unlocks.imps.Titimp) ratio /= 2;
 
             //Farms on Scryer if available, or Dominance, or just X
@@ -483,6 +483,9 @@ function autoMap() {
             if (ratio > 1.3) break;
         }
     }
+
+    //Farms on "Oneshoot level" + 1
+    if ((shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming) && siphLvl < maxLvl) siphLvl++;
 
     //Register the level of every regular map we have
     var obj = {};
