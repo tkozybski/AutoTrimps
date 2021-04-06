@@ -756,7 +756,7 @@ function autoMap() {
             }
 
             //Want to recreate the map
-            if (tryBetterMod && game.resources.fragments.owned > fragmentsNeeded) {
+            if (tryBetterMod && game.resources.fragments.owned >= fragmentsNeeded) {
                 repeatClicked();
             }
         } else {
@@ -766,7 +766,7 @@ function autoMap() {
             }
 
             //Turn if back on if it want to recreate a map, but doesn't have the fragments to do it
-            if (tryBetterMod && game.resources.fragments.owned > fragmentsNeeded) {
+            if (tryBetterMod && game.resources.fragments.owned < fragmentsNeeded) {
                 repeatClicked();
             }
 
