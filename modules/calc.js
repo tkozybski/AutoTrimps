@@ -774,7 +774,7 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     if (type == "void") health *= (zone >= 60) ? 4.5 : 2.5;
 
     //Average corrupt impact on World
-    else if (corrupt && !healthy && !game.global.spireActive) {
+    else if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
         //Calculates the impact of the corruption on the average health on that map. Improbabilities count as 5.
         var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 7; //Integer division
         var corruptionWeight = (104 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 10);
