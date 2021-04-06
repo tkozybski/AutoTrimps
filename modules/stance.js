@@ -219,7 +219,7 @@ function autoStance() {
             else if (survive("B", critPower))  {setFormation(3);   break;}
             else if (survive("X", critPower))  {setFormation("0"); break;}
             else if (survive("H", critPower))  {setFormation(1);   break;}
-	}
+	    }
 
         //If it cannot survive the worst case scenario on any formation, attempt it's luck on H, if available, or X
         if (critPower < -2) {

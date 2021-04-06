@@ -129,24 +129,22 @@ function useScryerStance() {
     var valid_min = game.global.world >= min_zone && game.global.world > 60;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
     
-    if (USS && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true)) {
+    if (USS && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true) && readyToSwitch()) {
         //Smooth transition to S before killing the target
         if (transitionRequired) {
             for (var cp=2; cp >= -2; cp--) {
-                if      (survive("D",  cp) && (!oneShootPower("D", false, 0, true)))                     {setFormation( 2 ); return;}
-                else if (survive("XB", cp) && (!oneShootPower("X", false, 0, true)))                     {setFormation("0"); return;}
-                else if (survive("B",  cp) && (!oneShootPower("B", false, 0, true) || !readyToSwitch())) {setFormation( 3 ); return;}
-                else if (survive("X",  cp) && (!oneShootPower("X", false, 0, true) || !readyToSwitch())) {setFormation("0"); return;}
-                else if (survive("H",  cp) && (!oneShootPower("H", false, 0, true) || !readyToSwitch())) {setFormation( 1 ); return;}
+                if      (survive("D",  cp) && !oneShootPower("D", false, 0, true)) {setFormation( 2 ); return;}
+                else if (survive("XB", cp) && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
+                else if (survive("B",  cp) && !oneShootPower("B", false, 0, true)) {setFormation( 3 ); return;}
+                else if (survive("X",  cp) && !oneShootPower("X", false, 0, true)) {setFormation("0"); return;}
+                else if (survive("H",  cp) && !oneShootPower("H", false, 0, true)) {setFormation( 1 ); return;}
             }
         }
 
         //Set to scry if it won't kill us or we are willing to die for it
-        if (readyToSwitch() || transitionRequired) {
-            setFormation(scry);
-            wantToScry = true;
-            return;
-        }
+        setFormation(scry);
+        wantToScry = true;
+        return;
     }
 
     //No reason to Scry
