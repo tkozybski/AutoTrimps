@@ -760,9 +760,17 @@ function autoMap() {
                 repeatClicked();
             }
         } else {
-            if (game.global.repeatMap && (!tryBetterMod || game.resources.fragments.owned > fragmentsNeeded)) {
+            //Start with Repeat Off
+            if (game.global.repeatMap) {
                 repeatClicked();
             }
+
+            //Turn if back on if it want to recreate a map, but doesn't have the fragments to do it
+            if (tryBetterMod && game.resources.fragments.owned > fragmentsNeeded) {
+                repeatClicked();
+            }
+
+            //Force Abandon to restart void maps
             if (restartVoidMap) {
                 mapsClicked(true);
             }
