@@ -757,7 +757,7 @@ function autoMap() {
                 repeatClicked();
             }
         } else {
-            if (game.global.repeatMap) {
+            if (game.global.repeatMap && (!tryBetterMod || game.resources.fragments.owned > fragmentsNeeded)) {
                 repeatClicked();
             }
             if (restartVoidMap) {
