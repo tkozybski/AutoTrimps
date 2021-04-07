@@ -115,7 +115,7 @@ function testMapSpecialModController(noLog) {
         if (c) {
             if (game.global.highestLevelCleared >= 59) {
                 //Select Map Modifier
-                if (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming) {
+                if (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || (preVoidCheck && !enoughDamage)) {
                     c.value = a.includes("lmc") ? "lmc" : a.includes("hc") ? "hc" : a.includes("smc") ? "smc" : "lc";
                 } else if (needPrestige && enoughDamage && a.includes("p")) {
                     c.value = "p";
