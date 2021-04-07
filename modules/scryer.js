@@ -110,7 +110,7 @@ function useScryerStance() {
         var HSD = oneShootPower("D", false, 0, true);
         var HS_next = oneShootPower("S", false, 1);
         var HSD_next = oneShootPower("D", false, 1, true);
-        if (readyToSwitch && HS > 0 && HS >= HSD && (HS > 1 || HS_next > 0 && HS_next >= HSD_next)) {
+        if (readyToSwitch() && HS > 0 && HS >= HSD && (HS > 1 || HS_next > 0 && HS_next >= HSD_next)) {
             setFormation(4);
             return;
         }
