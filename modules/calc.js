@@ -752,7 +752,7 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
 
     //Dailies
     if (game.global.challengeActive == "Daily") {
-        if (typeof game.global.dailyChallenge.empower.getMult() !== "undefined") health *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
+        if (typeof game.global.dailyChallenge.empower !== "undefined") health *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
     }
 
     //Obliterated + Eradicated
