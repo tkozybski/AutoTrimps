@@ -121,8 +121,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
 
     //Mirrored (Daily) -- Unblockable, unpredictable
     if (dailyMirrored && critPower >= -1) {
-        var mult = ((game.global.dailyChallenge.mirrored.strength % 10) + 1) / 10;
-        harm += mult * maxDamage;
+        harm += dailyModifiers.mirrored.reflectDamage(game.global.dailyChallenge.mirrored.strength, maxDamage);
     }
 
     return harm;

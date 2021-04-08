@@ -83,32 +83,32 @@ function getTrimpHealth(realHealth) {
 
     //Toughness
     if (game.portal.Toughness.level > 0)
-        health *= ((game.portal.Toughness.level * game.portal.Toughness.modifier) + 1);
+        health *= 1 + game.portal.Toughness.level * game.portal.Toughness.modifier;
     
     //Toughness II
     if (game.portal.Toughness_II.level > 0)
-        health *= ((game.portal.Toughness_II.level * game.portal.Toughness_II.modifier) + 1);
+        health *= 1 + game.portal.Toughness_II.level * game.portal.Toughness_II.modifier;
     
     //Resilience
     if (game.portal.Resilience.level > 0)
-        health *= (Math.pow(game.portal.Resilience.modifier + 1, game.portal.Resilience.level));
+        health *= Math.pow(game.portal.Resilience.modifier + 1, game.portal.Resilience.level);
     
     //Geneticists
     var geneticist = game.jobs.Geneticist;
-    if (geneticist.owned > 0) health *= (Math.pow(1.01, game.global.lastLowGen));
+    if (geneticist.owned > 0) health *= Math.pow(1.01, game.global.lastLowGen);
     
     //Formation
     if (game.global.formation !== 0) health *= (game.global.formation == 1) ? 4 : 0.5;
-    
-    //Golden Battle
-    if (game.goldenUpgrades.Battle.currentBonus > 0) health *= game.goldenUpgrades.Battle.currentBonus + 1;
-    
+
     //Heirloom
     var heirloomBonus = calcHeirloomBonus("Shield", "trimpHealth", 0, true);
-    if (heirloomBonus > 0) health *= ((heirloomBonus / 100) + 1);
+    if (heirloomBonus > 0) health *= 1 + heirloomBonus/100;
+    
+    //Golden Battle
+    if (game.goldenUpgrades.Battle.currentBonus > 0) health *= 1 + game.goldenUpgrades.Battle.currentBonus;
     
     //C2
-    if (game.global.totalSquaredReward > 0) health *= (1 + (game.global.totalSquaredReward / 100));
+    if (game.global.totalSquaredReward > 0) health *= 1 + game.global.totalSquaredReward/100;
     
     return health;
 }
@@ -168,8 +168,8 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     //Challenges
     if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
     else if (game.global.challengeActive == "Balance") health *= game.challenges.Balance.getHealthMult();
-    else if (typeof game.global.dailyChallenge.pressure !== 'undefined')
-        health *= (dailyModifiers.pressure.getMult(game.global.dailyChallenge.pressure.strength, game.global.dailyChallenge.pressure.stacks));
+    else if (typeof game.global.dailyChallenge.pressure !== 'undefined' && !realHealth)
+        health *= dailyModifiers.pressure.getMult(game.global.dailyChallenge.pressure.strength, game.global.dailyChallenge.pressure.stacks);
     
     //Magma
     if (mutations.Magma.active()) {
@@ -179,7 +179,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     }
     
     //Radio
-    //if (game.global.radioStacks > 0) health *= (1 - (game.global.radioStacks * 0.1));
+    if (game.global.radioStacks > 0) health *= 1 - (game.global.radioStacks * 0.1);
     
     //Amalgamator
     if (game.jobs.Amalgamator.owned > 0) health *= game.jobs.Amalgamator.getHealthMult();
