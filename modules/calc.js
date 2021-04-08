@@ -17,8 +17,8 @@ function debugCalc() {
 
     //Trimp Stats
     debug("Our Stats");
-    debug("Our attack: " + displayedMin.toExponential(1) + "-" + displayedMax.toExponential(2));
-    debug("Our crit: " + (getPlayerCritChance()*100) + "% for " + getPlayerCritDamageMult().toFixed(1) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(2) + "x");
+    debug("Our attack: " + displayedMin.toExponential(2) + "-" + displayedMax.toExponential(2));
+    debug("Our crit: " + 100 * getPlayerCritChance() + "% for " + getPlayerCritDamageMult().toFixed(1) + "x Damage. Average of " + getCritMulti(false, "maybe").toFixed(2) + "x");
     debug("Our block: " + calcOurBlock(true, true).toExponential(2));
     debug("Our Health: " + calcOurHealth(true, false, true).toExponential(2));
 

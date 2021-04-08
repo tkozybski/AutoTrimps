@@ -22,14 +22,16 @@ function autoStanceNew() {
     else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax)        setFormation('2');
 }
 
-function debugStance() {
-    for (critPower=2; critPower >= -2; critPower--) {
+function debugStance(maxPower) {
+    //Returns what stance we should be using right now, or false if non grants survival
+    for (critPower=2; critPower >= -2 && !maxPower; critPower--) {
         if      (survive("D", critPower))  {return "D" + critPower}
         else if (survive("XB", critPower)) {return "XB" + critPower}
         else if (survive("B", critPower))  {return "B" + critPower}
         else if (survive("X", critPower))  {return "X" + critPower}
         else if (survive("H", critPower))  {return "H" + critPower}
     }
+    return false;
 }
 
 function maxOneShootPower() {
@@ -117,7 +119,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
 
     //Mirrored (Daily) -- Unblockable, unpredictable
     if (dailyMirrored && critPower >= -1) {
-        var mult = ((game.global.dailyChallenge.mirrored.strength % 10) + 1) / 10
+        var mult = ((game.global.dailyChallenge.mirrored.strength % 10) + 1) / 10;
         harm += mult * maxDamage;
     }
 
