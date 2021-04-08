@@ -72,7 +72,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
     //Pre-Init
     if (!maxHealth) maxHealth = calcOurHealth(true, false, true);
     if (!minDamage) minDamage = calcOurDmg("min", true, true, "never", game.global.mapsActive, true);
-    if (!maxDamage) minDamage = calcOurDmg("max", true, true, "force", game.global.mapsActive, true);
+    if (!maxDamage) maxDamage = calcOurDmg("max", true, true, "force", game.global.mapsActive, true);
     if (!missingHealth) missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
 
     //Enemy
