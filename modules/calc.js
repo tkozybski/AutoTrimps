@@ -544,8 +544,13 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
     else if (game.global.challengeActive == "Coordinate") attack *= getBadCoordLevel();
     else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) attack *= 10;
 
+    //Dailies
+    if (game.global.challengeActive == "Daily") {
+        if (typeof game.global.dailyChallenge.empower.getMult() !== "undefined") attack *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
+    }
+
     //Obliterated and Eradicated
-    else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
+    else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated") {
         var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
         var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
         oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
@@ -744,6 +749,11 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
     if (game.global.challengeActive == "Toxicity")   health *= 2;
     if (game.global.challengeActive == "Life")       health *= 11;
     if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
+
+    //Dailies
+    if (game.global.challengeActive == "Daily") {
+        if (typeof game.global.dailyChallenge.empower.getMult() !== "undefined") health *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
+    }
 
     //Obliterated + Eradicated
     if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated") {
