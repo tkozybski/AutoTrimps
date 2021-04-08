@@ -546,7 +546,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
 
     //Dailies
     if (game.global.challengeActive == "Daily") {
-        if (typeof game.global.dailyChallenge.empower.getMult() !== "undefined") attack *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
+        if (typeof game.global.dailyChallenge.empower !== "undefined") attack *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
     }
 
     //Obliterated and Eradicated
