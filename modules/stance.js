@@ -25,11 +25,11 @@ function autoStanceNew() {
 function debugStance(maxPower) {
     //Returns what stance we should be using right now, or false if none grants survival
     for (critPower=2; critPower >= -2; critPower--) {
-        if      (survive("D", critPower))  {return "D" + critPower}
-        else if (survive("XB", critPower)) {return "XB" + critPower}
-        else if (survive("B", critPower))  {return "B" + critPower}
-        else if (survive("X", critPower))  {return "X" + critPower}
-        else if (survive("H", critPower))  {return "H" + critPower}
+        if      (survive("D",  critPower, true)) {return "D"  + critPower}
+        else if (survive("XB", critPower, true)) {return "XB" + critPower}
+        else if (survive("B",  critPower, true)) {return "B"  + critPower}
+        else if (survive("X",  critPower, true)) {return "X"  + critPower}
+        else if (survive("H",  critPower, true)) {return "H"  + critPower}
         else if (maxPower) break;
     }
 
@@ -170,7 +170,7 @@ function directDamage(formation, block, currentHealth, minDamage, critPower=2) {
     return harm;
 }
 
-function survive(formation = "S", critPower = 2) {
+function survive(formation = "S", critPower = 2, ignoreArmy) {
     //Check if the formation is valid
     if (formation == "D"  && !game.upgrades.Dominance.done) return false;
     if (formation == "XB" && !game.upgrades.Barrier.done) return false;
@@ -187,7 +187,7 @@ function survive(formation = "S", critPower = 2) {
     //More stats
     var minDamage = baseMinDamage;
     var maxDamage = baseMaxDamage;
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var newSquadRdy = !ignoreArmy && game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
 
     //Applies the formation modifiers
     if      (formation == "XB") {health /= 2;}
