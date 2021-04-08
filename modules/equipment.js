@@ -6,6 +6,7 @@ MODULES["equipment"].equipHealthDebugMessage = false;
 
 //Psycho
 MODULES["equipment"].numHitsMult = 2;
+MODULES["equipment"].mirroredDailyCap = true;
 
 var equipmentList = {
     'Dagger': {
@@ -262,9 +263,13 @@ function autoLevelEquipment() {
     }
 
     //Check for H & D
-    var enoughHealthE = calcHealthRatio(false, true) > getMapHealthCutOff() * MODULES.equipment.numHitsMult;
     var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
-    var enoughDamageE = oneShootPower(formation, true) >= 1;
+    var enoughDamageE = enoughDamage && oneShootPower(formation, true) >= 1;
+    var enoughHealthE = calcHealthRatio(false, true) > getMapHealthCutOff() * MODULES.equipment.numHitsMult;
+
+    //Check mirror dailies
+    var mirroredDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.mirrored !== "undefined";
+    var mirroredDailyOk = !MODULES.equipment.mirroredDailyCap || !mirroredDaily || oneShootPower() < maxOneShootPower() || !enoughDamage;
     
     //For each equipment...
     for (var equipName in equipmentList) {
@@ -309,7 +314,10 @@ function autoLevelEquipment() {
                 var DelayArmorWhenNeeded = getPageSetting('DelayArmorWhenNeeded');
                 var equipStat = equipmentList[equipName].Stat;
 
-                //Only delay armor Prestiges if lacking health or not lacking damage to advance
+                //Delay Weapon Prestiges on Mirrored Dailies
+                BuyWeaponUpgrades &= mirroredDailyOk;
+
+                //Only delay Armor Prestiges if not lacking health or not lacking damage to advance
                 BuyArmorUpgrades &= DelayArmorWhenNeeded || !enoughHealth || enoughDamage || equipmentList[equipName].Resource == "wood";
 
                 //Buy Prestiges
@@ -360,7 +368,7 @@ function autoLevelEquipment() {
                     buyEquipment(eqName, null, true);
                 }
             }
-            if (windstackingprestige() && BuyWeaponLevels && DaThing.Stat == 'attack' && (!enoughDamageE || enoughHealthE || maxmap)) {
+            if (windstackingprestige() && BuyWeaponLevels && DaThing.Stat == 'attack' && mirroredDailyOk && (!enoughDamageE || enoughHealthE || maxmap)) {
                 game.global.buyAmt = gearamounttobuy;
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
                     debug('Leveling equipment ' + eqName, "equips", '*upload3');

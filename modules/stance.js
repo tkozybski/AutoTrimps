@@ -81,12 +81,12 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
     var enemyDamage = calcSpecificEnemyAttack(critPower);
 
     //Active Challenges
-    var leadChallenge = game.global.challengeActive == 'Lead';
+    var leadChallenge = game.global.challengeActive == "Lead";
     var electricityChallenge = game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse";
-    var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
-    var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
-    var dailyMirrored = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.mirrored !== 'undefined');
-    var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity" || dailyPlague || dailyBogged;
+    var dailyPlague = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.plague !== "undefined";
+    var dailyBogged = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.bogged !== "undefined";
+    var dailyMirrored = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.mirrored !== "undefined";
+    var drainChallenge = game.global.challengeActive == "Nom" || game.global.challengeActive == "Toxicity" || dailyPlague || dailyBogged;
     var challengeDamage = 0, harm = 0;
 
     //Electricity Lead - Tox/Nom
