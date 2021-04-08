@@ -23,14 +23,16 @@ function autoStanceNew() {
 }
 
 function debugStance(maxPower) {
-    //Returns what stance we should be using right now, or false if non grants survival
-    for (critPower=2; critPower >= -2 && !maxPower; critPower--) {
+    //Returns what stance we should be using right now, or false if none grants survival
+    for (critPower=2; critPower >= -2; critPower--) {
         if      (survive("D", critPower))  {return "D" + critPower}
         else if (survive("XB", critPower)) {return "XB" + critPower}
         else if (survive("B", critPower))  {return "B" + critPower}
         else if (survive("X", critPower))  {return "X" + critPower}
         else if (survive("H", critPower))  {return "H" + critPower}
+        else if (maxPower) break;
     }
+
     return false;
 }
 
