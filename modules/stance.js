@@ -22,14 +22,14 @@ function autoStanceNew() {
     else if(game.global.formation == 1 && game.global.soldierHealth == game.global.soldierHealthMax)        setFormation('2');
 }
 
-function debugStance(maxPower) {
+function debugStance(maxPower, ignoreArmy) {
     //Returns what stance we should be using right now, or false if none grants survival
     for (critPower=2; critPower >= -2; critPower--) {
-        if      (survive("D",  critPower, true)) {return "D"  + critPower}
-        else if (survive("XB", critPower, true)) {return "XB" + critPower}
-        else if (survive("B",  critPower, true)) {return "B"  + critPower}
-        else if (survive("X",  critPower, true)) {return "X"  + critPower}
-        else if (survive("H",  critPower, true)) {return "H"  + critPower}
+        if      (survive("D",  critPower, ignoreArmy)) {return "D"  + critPower}
+        else if (survive("XB", critPower, ignoreArmy)) {return "XB" + critPower}
+        else if (survive("B",  critPower, ignoreArmy)) {return "B"  + critPower}
+        else if (survive("X",  critPower, ignoreArmy)) {return "X"  + critPower}
+        else if (survive("H",  critPower, ignoreArmy)) {return "H"  + critPower}
         else if (maxPower) break;
     }
 
