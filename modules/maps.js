@@ -18,7 +18,7 @@ MODULES.maps.UnearnedPrestigesRequired=2;
 MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
-MODULES.maps.scryerHDMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
+MODULES.maps.scryerHDMult = 4; //This is a diviser to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON
 MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
 MODULES.maps.voidHDMult = 1; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
 MODULES.maps.voidHitsMult = 1; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
@@ -207,7 +207,7 @@ function getMapCutOff(pure) {
     
     //Void and Scry cut off
     if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
-    if (scryingCorruption()) return cut * MODULES.maps.scryerHDMult;
+    if (scryingCorruption()) return cut / MODULES.maps.scryerHDMult;
 
     return cut;
 }
@@ -221,7 +221,7 @@ function getFarmCutOff() {
 
     //Void and Scry
     if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
-    if (scryingCorruption()) return cut * MODULES.maps.scryerHDMult;
+    if (scryingCorruption()) return cut / MODULES.maps.scryerHDMult;
 
     return cut;
 }
