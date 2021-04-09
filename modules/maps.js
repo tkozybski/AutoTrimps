@@ -51,13 +51,13 @@ function updateAutoMapsStatus(get) {
     var wantedDamage = calcHDRatio() / getMapCutOff();
     var wantedFarmDmg = calcHDRatio() / getFarmCutOff();
 
-    //Fail Safes
-    if (getPageSetting('AutoMaps') == 0) status = 'Off';
-    else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status = 'Out of Map Credits';
-
     //Raiding
-    else if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic") status = 'Prestige Raiding';
+    if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic") status = 'Prestige Raiding';
     else if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location == "Bionic") status = 'BW Raiding';
+
+    //Fail Safes
+    else if (getPageSetting('AutoMaps') == 0) status = 'Off';
+    else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status = 'Out of Map Credits';
 
     //Spire
     else if (preSpireFarming) {
