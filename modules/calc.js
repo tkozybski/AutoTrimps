@@ -459,7 +459,7 @@ function calcSpire(what, cell, name) {
     base *= game.badGuys[enemy][what];
 
     //Compensations
-    if (game.global.challengeActive == "Domination" && cell != 100) base /= (what == "attack") ? 10 : 75 * 4;
+        if (game.global.challengeActive == "Domination" && cell != 100) base /= (what == "attack") ? 25 : 75;
 
     return base;
 }
@@ -489,11 +489,8 @@ function calcEnemyBaseAttack(type, zone, cell, name) {
     //Before Breaking the Planet
     else if (zone < 60) {
         attack = (0.375 * attack) + (0.7 * attack * (cell / 100));
+        attack *= 0.85;
     }
-    
-    //Also Before Breaking the Planet
-    if (zone < 60) attack *= 0.85;
-    
 
     //After Breaking the Planet
     else {
@@ -698,10 +695,8 @@ function calcEnemyBaseHealth(type, zone, cell, name) {
     //Before Breaking the Planet
     else if (zone < 60) {
         health = (health * 0.4) + ((health * 0.4) * (cell / 110));
+        health *= 0.75;
     }
-    
-    //Also before Breaking the Planet
-    if (zone < 60) health *= 0.75;
 
     //After Breaking the Planet
     else {
@@ -776,7 +771,7 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     var healthy = mutations.Healthy.active();
 
     //Challenges - worst case for Lead and Domination
-    if (game.global.challengeActive == "Domination") health *= 7.5; //DEBUG 7.5 * (type != "map" ? 5 : 1) (Improbabilities have 5x more than health than Turtlimps)
+    if (game.global.challengeActive == "Domination") health *= 7.5;
     if (game.global.challengeActive == "Lead") health *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
 
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
