@@ -44,22 +44,42 @@ function maxOneShootPower() {
     return 2;
 }
 
-function oneShootPower(stance, worstCase, offset=0, maxOrMin) {
+function oneShootZone(stance, type, zone, maxOrMin) {
+    //Pre-Init
+    if (!type) type = preVoidCheck ? "void" : "world";
+    if (!zone) zone = game.global.world;
+
+    //Calculates our minimum damage
+    var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", type != "world", true);
+    if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
+
+    //Calculates how many enemies we can oneshoot + overkill
+    for (var power=1; power <= maxOneShootPower(); power++) {
+        //Enemy Health: A C99 Dragimp (worstCase)
+        damageLeft -= calcEnemyHealth(type, zone, 99-maxOneShootPower()+power, "Dragimp");
+
+        //Check if we can oneshoot the next enemy
+        if (damageLeft < 0) return power-1;
+
+        //Calculates our minimum "left over" damage, which will be used by the Overkill
+        damageLeft *= 0.005 * game.portal.Overkill.level;
+    }
+
+    return power-1;
+}
+
+function oneShootPower(stance, offset = 0, maxOrMin) {
     //Calculates our minimum damage
     var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", game.global.mapsActive, true);
     if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
-    
-    //The worst case don't need any offset
-    if (worstCase && offset) offset = 0;
-    
+
     //Calculates how many enemies we can oneshoot + overkill
     for (var power=1; power <= maxOneShootPower(); power++) {
         //No enemy to overkill (usually this happens at the last cell)
-        if (!worstCase && !getCurrentEnemy(power+offset)) return power+offset-1;
+        if (!getCurrentEnemy(power+offset)) return power+offset-1;
         
-        //Enemy Health: current enemy, his neighbours, or a C99 Dragimp (worstCase)
-        if (worstCase) damageLeft -= calcEnemyHealth(undefined, undefined, 99-maxOneShootPower()+power, "Dragimp");
-        else if (power+offset > 1) damageLeft -= calcSpecificEnemyHealth(undefined, undefined, getCurrentEnemy(power+offset).level);
+        //Enemy Health: current enemy or his neighbours
+        if (power+offset > 1) damageLeft -= calcSpecificEnemyHealth(undefined, undefined, getCurrentEnemy(power+offset).level);
         else damageLeft -= getCurrentEnemy().health;
         
         //Check if we can oneshoot the next enemy

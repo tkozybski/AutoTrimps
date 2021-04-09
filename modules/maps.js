@@ -16,6 +16,7 @@ MODULES.maps.UnearnedPrestigesRequired=2;
 
 //Psycho
 MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
+MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.scryerHDMult = 4; //This is a diviser to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON
@@ -464,7 +465,7 @@ function autoMap() {
     
     //Calculates Siphonology and Extra Map Levels
     var minLvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level);
-    var maxLvl = extraMapLevels + game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
+    var maxLvl = game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
     var siphLvl = minLvl - 1;
 	
     //If enabled, then
@@ -481,6 +482,12 @@ function autoMap() {
 
             //Stop increasing map level once we get to the right ratio. We use 1.2 here because created maps are usually shorter and easier
             if (ratio > 1.2) break;
+        }
+
+        //Keep increasing map level while we can overkill in that map
+        if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 109 && siphLvl == maxLvl) {
+            for (siphLvl = game.global.world + 5; siphLvl > maxLvl && !oneShootZone("S", "map", siphLvl); siphLvl--);
+            if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
         }
     }
 
@@ -885,8 +892,9 @@ function autoMap() {
                     var levelText = " Level: " + themapobj.level;
                     var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
                     runMap();
-                    if (lastMapWeWereIn != getCurrentMapObject()) debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
+                    debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
                     lastMapWeWereIn = getCurrentMapObject();
+                    fragmentsNeeded = 0;
                     return;
                 }
             }
@@ -922,8 +930,9 @@ function autoMap() {
             var levelText = " Level: " + themapobj.level;
             var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
             runMap();
-            if (lastMapWeWereIn != getCurrentMapObject()) debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
+            debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
             lastMapWeWereIn = getCurrentMapObject();
+            fragmentsNeeded = 0;
         }
     }
 }
