@@ -488,6 +488,8 @@ function autoMap() {
         if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 109 && siphLvl == maxLvl) {
             for (siphLvl = game.global.world + 5; siphLvl > maxLvl && !oneShotZone("S", "map", siphLvl); siphLvl--);
             if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
+            document.getElementById('advExtraLevelSelect').value = siphLvl - game.global.world;
+            extraMapLevels = getExtraMapLevels();
         }
     }
 
@@ -505,7 +507,7 @@ function autoMap() {
             if (mapAux.level == siphLvl) siphonMap = index;
 
             //Also grabs the highest level within our range that has a modifier on it
-            if (mapAux.level >= Math.max(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= Math.min(siphLvl+1, maxLvl)) {
+            if (mapAux.level >= Math.max(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= siphLvl+1) {
                 if (!mapAux.hasOwnProperty("bonus") || mapAux.bonus == "p") continue;
                 altSiphLevel = mapAux.level;
                 altSiphMap = index;
@@ -810,7 +812,7 @@ function autoMap() {
             mapsClicked();
         } else if (selectedMap == "create" || tryBetterMod) {
             var $mapLevelInput = document.getElementById("mapLevelInput");
-            $mapLevelInput.value = needPrestige ? game.global.world : siphLvl;
+            $mapLevelInput.value = (needPrestige || siphLvl > game.global.world) ? game.global.world : siphLvl;
             if (preSpireFarming && MODULES["maps"].SpireFarm199Maps)
                 $mapLevelInput.value = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
             var decrement;
