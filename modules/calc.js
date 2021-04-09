@@ -675,8 +675,7 @@ function badGuyCritMult(enemy, critPower=2, block, health) {
 function calcCorruptionScale(world, base) {
     var startPoint = (game.global.challengeActive == "Corrupted" || game.global.challengeActive == "Eradicated") ? 1 : 150;
     var scales = Math.floor((world - startPoint) / 6);
-    base *= Math.pow(1.05, scales);
-    return base;
+    return base * Math.pow(1.05, scales);
 }
 
 function calcEnemyBaseHealth(type, zone, cell, name) {
@@ -776,8 +775,8 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     var corrupt = zone >= mutations.Corruption.start();
     var healthy = mutations.Healthy.active();
 
-    //Challenges - worst case for Lead and Domination (Improbabilities have 5x more than health than Turtlimps)
-    if (game.global.challengeActive == "Domination") health *= 7.5 * (type != "map" ? 5 : 1);
+    //Challenges - worst case for Lead and Domination
+    if (game.global.challengeActive == "Domination") health *= 7.5; //DEBUG 7.5 * (type != "map" ? 5 : 1) (Improbabilities have 5x more than health than Turtlimps)
     if (game.global.challengeActive == "Lead") health *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
 
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
@@ -829,13 +828,13 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
     if (type != "world") health *= getCurrentMapObject().difficulty;
 
     //Corruption - May be slightly smaller than it should be, if "zone" is different than your current zone
-    else if (!healthy && (corrupt || name == "Improbability")) {
+    else if (type == "world" && !healthy && (corrupt || name == "Improbability")) {
         health *= calcCorruptionScale(zone, 10);
         if (enemy.corrupted == "corruptTough") health *= 5;
     }
 
     //Healthy -- DEBUG
-    if (healthy) {
+    if (type == "world" && healthy) {
         var scales = Math.floor((zone - 150) / 6);
         health *= 14 * Math.pow(1.05, scales);
         health *= 1.15;
