@@ -869,7 +869,7 @@ function autoMap() {
 
             //Sorry for the mess, this whole thing needs a rework
             if (tryBetterMod) {
-                if (gotBetterMod && updateMapCost(true) <= game.resources.fragments.owned) {
+                if (gotBetterMod && game.resources.fragments.owned >= updateMapCost(true)) {
                     fragmentsNeeded = 0;
                     if (siphonMap != -1) {
                         debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
@@ -895,7 +895,6 @@ function autoMap() {
                     runMap();
                     debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
                     lastMapWeWereIn = getCurrentMapObject();
-                    fragmentsNeeded = 0;
                     return;
                 }
             }
