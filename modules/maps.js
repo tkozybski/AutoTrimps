@@ -42,7 +42,6 @@ var spireMapBonusFarming = false;
 var spireTime = 0;
 var doMaxMapBonus = false;
 var vanillaMapatZone = false;
-var additionalCritMulti = 2 < getPlayerCritChance() ? 25 : 5;
 var fragmentsNeeded = 0;
 
 function updateAutoMapsStatus(get) {
@@ -57,8 +56,8 @@ function updateAutoMapsStatus(get) {
     else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status = 'Out of Map Credits';
 
     //Raiding
-    else if (game.global.mapsActive && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic") status = 'Prestige Raiding';
-    else if (game.global.mapsActive && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location == "Bionic") status = 'BW Raiding';
+    else if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic") status = 'Prestige Raiding';
+    else if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location == "Bionic") status = 'BW Raiding';
 
     //Spire
     else if (preSpireFarming) {
