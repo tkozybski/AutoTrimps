@@ -1,12 +1,9 @@
-function calcBaseDamageinX() {
-    baseDamage = calcOurDmg("avg", false, true, "never", game.global.mapsActive, true);
-    baseBlock = game.global.soldierCurrentBlock;
-    baseHealth = game.global.soldierHealthMax;
-}
+var baseMinDamage = 0;
+var baseMaxDamage = 0;
 
-function calcBaseDamageinX2() {
-    baseMinDamage  = calcOurDmg("min", false, true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
-    baseMaxDamage  = calcOurDmg("max", false, true, "force", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
+function calcBaseDamageInX() {
+    baseMinDamage = calcOurDmg("min", false, true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
+    baseMaxDamage = calcOurDmg("max", false, true, "force", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
     baseDamage = calcOurDmg("avg", false, true, "maybe", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
     baseHealth = calcOurHealth(false, false, true);
     baseBlock  = calcOurBlock(false, true);
@@ -24,7 +21,7 @@ function autoStanceNew() {
 
 function debugStance(maxPower, ignoreArmy) {
     //Returns what stance we should be using right now, or false if none grants survival
-    for (critPower=2; critPower >= -2; critPower--) {
+    for (var critPower=2; critPower >= -2; critPower--) {
         if      (survive("D",  critPower, ignoreArmy)) {return "D"  + critPower}
         else if (survive("XB", critPower, ignoreArmy)) {return "XB" + critPower}
         else if (survive("B",  critPower, ignoreArmy)) {return "B"  + critPower}
@@ -36,7 +33,7 @@ function debugStance(maxPower, ignoreArmy) {
     return false;
 }
 
-function maxOneShootPower() {
+function maxOneShotPower() {
     //No Overkill at all
     if (game.portal.Overkill.level == 0) return 1;
     
@@ -44,7 +41,7 @@ function maxOneShootPower() {
     return 2;
 }
 
-function oneShootZone(stance, type, zone, maxOrMin) {
+function oneShotZone(stance, type, zone, maxOrMin) {
     //Pre-Init
     if (!type) type = preVoidCheck ? "void" : "world";
     if (!zone) zone = game.global.world;
@@ -53,12 +50,12 @@ function oneShootZone(stance, type, zone, maxOrMin) {
     var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", type != "world", true);
     if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
 
-    //Calculates how many enemies we can oneshoot + overkill
-    for (var power=1; power <= maxOneShootPower(); power++) {
+    //Calculates how many enemies we can one shot + overkill
+    for (var power=1; power <= maxOneShotPower(); power++) {
         //Enemy Health: A C99 Dragimp (worstCase)
-        damageLeft -= calcEnemyHealth(type, zone, 99-maxOneShootPower()+power, "Dragimp");
+        damageLeft -= calcEnemyHealth(type, zone, 99-maxOneShotPower()+power, "Dragimp");
 
-        //Check if we can oneshoot the next enemy
+        //Check if we can one-shot the next enemy
         if (damageLeft < 0) return power-1;
 
         //Calculates our minimum "left over" damage, which will be used by the Overkill
@@ -68,13 +65,13 @@ function oneShootZone(stance, type, zone, maxOrMin) {
     return power-1;
 }
 
-function oneShootPower(stance, offset = 0, maxOrMin) {
+function oneShotPower(stance, offset = 0, maxOrMin) {
     //Calculates our minimum damage
     var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", game.global.mapsActive, true);
     if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
 
-    //Calculates how many enemies we can oneshoot + overkill
-    for (var power=1; power <= maxOneShootPower(); power++) {
+    //Calculates how many enemies we can one shot + overkill
+    for (var power=1; power <= maxOneShotPower(); power++) {
         //No enemy to overkill (usually this happens at the last cell)
         if (!getCurrentEnemy(power+offset)) return power+offset-1;
         
@@ -82,7 +79,7 @@ function oneShootPower(stance, offset = 0, maxOrMin) {
         if (power+offset > 1) damageLeft -= calcSpecificEnemyHealth(undefined, undefined, getCurrentEnemy(power+offset).level);
         else damageLeft -= getCurrentEnemy().health;
         
-        //Check if we can oneshoot the next enemy
+        //Check if we can one shot the next enemy
         if (damageLeft < 0) return power-1;
         
         //Calculates our minimum "left over" damage, which will be used by the Overkill
@@ -133,16 +130,19 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
         harm += (maxHealth - missingHealth) * challengeDamage;
     }
 
-    //Explosive Daily (or Magma Omnipotrimp --TODO) -- Blockable
+    //Calculates block and pierce
+    var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
+    //TODO if (formation != "B" && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+
+    //Explosive Daily
     if (typeof game.global.dailyChallenge['explosive'] !== 'undefined' && critPower >= 0) {
         var explosionDmg = enemyDamage * (1 + game.global.dailyChallenge['explosive'].strength);
         if (maxDamage > enemyHealth) harm += Math.max(explosionDmg - baseBlock,   explosionDmg * pierce);
     }
 
     //Mirrored (Daily) -- Unblockable, unpredictable
-    if (dailyMirrored && critPower >= -1) {
+    if (dailyMirrored && critPower >= -1)
         harm += dailyModifiers.mirrored.reflectDamage(game.global.dailyChallenge.mirrored.strength, maxDamage);
-    }
 
     return harm;
 }
@@ -198,7 +198,6 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
     if (formation == "S"  && (game.global.world < 60 || game.global.highestLevelCleared < 180)) return false;
 
     //Base stats
-    var damage = baseDamage;
     var health = baseHealth;
     var block  = baseBlock;
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
@@ -210,10 +209,10 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
 
     //Applies the formation modifiers
     if      (formation == "XB") {health /= 2;}
-    else if (formation == "D") {damage *= 4; minDamage *= 4; maxDamage *= 4; health /= 2; block  /= 2;}
-    else if (formation == "B") {damage /= 2; minDamage /= 2; maxDamage /= 2; health /= 2; block  *= 4;}
-    else if (formation == "H") {damage /= 2; minDamage /= 2; maxDamage /= 2; health *= 4; block  /= 2;}
-    else if (formation == "S") {damage /= 2; minDamage /= 2; maxDamage /= 2; health /= 2; block  /= 2;}
+    else if (formation == "D") {minDamage *= 4; maxDamage *= 4; health /= 2; block  /= 2;}
+    else if (formation == "B") {minDamage /= 2; maxDamage /= 2; health /= 2; block  *= 4;}
+    else if (formation == "H") {minDamage /= 2; maxDamage /= 2; health *= 4; block  /= 2;}
+    else if (formation == "S") {minDamage /= 2; maxDamage /= 2; health /= 2; block  /= 2;}
     
     //Max health for XB formation
     var maxHealth = health * (formation == "XB" ? 2 : 1);
@@ -225,7 +224,7 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
 }
 
 function autoStance() {
-    calcBaseDamageinX2();
+    calcBaseDamageInX();
 
     //Invalid Map - Dead Soldiers - Auto Stance Disabled - Formations Unavailable - No Enemy
     if (game.global.soldierHealth <= 0) return;
@@ -261,97 +260,6 @@ function autoStance() {
     }
 
     return true;
-}
-
-function autoStanceCheck(enemyCrit) {
-    if (game.global.gridArray.length === 0) return [true,true];
-    var ourDamage = calcOurDmg("min",false,true);
-    var ourBlock = game.global.soldierCurrentBlock;
-    var ourHealth = game.global.soldierHealthMax;
-    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-
-    var corrupt = game.global.world >= mutations.Corruption.start();
-    var enemy = getCurrentEnemy();
-    if (typeof enemy === 'undefined') return [true,true];
-    var enemyHealth = enemy.health;
-    var enemyDamage = calcSpecificEnemyAttack();
-    var critMulti = 1;
-    const ignoreCrits = getPageSetting('IgnoreCrits');
-    var isCrushed = false;
-    var isCritVoidMap = false;
-    var isCritDaily = false;
-    if (ignoreCrits != 2) {
-        (isCrushed = game.global.challengeActive == "Crushed" && game.global.soldierHealth > game.global.soldierCurrentBlock)
-            && enemyCrit && (critMulti *= 5);
-        (isCritVoidMap = (!ignoreCrits && game.global.voidBuff == 'getCrit') || (enemy.corrupted == 'corruptCrit') || (enemy.corrupted == 'healthyCrit'))
-            && enemyCrit && (critMulti *= (enemy.corrupted == 'healthyCrit' ? 7 : 5));
-        (isCritDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.crits !== 'undefined')
-            && enemyCrit && (critMulti *= dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength));
-        if (enemyCrit)
-            enemyDamage *= critMulti;
-    }
-    var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl') || (enemy.corrupted == 'healthyDbl');
-    var enemyFast = (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom")) || isDoubleAttack;
-    if (enemy.corrupted == 'corruptStrong')
-        enemyDamage *= 2;
-    if (enemy.corrupted == 'corruptTough')
-        enemyHealth *= 5;
-    if (enemy.corrupted == 'healthyStrong')
-        enemyDamage *= 2.5;
-		if (enemy.corrupted == 'healthyTough')
-        enemyHealth *= 7.5;
-    enemyDamage -= ourBlock;
-    var pierce = 0;
-    if (game.global.brokenPlanet && !game.global.mapsActive) {
-        pierce = getPierceAmt();
-        var atkPierce = pierce * enemyDamage;
-        if (enemyDamage < atkPierce) enemyDamage = atkPierce;
-    }
-    if (enemyDamage < 0) enemyDamage = 0;
-    var isdba = isDoubleAttack ? 2 : 1;
-    enemyDamage *= isdba;
-    var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
-    var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
-    var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
-    var leadChallenge = game.global.challengeActive == 'Lead';
-    if (drainChallenge) {
-        var hplost = 0.20;
-        enemyDamage += ourHealth * hplost;
-    } else if (dailyPlague) {
-        drainChallenge = true;
-        var hplost = dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength, 1 + game.global.dailyChallenge.plague.stacks);
-        enemyDamage += ourHealth * hplost;
-    } else if (dailyBogged) {
-        drainChallenge = true;
-        var hplost = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
-        enemyDamage += ourHealth * hplost;
-    } else if (leadChallenge) {
-        var leadDamage = game.challenges.Lead.stacks * 0.0003;
-        enemyDamage += game.global.soldierHealthMax * leadDamage;
-    }
-
-    if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed') || enemy.corrupted == 'healthyBleed') {
-        enemyDamage += game.global.soldierHealth * (enemy.corrupted == 'healthyBleed' ? 0.30 : 0.20);
-    }
-    ourDamage *= (game.global.titimpLeft > 0 ? 2 : 1);
-    ourDamage *= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;
-
-    var oneshotFast = enemyFast ? enemyHealth <= ourDamage : false;
-    var survive = ((newSquadRdy && ourHealth > enemyDamage) || (ourHealth - missingHealth > enemyDamage));
-    var leadAttackOK = !leadChallenge || oneshotFast || survive;
-    var drainAttackOK = !drainChallenge || oneshotFast || survive;
-    var isCritThing = isCritVoidMap || isCritDaily || isCrushed;
-    var voidCritok = !isCritThing || oneshotFast || survive;
-
-    if (!game.global.preMapsActive) {
-        var enoughDamage2 = enemyHealth <= ourDamage;
-        var enoughHealth2 = survive && leadAttackOK && drainAttackOK && voidCritok;
-        ourDamage /= (game.global.titimpLeft > 0 ? 2 : 1);
-        ourDamage /= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;
-        return [enoughHealth2,enoughDamage2];
-    } else
-        return [true,true];
 }
 
 function autoStance2() {

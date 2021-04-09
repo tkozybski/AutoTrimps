@@ -52,7 +52,7 @@ function useScryerStance() {
     //Check Corrupted Never
     var isCorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).mutation == "Corruption";
     var nextIsCorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).mutation == "Corruption";
-    var scryNext = !nextIsCorrupt && (transitionRequired || oneShootPower(undefined, 0, true));
+    var scryNext = !nextIsCorrupt && (transitionRequired || oneShotPower(undefined, 0, true));
     if (USS && !MA && SC && isCorrupt) {
         transitionRequired = scryNext;
         never_scry |= !scryNext;
@@ -97,7 +97,7 @@ function useScryerStance() {
     }
 
     //Calc Damage
-    if (AutoStance>=1) calcBaseDamageinX2();
+    if (AutoStance>=1) calcBaseDamageInX();
 
     //Checks if Overkill is allowed
     var useOverkill = getPageSetting('UseScryerStance') == true && getPageSetting('ScryerUseWhenOverkill');
@@ -106,10 +106,10 @@ function useScryerStance() {
     //Overkill
     if (useOverkill && getCurrentEnemy()) {
         //Switches to S if it has enough damage to secure an overkill
-        var HS = oneShootPower("S");
-        var HSD = oneShootPower("D", 0, true);
-        var HS_next = oneShootPower("S", 1);
-        var HSD_next = oneShootPower("D", 1, true);
+        var HS = oneShotPower("S");
+        var HSD = oneShotPower("D", 0, true);
+        var HS_next = oneShotPower("S", 1);
+        var HSD_next = oneShotPower("D", 1, true);
         if (readyToSwitch() && HS > 0 && HS >= HSD && (HS > 1 || HS_next > 0 && HS_next >= HSD_next)) {
             setFormation(4);
             return;
@@ -133,11 +133,11 @@ function useScryerStance() {
         //Smooth transition to S before killing the target
         if (transitionRequired) {
             for (var cp=2; cp >= -2; cp--) {
-                if      (survive("D",  cp) && !oneShootPower("D", 0, true)) {setFormation( 2 ); return;}
-                else if (survive("XB", cp) && !oneShootPower("X", 0, true)) {setFormation("0"); return;}
-                else if (survive("B",  cp) && !oneShootPower("B", 0, true)) {setFormation( 3 ); return;}
-                else if (survive("X",  cp) && !oneShootPower("X", 0, true)) {setFormation("0"); return;}
-                else if (survive("H",  cp) && !oneShootPower("H", 0, true)) {setFormation( 1 ); return;}
+                if      (survive("D",  cp) && !oneShotPower("D", 0, true)) {setFormation( 2 ); return;}
+                else if (survive("XB", cp) && !oneShotPower("X", 0, true)) {setFormation("0"); return;}
+                else if (survive("B",  cp) && !oneShotPower("B", 0, true)) {setFormation( 3 ); return;}
+                else if (survive("X",  cp) && !oneShotPower("X", 0, true)) {setFormation("0"); return;}
+                else if (survive("H",  cp) && !oneShotPower("H", 0, true)) {setFormation( 1 ); return;}
             }
         }
 
