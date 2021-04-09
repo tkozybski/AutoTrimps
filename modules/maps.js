@@ -709,7 +709,7 @@ function autoMap() {
                         break;
                     }
                 }
-            } else if (needPrestige || (extraMapLevels > 0)) {
+            } else if (needPrestige) {
                 if ((game.global.world + extraMapLevels) <= game.global.mapsOwnedArray[highestMap].level)
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
