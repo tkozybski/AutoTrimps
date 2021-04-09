@@ -486,7 +486,7 @@ function autoMap() {
 
         //Keep increasing map level while we can overkill in that map
         if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 109 && siphLvl == maxLvl) {
-            for (siphLvl = game.global.world + 5; siphLvl > maxLvl && !oneShotZone("S", "map", siphLvl); siphLvl--);
+            for (siphLvl = maxLvl; oneShotZone("S", "map", siphLvl+1) == maxOneShotPower(); siphLvl++);
             if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
             document.getElementById('advExtraLevelSelect').value = siphLvl - game.global.world;
             extraMapLevels = getExtraMapLevels();
