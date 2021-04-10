@@ -167,7 +167,7 @@ function getMapHealthCutOff(pure) {
     if (preVoidCheck) return cut * MODULES.maps.voidHitsMult;
 
     //Scryer Multiplier (only if scrying on corrupted)
-    if (scryingCorruption()) return cut * MODULES.maps.scryerHitsMult;
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut * MODULES.maps.scryerHitsMult;
 
     return cut;
 }
@@ -221,7 +221,7 @@ function getFarmCutOff() {
 
     //Void and Scry
     if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
-    if (scryingCorruption()) return cut / MODULES.maps.scryerHDMult;
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / MODULES.maps.scryerHDMult;
 
     return cut;
 }
