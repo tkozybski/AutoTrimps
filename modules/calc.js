@@ -821,7 +821,7 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
 
     //Challenges - considers the actual scenario for this enemy
     if (game.global.challengeActive == "Lead") health *= 1 + (0.04 * game.challenges.Lead.stacks);
-    if (game.global.challengeActive == 'Domination') {
+    if (game.global.challengeActive == "Domination") {
         var lastCell = (type == "world") ? 100 : game.global.mapGridArray.length;
         if (cell < lastCell) health /= 10;
         else health *= 7.5;

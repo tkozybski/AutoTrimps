@@ -19,8 +19,8 @@ MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive be
 MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
-MODULES.maps.scryerHDMult = 4; //This is a diviser to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON
-MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON
+MODULES.maps.scryerHDMult = 4; //This is a diviser to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON (Domination ignores this)
+MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON (Domination ignores this)
 MODULES.maps.voidHDMult = 1; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
 MODULES.maps.voidHitsMult = 1; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 MODULES.maps.spireHD = 32; //4 is actually 1 hit in D stance
@@ -207,7 +207,7 @@ function getMapCutOff(pure) {
     
     //Void and Scry cut off
     if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
-    if (scryingCorruption()) return cut / MODULES.maps.scryerHDMult;
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / MODULES.maps.scryerHDMult;
 
     return cut;
 }
