@@ -458,8 +458,9 @@ function calcSpire(what, cell, name) {
     base *= Math.pow(mod, cell);
     base *= game.badGuys[enemy][what];
 
-    //Compensations
-        if (game.global.challengeActive == "Domination" && cell != 100) base /= (what == "attack") ? 25 : 75;
+    //Compensations for Domination
+    if (game.global.challengeActive == "Domination" && cell != 100) base /= (what == "attack") ? 25 : 75;
+    if (game.global.challengeActive == "Domination" && cell == 100) base *= calcCorruptionScale(game.global.world, (what == "attack") ? 3 : 10);
 
     return base;
 }
