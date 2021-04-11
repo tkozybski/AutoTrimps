@@ -611,7 +611,7 @@ function autoMap() {
         bionicPool.sort(function (bionicA, bionicB) {return bionicA.level - bionicB.level});
         for (bionicMaxLevel=0; getMapRatio(undefined, 125 + 15 * bionicMaxLevel, 2.6) <= 1; bionicMaxLevel++)
         for (var bionicLevel=0; bionicLevel < bionicMaxLevel && bionicLevel < bionicPool.length; bionicLevel++) {
-            if (bionicLevel <= game.global.roboTrimpLevel || !game.achievements.oneOffs.finished[42] && bionicPool[bionicLevel].level >= game.global.world + 45) {
+            if (bionicLevel >= game.global.roboTrimpLevel || !game.achievements.oneOffs.finished[42] && bionicPool[bionicLevel].level >= game.global.world + 45) {
                 selectedMap = bionicPool[bionicLevel].id;
                 break;
             }
