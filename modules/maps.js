@@ -534,6 +534,7 @@ function autoMap() {
         //Init
         var runningC2 = game.global.runningChallengeSquared;
         var challengeRequireMap, challenge = game.global.challengeActive;
+        var bionicMaxLevel = 0;
         var bionicPool = [];
 
         //For each owned map..
@@ -608,8 +609,9 @@ function autoMap() {
 
         //Bionic Wonderland I+ (Unlocks)
         bionicPool.sort(function (bionicA, bionicB) {return bionicA.level - bionicB.level});
-        for (var i=0; i<bionicPool.length; i++) {
-            if ((bionicPool[i].level-110)/15 > game.global.roboTrimpLevel && getMapRatio(bionicPool[i]) <= 1) {
+        for (bionicMaxLevel=0; getMapRatio(undefined, 125 + 15 * bionicMaxLevel, 2.6) <= 1; bionicMaxLevel++)
+        for (var bionicLevel=0; bionicLevel < bionicMaxLevel && bionicLevel < bionicPool.length; bionicLevel++) {
+            if (bionicLevel <= game.global.roboTrimpLevel || !game.achievements.oneOffs.finished[42] && bionicPool[bionicLevel].level >= game.global.world + 45) {
                 selectedMap = theMap.id;
                 break;
             }
@@ -708,10 +710,10 @@ function autoMap() {
             if (preSpireFarming) {
                 var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["maps"].SpireFarm199Maps) ? game.global.world - 1 : game.global.world;
                 selectedMap = "create";
-                for (i = 0; i < keysSorted.length; i++) {
-                    if (game.global.mapsOwnedArray[keysSorted[i]].level >= spiremaplvl &&
-                        game.global.mapsOwnedArray[keysSorted[i]].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain')) {
-                        selectedMap = game.global.mapsOwnedArray[keysSorted[i]].id;
+                for (bionicLevel = 0; bionicLevel < keysSorted.length; bionicLevel++) {
+                    if (game.global.mapsOwnedArray[keysSorted[bionicLevel]].level >= spiremaplvl &&
+                        game.global.mapsOwnedArray[keysSorted[bionicLevel]].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain')) {
+                        selectedMap = game.global.mapsOwnedArray[keysSorted[bionicLevel]].id;
                         break;
                     }
                 }
