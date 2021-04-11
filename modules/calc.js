@@ -465,6 +465,65 @@ function calcSpire(what, cell, name) {
     return base;
 }
 
+function badGuyChallengeMult() {
+    var number=1;
+
+    //WARNING! Something is afoot!
+    //A few challenges
+    if      (game.global.challengeActive == "Meditate")   number *= 1.5;
+    else if (game.global.challengeActive == "Crushed")    number *= 3;
+    else if (game.global.challengeActive == "Watch")      number *= 1.25;
+    else if (game.global.challengeActive == "Corrupted")  number *= 3;
+    else if (game.global.challengeActive == "Domination") number *= 2.5;
+    else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
+    else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
+
+    //Obliterated and Eradicated
+    else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
+        var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
+        var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
+        oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
+        number *= oblitMult
+    }
+
+    return number;
+}
+
+function badGuyCritMult(enemy, critPower=2, block, health) {
+    //Pre-Init
+    if (getPageSetting('IgnoreCrits') == 2) return 1;
+    if (!enemy) enemy = getCurrentEnemy();
+    if (!enemy || critPower <= 0) return 1;
+    if (!block) block = game.global.soldierCurrentBlock;
+    if (!health) health = game.global.soldierHealth;
+
+    //Init
+    var regular=1, challenge=1;
+
+    //Non-challenge crits
+    if      (enemy.corrupted == 'corruptCrit') regular = 5;
+    else if (enemy.corrupted == 'healthyCrit') regular = 7;
+    else if (game.global.voidBuff == 'getCrit' && getPageSetting('IgnoreCrits') != 1) regular = 5;
+
+    //Challenge crits
+    var crushed = game.global.challengeActive == "Crushed";
+    var critDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.crits !== 'undefined';
+
+    //Challenge multiplier
+    if (critDaily) challenge = dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength);
+    else if (crushed && health > block) challenge = 5;
+
+    //Result -- Yep. Crits may crit! Yey!
+    if (critPower == 2) return regular * challenge;
+    else return Math.max(regular, challenge);
+}
+
+function calcCorruptionScale(world, base) {
+    var startPoint = (game.global.challengeActive == "Corrupted" || game.global.challengeActive == "Eradicated") ? 1 : 150;
+    var scales = Math.floor((world - startPoint) / 6);
+    return base * Math.pow(1.05, scales);
+}
+
 function calcEnemyBaseAttack(type, zone, cell, name) {
     //Pre-Init
     if (!type) type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
@@ -588,7 +647,7 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
         //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 5.
         else {
             //It uses the average times two for damage because otherwise trimps would be full pop half of the time, but dead in the other half
-            var corruptionAmount = Math.max(50, ~~((zone - mutations.Corruption.start()) / 3) + 7); //Integer division
+            var corruptionAmount = Math.min(50, ~~((zone - mutations.Corruption.start()) / 3) + 7); //Integer division
             var corruptionWeight = (104 - corruptionAmount) + 2 * corruptionAmount * calcCorruptionScale(zone, 3);
             attack *= corruptionWeight / 100;
         }
@@ -622,65 +681,6 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     if (getEmpowerment() == "Ice") attack *= game.empowerments.Ice.getCombatModifier();
 
     return Math.ceil(attack);
-}
-
-function badGuyChallengeMult() {
-    var number=1;
-
-    //WARNING! Something is afoot!
-    //A few challenges
-    if      (game.global.challengeActive == "Meditate")   number *= 1.5;
-    else if (game.global.challengeActive == "Crushed")    number *= 3;
-    else if (game.global.challengeActive == "Watch")      number *= 1.25;
-    else if (game.global.challengeActive == "Corrupted")  number *= 3;
-    else if (game.global.challengeActive == "Domination") number *= 2.5;
-    else if (game.global.challengeActive == "Coordinate") number *= getBadCoordLevel();
-    else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) number *= 10;
-
-    //Obliterated and Eradicated
-    else if (game.global.challengeActive == "Obliterated" || game.global.challengeActive == "Eradicated"){
-        var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
-        var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
-        oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
-        number *= oblitMult
-    }
-
-    return number;
-}
-
-function badGuyCritMult(enemy, critPower=2, block, health) {
-    //Pre-Init
-    if (getPageSetting('IgnoreCrits') == 2) return 1;
-    if (!enemy) enemy = getCurrentEnemy();
-    if (!enemy || critPower <= 0) return 1;
-    if (!block) block = game.global.soldierCurrentBlock;
-    if (!health) health = game.global.soldierHealth;
-    
-    //Init   
-    var regular=1, challenge=1;
-
-    //Non-challenge crits
-    if      (enemy.corrupted == 'corruptCrit') regular = 5;
-    else if (enemy.corrupted == 'healthyCrit') regular = 7;
-    else if (game.global.voidBuff == 'getCrit' && getPageSetting('IgnoreCrits') != 1) regular = 5;
-
-    //Challenge crits
-    var crushed = game.global.challengeActive == "Crushed";
-    var critDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.crits !== 'undefined';
-
-    //Challenge multiplier
-    if (critDaily) challenge = dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength);
-    else if (crushed && health > block) challenge = 5;
-
-    //Result -- Yep. Crits may crit! Yey!
-    if (critPower == 2) return regular * challenge;
-    else return Math.max(regular, challenge);
-}
-
-function calcCorruptionScale(world, base) {
-    var startPoint = (game.global.challengeActive == "Corrupted" || game.global.challengeActive == "Eradicated") ? 1 : 150;
-    var scales = Math.floor((world - startPoint) / 6);
-    return base * Math.pow(1.05, scales);
 }
 
 function calcEnemyBaseHealth(type, zone, cell, name) {
