@@ -226,10 +226,10 @@ function getFarmCutOff() {
     return cut;
 }
 
-function getMapRatio(map) {
-    var mapDmg = calcHDRatio(map.level, "map") / getMapCutOff(true);
-    var mapHp = getMapHealthCutOff(true) / calcHealthRatio(false, true, "map", map.level);
-    return map.difficulty * Math.max(mapDmg, mapHp);
+function getMapRatio(map, customLevel, customDiff) {
+    var mapDmg = calcHDRatio((customLevel ? customLevel : map.level), "map") / getMapCutOff(true);
+    var mapHp = getMapHealthCutOff(true) / calcHealthRatio(false, true, "map", (customLevel ? customLevel : map.level));
+    return (customDiff ? customDiff : map.difficulty) * Math.max(mapDmg, mapHp);
 }
 
 function autoMap() {
@@ -592,19 +592,21 @@ function autoMap() {
                     break;
                 }
 
-                //Bionic Wonderland II+ (Unlocks)
-                if (theMap.location == "Bionic" && game.global.roboTrimpLevel <= (theMap.level - 125) / 15) {
-                    if (getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
-                    break;
-                }
-
                 //Imploding Star (Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Devastation");
                 if (theMap.name == 'Imploding Star' && (challengeRequireMap || shouldSpeedRun(game.achievements.starTimed))) {
                     if (game.global.world < 170 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
                     break;
+                }
+
+                //Bionic Wonderland II+ (Unlocks)
+                if (theMap.location == "Bionic") {
+                    for (var bionicLevel=1; bionicLevel <= game.global.roboTrimpLevel+1 && getMapRatio(undefined, 110 + 15*bionicLevel, 2.6) <= 1; bionicLevel++) {
+                        selectedMap = theMap.id;
+                        break;
+                    }
+                    if (selectedMap == theMap.id) break;
                 }
             }
         }
