@@ -167,7 +167,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     
     //Challenges
     if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
-    else if (game.global.challengeActive == "Balance") health *= game.challenges.Balance.getHealthMult();
+    else if (game.global.challengeActive == "Balance" && !realHealth) health *= game.challenges.Balance.getHealthMult();
     else if (typeof game.global.dailyChallenge.pressure !== 'undefined' && !realHealth)
         health *= dailyModifiers.pressure.getMult(game.global.dailyChallenge.pressure.strength, game.global.dailyChallenge.pressure.stacks);
     
@@ -569,8 +569,9 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     var healthy = mutations.Healthy.active();
     
     //Challenges
-    if      (game.global.challengeActive == "Lead")       attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
+    if      (game.global.challengeActive == "Balance")    attack *= (type == "world") ? 1.17 : 2.35;
     else if (game.global.challengeActive == "Toxicity")   attack *= 5;
+    else if (game.global.challengeActive == "Lead")       attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
     else if (game.global.challengeActive == "Domination") attack *= 2.5;
 
     //Daily
