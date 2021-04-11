@@ -372,7 +372,7 @@ function autoMap() {
     shouldFarmDamage = calcHDRatio() >= getFarmCutOff();
     
     //Only actually trigger farming after doing map bonuses
-    if (getPageSetting('DisableFarm') > 0 && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit')) {
+    if (getPageSetting('DisableFarm') > 0 && (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || enoughDamage && game.global.mapBonus >= getPageSetting('MaxMapBonusHealth'))) {
         //Farm on Low Health
         shouldFarm = shouldFarmDamage || (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
 
