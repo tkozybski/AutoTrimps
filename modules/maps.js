@@ -534,6 +534,7 @@ function autoMap() {
         //Init
         var runningC2 = game.global.runningChallengeSquared;
         var challengeRequireMap, challenge = game.global.challengeActive;
+        var bionicPool = [];
 
         //For each owned map..
         for (var map in game.global.mapsOwnedArray) {
@@ -584,7 +585,7 @@ function autoMap() {
                     break;
                 }
 
-                //Bionic Wonderland (Challenges, Unlocks and Speed Achievement)
+                //Bionic Wonderland (Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Crushed");
                 if (theMap.name == 'Bionic Wonderland' && (challengeRequireMap || shouldSpeedRun(game.achievements.bionicTimed))) {
                     if (game.global.world < 125 || getMapRatio(theMap) > 1) continue;
@@ -601,13 +602,16 @@ function autoMap() {
                 }
 
                 //Bionic Wonderland II+ (Unlocks)
-                if (theMap.location == "Bionic") {
-                    for (var bionicLevel=1; bionicLevel <= game.global.roboTrimpLevel+1 && getMapRatio(undefined, 110 + 15*bionicLevel, 2.6) <= 1; bionicLevel++) {
-                        selectedMap = theMap.id;
-                        break;
-                    }
-                    if (selectedMap == theMap.id) break;
-                }
+                if (theMap.location == "Bionic") bionicPool.push(theMap);
+            }
+        }
+
+        //Bionic Wonderland I+ (Unlocks)
+        bionicPool.sort(function (bionicA, bionicB) {return bionicA.level - bionicB.level});
+        for (var i=0; i<bionicPool.length; i++) {
+            if ((bionicPool[i].level-110)/15 > game.global.roboTrimpLevel && getMapRatio(bionicPool[i]) <= 1) {
+                selectedMap = theMap.id;
+                break;
             }
         }
     }
