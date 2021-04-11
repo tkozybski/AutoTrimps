@@ -611,7 +611,7 @@ function autoMap() {
         bionicPool.sort(function (bionicA, bionicB) {return bionicA.level - bionicB.level});
         for (bionicMaxLevel=0; getMapRatio(undefined, 125 + 15 * bionicMaxLevel, 2.6) <= 1; bionicMaxLevel++);
         var tryBionicSniper = !game.achievements.oneOffs.finished[42] && (110 + 15*bionicMaxLevel) >= game.global.world + 45;
-        if (bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper) {
+        if (bionicPool.length > 0 && bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper) {
             var bionicLevel = bionicPool.length-1;
             while (bionicLevel >= bionicMaxLevel) bionicLevel--;
             selectedMap = bionicPool[bionicLevel].id;
