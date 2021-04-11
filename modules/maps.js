@@ -609,12 +609,12 @@ function autoMap() {
 
         //Bionic Wonderland I+ (Unlocks, RoboTrimp or Bionic Sniper)
         bionicPool.sort(function (bionicA, bionicB) {return bionicA.level - bionicB.level});
-        for (bionicMaxLevel=0; getMapRatio(undefined, 125 + 15 * bionicMaxLevel, 2.6) <= 1; bionicMaxLevel++)
-        for (var bionicLevel=0; bionicLevel < bionicMaxLevel && bionicLevel < bionicPool.length; bionicLevel++) {
-            if (bionicLevel >= game.global.roboTrimpLevel || !game.achievements.oneOffs.finished[42] && bionicPool[bionicLevel].level >= game.global.world + 45) {
-                selectedMap = bionicPool[bionicLevel].id;
-                break;
-            }
+        for (bionicMaxLevel=0; getMapRatio(undefined, 125 + 15 * bionicMaxLevel, 2.6) <= 1; bionicMaxLevel++);
+        var tryBionicSniper = !game.achievements.oneOffs.finished[42] && (110 + 15*bionicMaxLevel) >= game.global.world + 45;
+        if (bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper) {
+            var bionicLevel = bionicPool.length-1;
+            while (bionicLevel >= bionicMaxLevel) bionicLevel--;
+            selectedMap = bionicPool[i].id;
         }
     }
 
