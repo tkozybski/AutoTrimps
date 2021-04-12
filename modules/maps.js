@@ -614,7 +614,7 @@ function autoMap() {
         if (bionicPool.length > 0 && bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper) {
             var bionicLevel = bionicPool.length-1;
             while (bionicLevel >= bionicMaxLevel) bionicLevel--;
-            selectedMap = bionicPool[bionicLevel].id;
+            if (bionicLevel > 0) selectedMap = bionicPool[bionicLevel].id;
         }
     }
 
