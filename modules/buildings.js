@@ -9,6 +9,7 @@ MODULES["buildings"].gatewayWall = 100;
 MODULES["buildings"].nurseryWall = 10;
 MODULES["buildings"].nurserySpireWall = 10;
 MODULES["buildings"].gemEfficiencyIgnoresLimit = true;
+MODULES["buildings"].foodEfficiencyIgnoresLimit = true;
 MODULES["buildings"].advancedNurseries = true; //Use on Magma. HIGHLY EXPERIMENTAL
 
 //Helium
@@ -105,7 +106,7 @@ function buyFoodEfficientHousing() {
     var bestfoodBuilding = null;
     var bb = buildorder[0];
     var max = getPageSetting('Max' + bb.name);
-    if (game.buildings[bb.name].owned < max || max == -1) {
+    if (game.buildings[bb.name].owned < max || max == -1 || MODULES["buildings"].foodEfficiencyIgnoresLimit && (bb.name == "Hut" || bb.name == "House")) {
         bestfoodBuilding = bb.name;
     }
     if (bestfoodBuilding) {
@@ -127,7 +128,6 @@ function buyGemEfficientHousing() {
         var building = game.buildings[unlockedHousing[house]];
         var cost = getBuildingItemPrice(building, "gems", false, 1);
         var ratio = cost / building.increase.by;
-	//if (unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway')) continue;
         obj[unlockedHousing[house]] = ratio;
         document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
     }
