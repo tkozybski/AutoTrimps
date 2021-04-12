@@ -12,7 +12,7 @@ function customLeadTimer() {
 
     //Timer = 10 to 30, according to the number of stacks. Or from 5-30 if Scrying
     if (game.global.formation != 4) return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
-    else return Math.min(30, 38 - 0.185 * game.challenges.Lead.stacks);
+    else return Math.min(30, 35 - 3.0 * game.challenges.Lead.stacks/20.0);
 }
 
 function breedingPS() {
