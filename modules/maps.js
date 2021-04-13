@@ -493,7 +493,7 @@ function autoMap() {
     }
 
     //Farms on "Oneshoot level" + 1
-    if ((shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || siphLvl < minLvl) && siphLvl < maxLvl) siphLvl++;
+    if ((shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || siphLvl < minLvl) && siphLvl < maxLvl && game.global.challengeActive != "Coordinate") siphLvl++;
 
     //Register the level of every regular map we have
     var obj = {};
