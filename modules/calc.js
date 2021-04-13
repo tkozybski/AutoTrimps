@@ -598,8 +598,12 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
     else if (game.global.challengeActive == "Crushed")    attack *= 3;
     else if (game.global.challengeActive == "Watch")      attack *= 1.25;
     else if (game.global.challengeActive == "Corrupted")  attack *= 3;
-    else if (game.global.challengeActive == "Coordinate") attack *= getBadCoordLevel();
     else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) attack *= 10;
+
+    //Coordinate
+    if (game.global.challengeActive == "Coordinate") {
+        for (var i=1; i<zone; i++) attack = Math.ceil(attack * 1.25);
+    }
 
     //Dailies
     if (game.global.challengeActive == "Daily") {
@@ -750,7 +754,11 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
     if (game.global.challengeActive == "Meditate")   health *= 2;
     if (game.global.challengeActive == "Toxicity")   health *= 2;
     if (game.global.challengeActive == "Life")       health *= 11;
-    if (game.global.challengeActive == "Coordinate") health *= getBadCoordLevel();
+
+    //Coordinate
+    if (game.global.challengeActive == "Coordinate") {
+        for (var i=1; i<zone; i++) health = Math.ceil(health * 1.25);
+    }
 
     //Dailies
     if (game.global.challengeActive == "Daily") {
