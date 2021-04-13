@@ -602,7 +602,9 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
 
     //Coordinate
     if (game.global.challengeActive == "Coordinate") {
-        for (var i=1; i<zone; i++) attack = Math.ceil(attack * 1.25);
+        var amt = 1;
+        for (var i=1; i<zone; i++) amt = Math.ceil(amt * 1.25);
+        attack *= amt;
     }
 
     //Dailies
@@ -757,7 +759,9 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
 
     //Coordinate
     if (game.global.challengeActive == "Coordinate") {
-        for (var i=1; i<zone; i++) health = Math.ceil(health * 1.25);
+        var amt = 1;
+        for (var i=1; i<zone; i++) amt = Math.ceil(amt * 1.25);
+        health *= amt;
     }
 
     //Dailies
