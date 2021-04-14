@@ -234,7 +234,7 @@ function autoStance() {
     if (typeof getCurrentEnemy() === 'undefined') return true;
 
     //Keep on D vs the Domination bosses
-    if (game.global.challengeActive == "Domination" && game.global.lastClearedCell == 98) {
+    if (game.global.challengeActive == "Domination" && (game.global.lastClearedCell == 98 || getCurrentEnemy() && getCurrentEnemy().name == "Cthulimp")) {
         autoStance2();
         return;
     }
