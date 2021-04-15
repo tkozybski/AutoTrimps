@@ -146,8 +146,7 @@ function c2runnerportal() {
 }
 
 function c2runner() {
-   
-if (!game.global.portalActive) return;
+    if (!game.global.portalActive) return;
     if (getPageSetting('c2runnerstart') == true && getPageSetting('c2runnerportal') > 0 && getPageSetting('c2runnerpercent') > 0) {
             if (game.global.highestLevelCleared > 34 && (100*(game.c2.Size/(game.global.highestLevelCleared+1))) < getPageSetting('c2runnerpercent')) {
                 challengeSquaredMode = true;

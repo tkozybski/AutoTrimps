@@ -614,7 +614,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
             attack *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks)
 
         //Bad Strength
-        if (typeof game.global.dailyChallenge.badStrength !== undefined)
+        if (typeof game.global.dailyChallenge.badStrength !== "undefined")
             attack *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength)
     }
 
