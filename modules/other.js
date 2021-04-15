@@ -1257,7 +1257,7 @@ function PraidHarder() {
 	if (getPageSetting(praidSetting).length) {
 		var psychoRaidingTrigger = !MODULES.other.psychoRaiding || game.upgrades.Dagadder.done == game.upgrades.Dagadder.allowed || game.upgrades.Bootboost.done == game.upgrades.Dagadder.allowed;
 		if (getPageSetting(praidSetting).includes(game.global.world) && ((game.global.lastClearedCell+1) >= cell) && !prestraid && !failpraid && !shouldFarmFrags && psychoRaidingTrigger) {
-			debug('Beginning Praiding');
+			if (!mapExiting) debug('Beginning Praiding');
 			// Initialise shouldFarmFrags to false
 			shouldFarmFrags = false;
 
