@@ -4,8 +4,8 @@ var transitionRequired = false;
 var maxZoneCorruptedOnly = true; //Instead of not using scry after reaching the max zone, it'll just disable scry on corrupted
 
 function scryingCorruption() {
-    var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && game.global.world < getPageSetting('ScryerMaxZone');
-    var scryCorrupt = scryZone && game.global.world >= getPageSetting('ScryerMinZone') && getPageSetting('ScryerSkipCorrupteds2') != 0;
+    var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && (game.global.world < getPageSetting('ScryerMaxZone') || getPageSetting('ScryerMaxZone') < 1);
+    var scryCorrupt = scryZone && getPageSetting('ScryerSkipCorrupteds2') != 0;
     var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
     if (scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true) return true;
 }
