@@ -1260,9 +1260,17 @@ function PraidHarder() {
 			debug('Beginning Praiding');
 			// Initialise shouldFarmFrags to false
 			shouldFarmFrags = false;
+
 			// Mark that we are prestige raiding and turn off automaps to stop it interfering
 			prestraidon = true;
 			autoTrimpSettings["AutoMaps"].value = 0;
+
+			//Get out of the current map
+			if (game.global.mapsActive)  {
+				repeatClicked();
+				return;
+			}
+
 			// Get into the preMaps screen
 			if (!game.global.preMapsActive && !game.global.mapsActive) {
 				mapsClicked();
