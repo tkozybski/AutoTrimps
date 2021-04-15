@@ -338,18 +338,22 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     //Daily
     if (game.global.challengeActive == "Daily") {
         //Range Dailies
-        if (typeof game.global.dailyChallenge.minDamage !== 'undefined') minFluct = dailyModifiers.minDamage.getMult(game.global.dailyChallenge.minDamage.strength);
-        if (typeof game.global.dailyChallenge.maxDamage !== 'undefined') maxFluct = dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
+        if (typeof game.global.dailyChallenge.minDamage !== "undefined") minFluct = dailyModifiers.minDamage.getMult(game.global.dailyChallenge.minDamage.strength);
+        if (typeof game.global.dailyChallenge.maxDamage !== "undefined") maxFluct = dailyModifiers.maxDamage.getMult(game.global.dailyChallenge.maxDamage.strength);
         
 	    //Even-Odd Dailies
-        if (typeof game.global.dailyChallenge.oddTrimpNerf !== 'undefined' && ((game.global.world % 2) == 1))
+        if (typeof game.global.dailyChallenge.oddTrimpNerf !== "undefined" && ((game.global.world % 2) == 1))
             number *= dailyModifiers.oddTrimpNerf.getMult(game.global.dailyChallenge.oddTrimpNerf.strength);
-        if (typeof game.global.dailyChallenge.evenTrimpBuff !== 'undefined' && ((game.global.world % 2) == 0))
+        if (typeof game.global.dailyChallenge.evenTrimpBuff !== "undefined" && ((game.global.world % 2) == 0))
             number *= dailyModifiers.evenTrimpBuff.getMult(game.global.dailyChallenge.evenTrimpBuff.strength);
         
         //Rampage Dailies
-        if (typeof game.global.dailyChallenge.rampage !== 'undefined')
+        if (typeof game.global.dailyChallenge.rampage !== "undefined")
             number *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
+
+        //Weakness
+        if (typeof game.global.dailyChallenge.weakness !== "undefined")
+            number *= dailyModifiers.weakness.getMult(game.global.dailyChallenge.weakness.strength, game.global.dailyChallenge.weakness.stacks);
     }
 	
     //Battle Goldens
