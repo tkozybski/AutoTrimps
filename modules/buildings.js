@@ -74,7 +74,7 @@ function advancedNurseries() {
     var a = calcHealthRatio(false, true) < getMapHealthCutOff();
     var b = calcHDRatio() < getFarmCutOff();
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
-    var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getPageSetting("mapcuntoff");
+    var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getMapCutOff();
     var e = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || getPageSetting('MaxMapBonushealth') == 0;
     var f = !preSpireFarming || !MODULES.buildings.advancedNurseries;
     var off = !MODULES["buildings"].advancedNurseries || game.stats.highestLevel.valueTotal() < 230;
