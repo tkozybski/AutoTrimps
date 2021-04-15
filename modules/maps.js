@@ -776,6 +776,11 @@ function autoMap() {
             if (tryBetterMod && game.resources.fragments.owned >= fragmentsNeeded) {
                 repeatClicked();
             }
+
+            //Want to exit the current map to pRaid
+            if (mapExiting) {
+                repeatClicked();
+            }
         } else {
             //Start with Repeat Off
             if (game.global.repeatMap) {

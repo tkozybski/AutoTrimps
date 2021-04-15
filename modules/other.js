@@ -1,7 +1,7 @@
 MODULES["other"] = {};
 MODULES["other"].enableRoboTrimpSpam = true;
 MODULES["other"].psychoRaiding = true;
-var prestraid=!1,dprestraid=!1,failpraid=!1,dfailpraid=!1,bwraided=!1,dbwraided=!1,failbwraid=!1,dfailbwraid=!1,perked=!1,prestraidon=!1,dprestraidon=!1,mapbought=!1,dmapbought=!1,bwraidon=!1,dbwraidon=!1,presteps=null,minMaxMapCost,fMap,pMap,shouldFarmFrags=!1,praidDone=!1;
+var mapExiting=!1,prestraid=!1,dprestraid=!1,failpraid=!1,dfailpraid=!1,bwraided=!1,dbwraided=!1,failbwraid=!1,dfailbwraid=!1,perked=!1,prestraidon=!1,dprestraidon=!1,mapbought=!1,dmapbought=!1,bwraidon=!1,dbwraidon=!1,presteps=null,minMaxMapCost,fMap,pMap,shouldFarmFrags=!1,praidDone=!1;
 function armydeath(){if(game.global.mapsActive)return!1;var e=game.global.lastClearedCell+1,l=game.global.gridArray[e].attack*dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength,game.global.dailyChallenge.empower.stacks),a=game.global.soldierHealth+game.global.soldierEnergyShield;"Ice"==getEmpowerment()&&(l*=game.empowerments.Ice.getCombatModifier());var g=game.global.soldierCurrentBlock;return 3==game.global.formation?g/=4:"0"!=game.global.formation&&(g*=2),g>game.global.gridArray[e].attack?l*=getPierceAmt():l-=g*(1-getPierceAmt()),"Daily"==game.global.challengeActive&&void 0!==game.global.dailyChallenge.crits&&(l*=dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength)),void 0!==game.global.dailyChallenge.bogged&&(a-=game.global.soldierHealthMax*dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength)),void 0!==game.global.dailyChallenge.plague&&(a-=game.global.soldierHealthMax*dailyModifiers.plague.getMult(game.global.dailyChallenge.plague.strength,game.global.dailyChallenge.plague.stacks)),"Electricity"==game.global.challengeActive&&(a-=game.global.soldierHealth-=game.global.soldierHealthMax*(.1*game.challenges.Electricity.stacks)),"corruptCrit"==game.global.gridArray[e].corrupted?l*=5:"healthyCrit"==game.global.gridArray[e].corrupted?l*=7:"corruptBleed"==game.global.gridArray[e].corrupted?a*=.8:"healthyBleed"==game.global.gridArray[e].corrupted&&(a*=.7),(a-=l)<=1e3}
 function autoRoboTrimp(){if(!(0<game.global.roboTrimpCooldown)&&game.global.roboTrimpLevel){var a=parseInt(getPageSetting("AutoRoboTrimp"));0==a||game.global.world>=a&&!game.global.useShriek&&(magnetoShriek(),MODULES.other.enableRoboTrimpSpam&&debug("Activated Robotrimp MagnetoShriek Ability @ z"+game.global.world,"graphs","*podcast"))}}
 function isBelowThreshold(a){return a!=game.global.world}
@@ -1267,20 +1267,24 @@ function PraidHarder() {
 
 			//Get out of the current map
 			if (game.global.mapsActive)  {
-				repeatClicked();
+				mapExiting = true;
 				return;
 			}
 
+			mapExiting = false;
+
 			// Get into the preMaps screen
-			if (!game.global.preMapsActive && !game.global.mapsActive) {
+			if (!game.global.preMapsActive) {
 				mapsClicked();
 				if (!game.global.preMapsActive) {
 					mapsClicked();
 				}
 			}
+
 			// Set repeat for items
 			game.options.menu.repeatUntil.enabled = 2;
 			toggleSetting("repeatUntil", null, false, true);
+
 			// if we can farm for fragments, work out the minimum number we need to get all available prestiges
 			if (farmFragments) {
 				plusPres();
@@ -1289,6 +1293,7 @@ function PraidHarder() {
         		document.getElementById('difficultyAdvMapsRange').value = 0;
 				document.getElementById('advSpecialSelect').value = "0";
 				minMaxMapCost = updateMapCost(true);
+
 				// If we are not Praiding before farming, and cannot afford a max plus map, set flags for farming
 				if (!praidBeforeFarm && game.resources.fragments.owned < minMaxMapCost) {
 					prestraid = true;
@@ -1299,14 +1304,18 @@ function PraidHarder() {
 			// Set map settings to the best map for Praiding (even if we can't afford it)
 			plusPres();
 			document.getElementById('advExtraLevelSelect').value = maxPlusZones;
+
 			// Iterate down through plusMaps setting until we find one we can afford
 			for (var curPlusZones = maxPlusZones; curPlusZones >= 0; curPlusZones--) {
 				// If the current targeted zone has no prestiges, decrement the number of plusZones and continue
 				if ((game.global.world + curPlusZones) % 10 == 0 || (game.global.world + curPlusZones) % 10 > 5) continue;
+
 				// Otherwise check to see if we can afford a map at the current plusZones setting
 				document.getElementById('advExtraLevelSelect').value = curPlusZones;
+
 				// If we find a map we can afford, break out of the loop
 				if (relaxMapReqs(mapModifiers)) break;
+
 				// conserve fragments if going to farm after by selecting only maps with no special modifier
 				else if (farmFragments) mapModifiers = ["0"];
 			}
@@ -1319,10 +1328,13 @@ function PraidHarder() {
 				buyMap();
 				pMap = game.global.mapsOwnedArray[game.global.mapsOwnedArray.length-1].id;
 				selectMap(pMap);
+
 				// Set flags to avoid rerunning this step
 				prestraid = true;
+
 				// prestraidon = false;
 				failpraid = false;
+
 				// Set repeat on and run the map
 				game.global.repeatMap = true;
 				runMap();
