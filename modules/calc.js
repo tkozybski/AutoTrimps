@@ -172,7 +172,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
         health *= dailyModifiers.pressure.getMult(game.global.dailyChallenge.pressure.strength, game.global.dailyChallenge.pressure.stacks);
     
     //Magma
-    if (mutations.Magma.active()) {
+    if (mutations.Magma.active() && !realHealth) {
         var mult = mutations.Magma.getTrimpDecay();
         //var zoneDiff = game.global.world - mutations.Magma.start() + 1; DEBUG
         health *= mult;
