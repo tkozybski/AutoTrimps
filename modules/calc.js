@@ -777,7 +777,7 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
             health *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks)
 
         //Bad Map Health
-        if (typeof game.global.dailyChallenge.badMapHealth !== "undefined")
+        if (typeof game.global.dailyChallenge.badMapHealth !== "undefined" && type != "world")
             health *= dailyModifiers.badMapHealth.getMult(game.global.dailyChallenge.badMapHealth.strength);
     }
 
