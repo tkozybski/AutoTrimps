@@ -609,7 +609,13 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
 
     //Dailies
     if (game.global.challengeActive == "Daily") {
-        if (typeof game.global.dailyChallenge.empower !== "undefined") attack *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
+        //Empower
+        if (typeof game.global.dailyChallenge.empower !== "undefined")
+            attack *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks)
+
+        //Bad Strength
+        if (typeof game.global.dailyChallenge.badStrength !== undefined)
+            attack *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength)
     }
 
     //Obliterated and Eradicated
@@ -766,7 +772,13 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
 
     //Dailies
     if (game.global.challengeActive == "Daily") {
-        if (typeof game.global.dailyChallenge.empower !== "undefined") health *= 1 + 0.002 * game.global.dailyChallenge.empower.stacks;
+        //Empower
+        if (typeof game.global.dailyChallenge.empower !== "undefined")
+            health *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks)
+
+        //Bad Map Health
+        if (typeof game.global.dailyChallenge.badMapHealth !== "undefined")
+            health *= dailyModifiers.badMapHealth.getMult(game.global.dailyChallenge.badMapHealth.strength);
     }
 
     //Obliterated + Eradicated
