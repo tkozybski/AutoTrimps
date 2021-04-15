@@ -1268,6 +1268,7 @@ function PraidHarder() {
 			//Get out of the current map
 			if (game.global.mapsActive)  {
 				mapExiting = true;
+				repeatClicked();
 				return;
 			}
 
