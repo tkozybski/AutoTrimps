@@ -611,11 +611,15 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
     if (game.global.challengeActive == "Daily") {
         //Empower
         if (typeof game.global.dailyChallenge.empower !== "undefined")
-            attack *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks)
+            attack *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks);
 
         //Bad Strength
         if (typeof game.global.dailyChallenge.badStrength !== "undefined")
-            attack *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength)
+            attack *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength);
+
+        //Bad Map Strength
+        if (typeof game.global.dailyChallenge.badMapStrength !== "undefined")
+            attack *= dailyModifiers.badMapStrength.getMult(game.global.dailyChallenge.badMapStrength.strength)
     }
 
     //Obliterated and Eradicated
