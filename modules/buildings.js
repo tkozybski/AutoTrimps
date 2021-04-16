@@ -250,10 +250,10 @@ function buyBuildings() {
     var nurseryZoneOk = game.global.world >= getPageSetting('NoNurseriesUntil');
     var maxNurseryOk = getPageSetting('MaxNursery') < 0 || game.buildings.Nursery.owned < getPageSetting('MaxNursery');
 
-    var spireNurseryActive = game.global.challengeActive != "Daily" && (isActiveSpireAT() || getPageSetting('IgnoreSpiresUntil') <= 200);
+    var spireNurseryActive = game.global.challengeActive != "Daily" && (isActiveSpireAT() || game.global.world <= 200 && getPageSetting('IgnoreSpiresUntil') <= 200);
     var nurseryPreSpire = spireNurseryActive && game.buildings.Nursery.owned < getPageSetting('PreSpireNurseries');
 
-    var dailySpireNurseryActive = game.global.challengeActive == "Daily" && (disActiveSpireAT() || getPageSetting('dIgnoreSpiresUntil') <= 200);
+    var dailySpireNurseryActive = game.global.challengeActive == "Daily" && (disActiveSpireAT() || game.global.world <= 200 && getPageSetting('dIgnoreSpiresUntil') <= 200);
     var dailyNurseryPreSpire = dailySpireNurseryActive && game.buildings.Nursery.owned < getPageSetting('dPreSpireNurseries');
 
     //Nurseries
