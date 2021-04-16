@@ -622,7 +622,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
             attack *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength);
 
         //Bad Map Strength
-        if (typeof game.global.dailyChallenge.badMapStrength !== "undefined")
+        if (typeof game.global.dailyChallenge.badMapStrength !== "undefined" && type != "world")
             attack *= dailyModifiers.badMapStrength.getMult(game.global.dailyChallenge.badMapStrength.strength);
     }
 
