@@ -507,7 +507,7 @@ function autoMap() {
             if (mapAux.level == siphLvl) siphonMap = index;
 
             //Also grabs the highest level within our range that has a modifier on it
-            if (mapAux.level >= Math.max(siphLvl-2, minLvl, altSiphLevel+1) && mapAux.level <= siphLvl+1) {
+            if (mapAux.level >= Math.max(Math.min(siphLvl-2, maxLvl), minLvl, altSiphLevel+1) && mapAux.level <= siphLvl+1) {
                 if (!mapAux.hasOwnProperty("bonus") || mapAux.bonus == "p") continue;
                 altSiphLevel = mapAux.level;
                 altSiphMap = index;
@@ -915,14 +915,12 @@ function autoMap() {
 
             //No fragments to create a map
             if (updateMapCost(true) > game.resources.fragments.owned) {
-                fragmentsNeeded = updateMapCost(true);
                 selectMap(game.global.mapsOwnedArray[highestMap].id);
                 debug("Can't afford the map we designed, #" + mapLvlPicked, "maps", '*crying2');
                 debug("...selected our highest map instead # " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, "maps", '*happy2');
                 runMap();
                 lastMapWeWereIn = getCurrentMapObject();
             } else {
-                fragmentsNeeded = 0;
                 debug("Buying a Map, level: #" + mapLvlPicked + " for " + updateMapCost(true).toExponential(2) + " fragments", "maps", 'th-large');
                 var result = buyMap();
                 if (result == -2) {
