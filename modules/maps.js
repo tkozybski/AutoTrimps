@@ -487,8 +487,6 @@ function autoMap() {
         if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 209 && siphLvl == maxLvl) {
             for (siphLvl = maxLvl; oneShotZone("S", "map", siphLvl+1) == maxOneShotPower(); siphLvl++);
             if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
-            document.getElementById('advExtraLevelSelect').value = siphLvl - game.global.world;
-            extraMapLevels = getExtraMapLevels();
         }
     }
 
@@ -877,8 +875,18 @@ function autoMap() {
             while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
                 sizeAdvMapsRange.value -= 1;
             }
-            if (getPageSetting('AdvMapSpecialModifier'))
+            if (getPageSetting('AdvMapSpecialModifier')) {
+                if (siphLvl > maxLvl) {
+                    //Finds the highest map level we can buy modifiers for
+                    while (game.global.world + getExtraMapLevels() <= siphLvl && testMapSpecialModController(true))
+                        document.getElementById('advExtraLevelSelect').value++;
+                    if (getExtraMapLevels() > 0) document.getElementById('advExtraLevelSelect').value--;
+
+                    //Updates our control flag
+                    extraMapLevels = getExtraMapLevels();
+                }
                 gotBetterMod = testMapSpecialModController(tryBetterMod);
+            }
             var mapLvlPicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
 
             //Sorry for the mess, this whole thing needs a rework
