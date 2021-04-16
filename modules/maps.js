@@ -23,7 +23,7 @@ MODULES.maps.scryerHDMult = 4; //This is a divisor to your "mapCutOff" and "farm
 MODULES.maps.scryerHitsMult = 6; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON (Domination ignores this)
 MODULES.maps.voidHDMult = 1; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
 MODULES.maps.voidHitsMult = 1; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
-MODULES.maps.spireHD = 8; //4 is actually 1 hit in D stance
+MODULES.maps.spireHD = 16; //4 is actually 1 hit in D stance
 MODULES.maps.spireHitsSurvived = 1.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 
 var isFarming = false;
