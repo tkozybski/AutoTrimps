@@ -269,7 +269,7 @@ function autoLevelEquipment() {
 
     //Check mirror dailies
     var mirroredDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.mirrored !== "undefined";
-    var mirroredDailyOk = !MODULES.equipment.mirroredDailyCap || !mirroredDaily || oneShotPower() < maxOneShotPower() || !enoughDamage;
+    var mirroredDailyOk = !MODULES.equipment.mirroredDailyCap || !mirroredDaily || oneShotPower() < maxOneShotPower(true) || !enoughDamage;
     
     //For each equipment...
     for (var equipName in equipmentList) {
