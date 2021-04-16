@@ -246,8 +246,18 @@ function buyBuildings() {
     if (!game.buildings.Tribute.locked && !hidebuild && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1))
         safeBuyBuilding('Tribute');
     
+    //Nurseries Init
+    var nurseryZoneOk = game.global.world >= getPageSetting('NoNurseriesUntil');
+    var maxNurseryOk = getPageSetting('MaxNursery') < 0 || game.buildings.Nursery.owned < getPageSetting('MaxNursery');
+
+    var spireNurseryActive = game.global.challengeActive != "Daily" && (isActiveSpireAT() || getPageSetting('IgnoreSpiresUntil') <= 200);
+    var nurseryPreSpire = spireNurseryActive && game.buildings.Nursery.owned < getPageSetting('PreSpireNurseries');
+
+    var dailySpireNurseryActive = game.global.challengeActive == "Daily" && (disActiveSpireAT() || getPageSetting('dIgnoreSpiresUntil') <= 200);
+    var dailyNurseryPreSpire = dailySpireNurseryActive && game.buildings.Nursery.owned < getPageSetting('dPreSpireNurseries');
+
     //Nurseries
-    if (game.buildings.Nursery.locked == 0 && advancedNurseries() && (!hidebuild && (game.global.world >= getPageSetting('NoNurseriesUntil') || getPageSetting('NoNurseriesUntil') < 1) && (getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1)) || (game.global.challengeActive != "Daily" && getPageSetting('PreSpireNurseries') > game.buildings.Nursery.owned && isActiveSpireAT()) || (game.global.challengeActive == "Daily" && getPageSetting('dPreSpireNurseries') > game.buildings.Nursery.owned && disActiveSpireAT())) {
+    if (game.buildings.Nursery.locked == 0 && !hidebuild && (advancedNurseries() && nurseryZoneOk && maxNurseryOk || nurseryPreSpire || dailyNurseryPreSpire)) {
         //Nursery Wall
         var nurseryWallpct = MODULES["buildings"].nurseryWall;
         if (nurseryWallpct <= 1 || getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) < (game.resources.gems.owned / nurseryWallpct))
