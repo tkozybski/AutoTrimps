@@ -484,7 +484,7 @@ function autoMap() {
         }
 
         //Keep increasing map level while we can overkill in that map
-        if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 109 && siphLvl == maxLvl) {
+        if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 209 && siphLvl == maxLvl) {
             for (siphLvl = maxLvl; oneShotZone("S", "map", siphLvl+1) == maxOneShotPower(); siphLvl++);
             if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
             document.getElementById('advExtraLevelSelect').value = siphLvl - game.global.world;
@@ -915,6 +915,7 @@ function autoMap() {
 
             //No fragments to create a map
             if (updateMapCost(true) > game.resources.fragments.owned) {
+                fragmentsNeeded = updateMapCost(true);
                 selectMap(game.global.mapsOwnedArray[highestMap].id);
                 debug("Can't afford the map we designed, #" + mapLvlPicked, "maps", '*crying2');
                 debug("...selected our highest map instead # " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, "maps", '*happy2');
