@@ -902,7 +902,7 @@ function calcHDRatio(targetZone, type) {
     }
 
     //Void Power compensation
-    if (type == "void" && !game.global.mapsActive || getCurrentMapObject().location != "Void") {
+    if (type == "void" && !(game.global.mapsActive && getCurrentMapObject().location != "Void")) {
         if      (game.talents.voidPower3.purchased) ourBaseDamage *= 1.15;
         else if (game.talents.voidPower2.purchased) ourBaseDamage *= 1.35;
         else if (game.talents.voidPower.purchased)  ourBaseDamage *= 1.65;
