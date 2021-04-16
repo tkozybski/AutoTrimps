@@ -883,8 +883,10 @@ function autoMap() {
                     if (getExtraMapLevels() > 0) document.getElementById('advExtraLevelSelect').value--;
 
                     //Updates our control flags
+                    var fragAux = fragmentsNeeded;
                     extraMapLevels = getExtraMapLevels();
                     gotBetterMod = game.global.world + getExtraMapLevels() > altSiphLevel && testMapSpecialModController(true);
+                    if (gotBetterMod) fragmentsNeeded = fragAux;
                 }
                 else gotBetterMod = testMapSpecialModController(tryBetterMod);
             }
