@@ -882,10 +882,11 @@ function autoMap() {
                         document.getElementById('advExtraLevelSelect').value++;
                     if (getExtraMapLevels() > 0) document.getElementById('advExtraLevelSelect').value--;
 
-                    //Updates our control flag
+                    //Updates our control flags
                     extraMapLevels = getExtraMapLevels();
+                    gotBetterMod = game.global.world + getExtraMapLevels() > altSiphLevel;
                 }
-                gotBetterMod = testMapSpecialModController(tryBetterMod);
+                else gotBetterMod = testMapSpecialModController(tryBetterMod);
             }
             var mapLvlPicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
 
