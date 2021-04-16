@@ -884,7 +884,7 @@ function autoMap() {
 
                     //Updates our control flags
                     extraMapLevels = getExtraMapLevels();
-                    gotBetterMod = game.global.world + getExtraMapLevels() > altSiphLevel;
+                    gotBetterMod = game.global.world + getExtraMapLevels() > altSiphLevel && testMapSpecialModController(true);
                 }
                 else gotBetterMod = testMapSpecialModController(tryBetterMod);
             }
