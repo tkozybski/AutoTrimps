@@ -213,7 +213,17 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
     var worldDamage = calcEnemyAttack("world", targetZone);
     
     //Enemy Damage on Void Maps
-    if (type == "void") voidDamage = calcEnemyAttack("void", targetZone);
+    if (type == "void") {
+        //Void Damage
+        voidDamage = calcEnemyAttack("void", targetZone);
+
+        //Void Power compensation
+        if (!game.global.mapsActive || getCurrentMapObject().location != "Void") {
+            if      (game.talents.voidPower3.purchased) health *= 1.15;
+            else if (game.talents.voidPower2.purchased) health *= 1.35;
+            else if (game.talents.voidPower.purchased)  health *= 1.65;
+        }
+    }
 
     //Pierce & Voids
     var pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
@@ -905,6 +915,13 @@ function calcHDRatio(targetZone, type) {
         ourBaseDamage *= getCritMulti(true);
     }
 
+    //Void Power compensation
+    if (type == "void" && !game.global.mapsActive || getCurrentMapObject().location != "Void") {
+        if      (game.talents.voidPower3.purchased) ourBaseDamage *= 1.15;
+        else if (game.talents.voidPower2.purchased) ourBaseDamage *= 1.35;
+        else if (game.talents.voidPower.purchased)  ourBaseDamage *= 1.65;
+    }
+
     //Lead Challenge
     if (game.global.challengeActive == "Lead" && targetZone%2 == 1 && type != "map") {
         //Stats for void maps
@@ -916,9 +933,10 @@ function calcHDRatio(targetZone, type) {
         ourBaseDamage /= 1.5;
 
         //Custom Anticipation Stacks
-        if (game.global.antiStacks > 19) {
+        var anti = (mutations.Corruption.active()) ? (scryingCorruption() ? 5 : 10) : 19;
+        if (game.global.antiStacks > anti) {
             ourBaseDamage /= getAnticipationBonus(game.global.antiStacks);
-            ourBaseDamage *= getAnticipationBonus(19);
+            ourBaseDamage *= getAnticipationBonus(anti);
         }
 
         //Return whatever gives the worst H:D ratio, an odd zone void map or farming for the next even zone
