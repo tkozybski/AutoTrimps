@@ -623,7 +623,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
 
         //Bad Map Strength
         if (typeof game.global.dailyChallenge.badMapStrength !== "undefined")
-            attack *= dailyModifiers.badMapStrength.getMult(game.global.dailyChallenge.badMapStrength.strength)
+            attack *= dailyModifiers.badMapStrength.getMult(game.global.dailyChallenge.badMapStrength.strength);
     }
 
     //Obliterated and Eradicated
@@ -631,7 +631,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
         var oblitMult = (game.global.challengeActive == "Eradicated") ? game.challenges.Eradicated.scaleModifier : 1e12;
         var zoneModifier = Math.floor(game.global.world / game.challenges[game.global.challengeActive].zoneScaleFreq);
         oblitMult *= Math.pow(game.challenges[game.global.challengeActive].zoneScaling, zoneModifier);
-        attack *= oblitMult
+        attack *= oblitMult;
     }
     
     return minOrMax ? 0.8 * attack : 1.2 * attack;
