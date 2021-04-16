@@ -598,7 +598,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
     //WARNING! Check every challenge!
     //A few challenges
     if      (game.global.challengeActive == "Meditate")   attack *= 1.5;
-    else if (game.global.challengeActive == 'Life')       attack *= 6;
+    else if (game.global.challengeActive == "Life")       attack *= 6;
     else if (game.global.challengeActive == "Crushed")    attack *= 3;
     else if (game.global.challengeActive == "Watch")      attack *= 1.25;
     else if (game.global.challengeActive == "Corrupted")  attack *= 3;
