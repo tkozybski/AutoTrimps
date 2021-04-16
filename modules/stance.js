@@ -34,8 +34,11 @@ function debugStance(maxPower, ignoreArmy) {
 }
 
 function maxOneShotPower() {
+    //No enemy to attack
+    if (!getCurrentEnemy()) return 0;
+
     //No Overkill at all
-    if (game.portal.Overkill.level == 0) return 1;
+    if (game.portal.Overkill.level == 0 || !getCurrentEnemy(2)) return 1;
     
     //Regular Overkills
     return 2;
