@@ -594,7 +594,7 @@ function autoMap() {
                     selectedMap = theMap.id;
                 }
 
-                //Bionic Wonderland II+ (Unlocks)
+                //Bionic Wonderland I+ (Unlocks)
                 if (theMap.location == "Bionic") {
                     bionicPool.push(theMap);
                     break;
@@ -614,10 +614,9 @@ function autoMap() {
         bionicPool.sort(function (bionicA, bionicB) {return bionicA.level - bionicB.level});
         for (bionicMaxLevel=0; getMapRatio(undefined, 125 + 15 * bionicMaxLevel, 2.6) <= 1; bionicMaxLevel++);
         var tryBionicSniper = !game.achievements.oneOffs.finished[42] && (110 + 15*bionicMaxLevel) >= game.global.world + 45;
-        if (bionicPool.length > 0 && bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper) {
-            var bionicLevel = bionicPool.length-1;
-            while (bionicLevel >= bionicMaxLevel) bionicLevel--;
-            if (bionicLevel > 0) selectedMap = bionicPool[bionicLevel].id;
+        if (bionicPool.length > 0 && (bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper)) {
+            var bionicLevel = Math.min(bionicPool.length, bionicMaxLevel);
+            if (bionicLevel > 0) selectedMap = bionicPool[bionicLevel-1].id;
         }
     }
 
