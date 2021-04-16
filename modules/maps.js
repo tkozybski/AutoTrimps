@@ -592,6 +592,11 @@ function autoMap() {
                 if (theMap.name == 'Bionic Wonderland' && (challengeRequireMap || shouldSpeedRun(game.achievements.bionicTimed))) {
                     if (game.global.world < 125 || getMapRatio(theMap) > 1) continue;
                     selectedMap = theMap.id;
+                }
+
+                //Bionic Wonderland II+ (Unlocks)
+                if (theMap.location == "Bionic") {
+                    bionicPool.push(theMap);
                     break;
                 }
 
@@ -602,9 +607,6 @@ function autoMap() {
                     selectedMap = theMap.id;
                     break;
                 }
-
-                //Bionic Wonderland II+ (Unlocks)
-                if (theMap.location == "Bionic") bionicPool.push(theMap);
             }
         }
 
