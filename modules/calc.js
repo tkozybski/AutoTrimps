@@ -428,21 +428,6 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     return avg;
 }
 
-function calcDailyAttackMod(number) {
-    if (game.global.challengeActive == "Daily"){
-        if (typeof game.global.dailyChallenge.badStrength !== 'undefined'){
-            number *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength);
-        }
-        if (typeof game.global.dailyChallenge.badMapStrength !== 'undefined' && game.global.mapsActive){
-            number *= dailyModifiers.badMapStrength.getMult(game.global.dailyChallenge.badMapStrength.strength);
-        }
-        if (typeof game.global.dailyChallenge.bloodthirst !== 'undefined'){
-            number *= dailyModifiers.bloodthirst.getMult(game.global.dailyChallenge.bloodthirst.strength, game.global.dailyChallenge.bloodthirst.stacks);
-        }
-    }
-    return number;
-}
-
 function calcSpire(what, cell, name) {
     //Target Cell
     if (!cell) {
@@ -623,10 +608,6 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
 
     //Dailies
     if (game.global.challengeActive == "Daily") {
-        //Empower
-        if (typeof game.global.dailyChallenge.empower !== "undefined")
-            attack *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks);
-
         //Bad Strength
         if (typeof game.global.dailyChallenge.badStrength !== "undefined")
             attack *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength);
@@ -634,6 +615,14 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
         //Bad Map Strength
         if (typeof game.global.dailyChallenge.badMapStrength !== "undefined" && type != "world")
             attack *= dailyModifiers.badMapStrength.getMult(game.global.dailyChallenge.badMapStrength.strength);
+
+        //Bloodthirsty
+        if (typeof game.global.dailyChallenge.bloodthirst !== 'undefined')
+            attack *= dailyModifiers.bloodthirst.getMult(game.global.dailyChallenge.bloodthirst.strength, game.global.dailyChallenge.bloodthirst.stacks);
+
+        //Empower
+        if (typeof game.global.dailyChallenge.empower !== "undefined")
+            attack *= dailyModifiers.empower.getMult(game.global.dailyChallenge.empower.strength, game.global.dailyChallenge.empower.stacks);
     }
 
     //Obliterated and Eradicated
@@ -663,16 +652,13 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     else if (game.global.challengeActive == "Lead")       attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
     else if (game.global.challengeActive == "Domination") attack *= 2.5;
 
-    //Daily
-    else attack = calcDailyAttackMod(attack);
-
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;
 
     //Average corrupt impact on World times two - this is to compensate a bit for Corrupted buffs. Improbabilities count as 5.
     else if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
         //Corruption during Domination
-        if (game.global.challengeActive == "Domination") attack *= calcCorruptionScale(zone, 10);
+        if (game.global.challengeActive == "Domination") attack *= calcCorruptionScale(zone, 3);
 
         //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 5.
         else {
