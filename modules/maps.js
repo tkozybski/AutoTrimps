@@ -587,6 +587,14 @@ function autoMap() {
                     break;
                 }
 
+                //Imploding Star (Challenges or Speed Achievement)
+                challengeRequireMap = !runningC2 && (challenge == "Devastation");
+                if (theMap.name == 'Imploding Star' && (challengeRequireMap || shouldSpeedRun(game.achievements.starTimed))) {
+                    if (game.global.world < 170 || getMapRatio(theMap) > 1) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
+
                 //Bionic Wonderland (Challenges or Speed Achievement)
                 challengeRequireMap = !runningC2 && (challenge == "Crushed");
                 if (theMap.name == 'Bionic Wonderland' && (challengeRequireMap || shouldSpeedRun(game.achievements.bionicTimed))) {
@@ -595,18 +603,8 @@ function autoMap() {
                 }
 
                 //Bionic Wonderland I+ (Unlocks)
-                if (theMap.location == "Bionic") {
+                if (theMap.location == "Bionic")
                     bionicPool.push(theMap);
-                    break;
-                }
-
-                //Imploding Star (Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Devastation");
-                if (theMap.name == 'Imploding Star' && (challengeRequireMap || shouldSpeedRun(game.achievements.starTimed))) {
-                    if (game.global.world < 170 || getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
-                    break;
-                }
             }
         }
 
@@ -617,7 +615,6 @@ function autoMap() {
         if (bionicPool.length > 0 && (bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper)) {
             var bionicLevel = Math.min(bionicPool.length, bionicMaxLevel);
             if (bionicLevel > 0) selectedMap = bionicPool[bionicLevel-1].id;
-            debug("Selected Bionic Level " + bionicLevel + " resulting in map id " + selectedMap);
         }
     }
 
