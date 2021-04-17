@@ -877,14 +877,19 @@ function autoMap() {
             }
             if (getPageSetting('AdvMapSpecialModifier')) {
                 if (siphLvl > maxLvl) {
-                    //Finds the highest map level we can buy modifiers for
+                    //Finds the highest map level we can buy modifiers for, plus one
                     while (game.global.world + getExtraMapLevels() <= siphLvl && testMapSpecialModController(true))
                         document.getElementById('advExtraLevelSelect').value++;
-                    if (getExtraMapLevels() > (game.talents.mapLoot.purchased ? 1 : 0)) document.getElementById('advExtraLevelSelect').value--;
 
-                    //Updates our control flags
+                    //Since we can't create a map for zone X + 1, target zone X
+                    if (getExtraMapLevels() > 0) document.getElementById('advExtraLevelSelect').value--;
+
+                    //Reduce our map zone to world - 1 if we can't create a map for world + 1
+                    if (game.talents.mapLoot.purchased && getExtraMapLevels() == 0) $mapLevelInput.value--;
+
+                    //Update our control flags
                     extraMapLevels = getExtraMapLevels();
-                    gotBetterMod = game.global.world + getExtraMapLevels() > altSiphLevel && testMapSpecialModController(true);
+                    gotBetterMod = $mapLevelInput.value + getExtraMapLevels() > altSiphLevel && testMapSpecialModController(true);
                 }
                 else gotBetterMod = testMapSpecialModController(tryBetterMod);
             }
@@ -897,7 +902,6 @@ function autoMap() {
                     if (siphonMap != -1) {
                         debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
                         recycleMap(siphonMap);
-                        return;
                     }
                 }
                 else if (altSiphMap != -1) {
