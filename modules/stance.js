@@ -138,7 +138,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, 
     //Explosive Daily
     if (typeof game.global.dailyChallenge['explosive'] !== 'undefined' && critPower >= 0) {
         var explosionDmg = enemyDamage * dailyModifiers.explosive.getMult(game.global.dailyChallenge.explosive.strength);
-        if (maxDamage >= enemyHealth) harm += Math.max(explosionDmg - block, explosionDmg * pierce);
+        if (maxDamage >= enemyHealth && maxHealth > block) harm += Math.max(explosionDmg - block, explosionDmg * pierce);
     }
 
     //Mirrored (Daily) -- Unblockable, unpredictable
