@@ -594,7 +594,6 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
     //A few challenges
     if      (game.global.challengeActive == "Meditate")   attack *= 1.5;
     else if (game.global.challengeActive == "Life")       attack *= 6;
-    else if (game.global.challengeActive == "Crushed")    attack *= 3;
     else if (game.global.challengeActive == "Watch")      attack *= 1.25;
     else if (game.global.challengeActive == "Corrupted")  attack *= 3;
     else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) attack *= 10;
@@ -648,9 +647,17 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     
     //Challenges
     if      (game.global.challengeActive == "Balance")    attack *= (type == "world") ? 1.17 : 2.35;
+    else if (game.global.challengeActive == "Crushed")    attack *= 3;
     else if (game.global.challengeActive == "Toxicity")   attack *= 5;
     else if (game.global.challengeActive == "Lead")       attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
     else if (game.global.challengeActive == "Domination") attack *= 2.5;
+
+    //Dailies
+    else if (game.global.challengeActive == "Daily") {
+        //Crits
+        if (game.global.dailyChallenge.crits !== "undefined")
+            attack *= 0.75 + 0.25 * dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength);
+    }
 
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;

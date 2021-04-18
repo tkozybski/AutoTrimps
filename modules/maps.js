@@ -877,6 +877,7 @@ function autoMap() {
             }
             if (getPageSetting('AdvMapSpecialModifier')) {
                 if (siphLvl > maxLvl) {
+                    //TODO -- Buggy when we don't have fragments to create any map with modifiers
                     //Finds the highest map level we can buy modifiers for, plus one
                     while (game.global.world + getExtraMapLevels() <= siphLvl && testMapSpecialModController(true))
                         document.getElementById('advExtraLevelSelect').value++;
