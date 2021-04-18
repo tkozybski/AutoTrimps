@@ -829,10 +829,10 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
         //Corruption during Domination
         if (game.global.challengeActive == "Domination") health *= calcCorruptionScale(zone, 10);
 
-        //Calculates the impact of the corruption on the average health on that map. Improbabilities count as 5.
+        //Calculates the impact of the corruption on the average health on that map times two. Improbabilities count as 5.
         else {
-            var corruptionAmount = ~~((zone - mutations.Corruption.start())/3) + 7; //Integer division
-            var corruptionWeight = (104 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 10);
+            var corruptionAmount = Math.min(50, ~~((zone - mutations.Corruption.start()) / 3) + 7); //Integer division
+            var corruptionWeight = (104 - corruptionAmount) + 2 * corruptionAmount * calcCorruptionScale(zone, 10);
             health *= corruptionWeight/100;
         }
     }
