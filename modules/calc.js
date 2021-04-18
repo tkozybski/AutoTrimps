@@ -655,7 +655,7 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     //Dailies
     else if (game.global.challengeActive == "Daily") {
         //Crits
-        if (game.global.dailyChallenge.crits !== "undefined")
+        if (typeof game.global.dailyChallenge.crits !== "undefined")
             attack *= 0.75 + 0.25 * dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength);
     }
 
