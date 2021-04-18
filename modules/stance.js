@@ -92,12 +92,14 @@ function oneShotPower(stance, offset = 0, maxOrMin) {
     return power-1;
 }
 
-function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower=2) {
+function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower = 2) {
     //Pre-Init
     if (!maxHealth) maxHealth = calcOurHealth(true, false, true);
     if (!minDamage) minDamage = calcOurDmg("min", true, true, "never", game.global.mapsActive, true);
     if (!maxDamage) maxDamage = calcOurDmg("max", true, true, "force", game.global.mapsActive, true);
     if (!missingHealth) missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
+    if (!pierce) pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
+    if (!block) missingHealth = calcOurBlock(true, true);
 
     //Enemy
     var enemy = getCurrentEnemy();
@@ -133,14 +135,10 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
         harm += (maxHealth - missingHealth) * challengeDamage;
     }
 
-    //Calculates block and pierce
-    var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    //TODO if (formation != "B" && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
-
     //Explosive Daily
     if (typeof game.global.dailyChallenge['explosive'] !== 'undefined' && critPower >= 0) {
-        var explosionDmg = enemyDamage * (1 + game.global.dailyChallenge['explosive'].strength);
-        if (maxDamage > enemyHealth) harm += Math.max(explosionDmg - baseBlock,   explosionDmg * pierce);
+        var explosionDmg = enemyDamage * dailyModifiers.explosive.getMult(game.global.dailyChallenge.explosive.strength);
+        if (maxDamage >= enemyHealth) harm += Math.max(explosionDmg - block, explosionDmg * pierce);
     }
 
     //Mirrored (Daily) -- Unblockable, unpredictable
@@ -150,16 +148,10 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPow
     return harm;
 }
 
-function directDamage(formation, block, currentHealth, minDamage, critPower=2) {
+function directDamage(block, pierce, currentHealth, minDamage, critPower = 2) {
     //Pre Init
-    if (!formation) {
-        if (game.global.formation == 0) formation = "X";
-        else if (game.global.formation == 1) formation = "H";
-        else if (game.global.formation == 2) formation = "D";
-        else if (game.global.formation == 3) formation = "B";
-        else if (game.global.formation == 4) formation = "S";
-    }
     if (!block) block = calcOurBlock(true, true);
+    if (!pierce) pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (!currentHealth) currentHealth = calcOurHealth(true, false, true) - (game.global.soldierHealthMax - game.global.soldierHealth);
     if (!minDamage) minDamage = calcOurDmg("min", true  , true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
     
@@ -167,10 +159,6 @@ function directDamage(formation, block, currentHealth, minDamage, critPower=2) {
     var enemy = getCurrentEnemy();
     var enemyHealth = enemy.health;
     var enemyDamage = calcSpecificEnemyAttack(critPower, block, currentHealth);
-
-    //Calculates block and pierce
-    var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    if (formation != "B" && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //Applies pierce
     var harm = Math.max(enemyDamage - block, pierce * enemyDamage, 0);
@@ -220,9 +208,13 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
     //Max health for XB formation
     var maxHealth = health * (formation == "XB" ? 2 : 1);
 
+    //Pierce
+    var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
+    if (formation != "B" && game.global.formation == 3) pierce *= 2;
+
     //Decides if the trimps can survive in this formation
     var notSpire = game.global.mapsActive || !game.global.spireActive;
-    var harm = directDamage(formation, block, health - missingHealth, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, critPower);
+    var harm = directDamage(block, pierce, health - missingHealth, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower);
     return (newSquadRdy && notSpire && health > harm) || (health - missingHealth > harm);
 }
 
