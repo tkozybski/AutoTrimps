@@ -8,6 +8,7 @@ MODULES["upgrades"].customTargetZone = undefined;
 MODULES["upgrades"].customMetalRatio = undefined;
 
 //5 or less = very fast run, around 10 = most regular runs, 20 = pushy, 21+ (Usually 50) = really, really pushing, 100 = ...you know you're using Auto Trimps, right?
+MODULES["upgrades"].targetFuelZone = true;
 MODULES["upgrades"].customSlowDownFactor = 10;
 MODULES["upgrades"].delayFirstGiga = MODULES["upgrades"].customSlowDownFactor > 20;
 
@@ -35,10 +36,15 @@ function gigaTargetZone() {
     //Set targetZone
     if (!runningC2) targetZone = Math.max(targetZone, voidZone, challengeZone, portalZone-1);
     else targetZone = Math.max(targetZone, c2zone-1);
-    
+
+    //Target Fuel Zone
+    if (daily && getPageSetting("AutoGenDC") != 0) targetZone = Math.min(targetZone, 230);
+    if (runningC2 && getPageSetting("AutoGenC2") != 0) targetZone = Math.min(targetZone, 230);
+    if (MODULES.upgrades.targetFuelZone && (getPageSetting("fuellater") >= 1 || getPageSetting("beforegen") != 0)) targetZone = Math.min(targetZone, Math.max(230, getPageSetting("fuellater")));
+
     //Failsafe
     if (targetZone < 60) {
-	targetZone = Math.max(65, game.global.highestLevelCleared);
+	    targetZone = Math.max(65, game.global.highestLevelCleared);
         debug("Auto Gigastation: Warning! Unable to find a proper targetZone. Using your HZE instead", "general", "*rocket");
     }
     
