@@ -455,11 +455,9 @@ function calcSpire(what, cell, name) {
 
     //Math
     base *= Math.pow(mod, cell);
-    base *= game.badGuys[enemy][what];
 
     //Compensations for Domination
     if (game.global.challengeActive == "Domination" && cell != 100) base /= (what == "attack") ? 25 : 75;
-    if (game.global.challengeActive == "Domination" && cell == 100) base *= calcCorruptionScale(game.global.world, (what == "attack") ? 3 : 10);
 
     return base;
 }
@@ -874,8 +872,8 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
     //Map and Void Difficulty
     if (type != "world") health *= getCurrentMapObject().difficulty;
 
-    //Corruption - May be slightly smaller than it should be, if "zone" is different than your current zone
-    else if (type == "world" && !healthy && (corrupt || name == "Improbability")) {
+    //Corruption
+    else if (type == "world" && !healthy && (corrupt || mutations.Corruption.active() && cell == 100) && !game.global.spireActive) {
         health *= calcCorruptionScale(zone, 10);
         if (enemy.corrupted == "corruptTough") health *= 5;
     }
