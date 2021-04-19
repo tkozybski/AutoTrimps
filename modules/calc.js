@@ -698,6 +698,9 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     //Challenges - considers the actual scenario for this enemy
     if (game.global.challengeActive == "Lead") attack *= 1 + (0.04 * game.challenges.Lead.stacks);
 
+    //Magneto Shriek
+    if (game.global.usingShriek) attack *= game.mapUnlocks.roboTrimp.getShriekValue();
+
     //Ice
     if (getEmpowerment() == "Ice") attack *= game.empowerments.Ice.getCombatModifier();
 
