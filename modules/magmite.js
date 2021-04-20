@@ -3,6 +3,7 @@ MODULES["magmite"].algorithm = 2;
 
 //Psycho
 MODULES["magmite"].autoFuelZone = true;
+MODULES["magmite"].zonesToFuel = 5;
 
 var priceIncreases = {
     Efficiency: 8,
@@ -177,8 +178,10 @@ function autoGenerator() {
     var afterFuelState = getPageSetting("defaultgen");
 
     //Auto Fuel Zone
-    if (MODULES.magmite.autoFuelZone)
+    if (MODULES.magmite.autoFuelZone) {
         setPageSetting("fuellater", 230 + 2 * game.generatorUpgrades.Supply.upgrades);
+        setPageSetting("fuelend", getPageSetting("fuellater") + MODULES.magmite.zonesToFuel);
+    }
 
     //Dimensional Generator locked
     if (game.global.world < 230) return;
