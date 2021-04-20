@@ -370,8 +370,8 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (game.goldenUpgrades.Battle.currentBonus > 0) number *= game.goldenUpgrades.Battle.currentBonus + 1;
 
     //Empowerments
-    if (getPageSetting("fullice") == true && getEmpowerment() == "Ice") number *= (Fluffy.isRewardActive('naturesWrath') ? 3 : 2);
-    if (getPageSetting('fullice') == false && getEmpowerment() == "Ice") number *= (game.empowerments.Ice.getDamageModifier()+1);
+    if (getEmpowerment() == "Ice" && getPageSetting("fullice") == true) number *= (Fluffy.isRewardActive('naturesWrath')) ? 3 : 2;
+    if (getEmpowerment() == "Ice" && getPageSetting('fullice') == false) number *= 1 + game.empowerments.Ice.getDamageModifier();
     if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
         number *= (1 + game.empowerments.Poison.getModifier());
         number *= 4;

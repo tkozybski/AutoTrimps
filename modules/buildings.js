@@ -216,9 +216,9 @@ function buyBuildings() {
             var zoneDamage = calcEnemyAttack();
             var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > zoneDamage * (1 - pierce));
             
-            //Stop buying Gyms if we already have enough block for our current enemy, and are not lacking in health to progress
+            //Stop buying Gyms if we already have enough block for our current enemy
             //Or if we are on world and have enough block to defeat an C99 Snimp
-            if (!game.global.preMapsActive && !game.global.spireActive && enoughHealth && currentEnemyDamageOK && zoneEnemyDamageOK) skipGym = true;
+            if (!game.global.preMapsActive && !game.global.spireActive && currentEnemyDamageOK && zoneEnemyDamageOK) skipGym = true;
 	    }
 	
 	    //Gym Wall
