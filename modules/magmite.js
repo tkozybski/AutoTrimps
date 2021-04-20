@@ -195,14 +195,14 @@ function autoGenerator() {
         return;
     }
 
-    //After Fuel
-    if (getPageSetting("fuelend") > 0 && game.global.world >= getPageSetting("fuelend"))
-        changeGeneratorState(afterFuelState);
+    //Before Fuel
+    if (getPageSetting("fuellater") < 0 || game.global.world < getPageSetting("fuellater"))
+        changeGeneratorState(beforeFuelState);
 
     //Fuel
-    else if (getPageSetting("fuellater") > 0 && game.global.world >= getPageSetting("fuellater"))
+    else if (getPageSetting("fuelend") < 0 || game.global.world < getPageSetting("fuelend"))
         changeGeneratorState(1);
 
-    //Before Fuel
-    else changeGeneratorState(beforeFuelState);
-  }
+    //After Fuel
+    else changeGeneratorState(afterFuelState);
+}
