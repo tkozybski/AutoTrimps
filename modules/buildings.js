@@ -212,13 +212,13 @@ function buyBuildings() {
         if (getPageSetting('DynamicGyms')) {
             var pierce = getPierceAmt() * (game.global.formation == 3 ? 2 : 1);
 	        var nextGym = game.upgrades.Gymystic.modifier;
-            var currentEnemyDamageOK = (calcOurBlock(true) > nextGym * calcSpecificEnemyAttack());
+            var currentEnemyDamageOK = calcOurBlock(true) > nextGym * calcSpecificEnemyAttack();
             var zoneDamage = calcEnemyAttack();
             var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > zoneDamage * (1 - pierce));
             
             //Stop buying Gyms if we already have enough block for our current enemy
             //Or if we are on world and have enough block to defeat an C99 Snimp
-            if (!game.global.preMapsActive && !game.global.spireActive && currentEnemyDamageOK && zoneEnemyDamageOK) skipGym = true;
+            if (!game.global.spireActive && currentEnemyDamageOK && zoneEnemyDamageOK) skipGym = true;
 	    }
 	
 	    //Gym Wall
