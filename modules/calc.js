@@ -580,7 +580,7 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
     //Map and Void Corruption
     if (type != "world") {
         //Corruption
-        var corruptionScale = calcCorruptionScale(zone, 3);
+        var corruptionScale = calcCorruptionScale(game.global.world, 3);
         if (mutations.Magma.active()) attack *= corruptionScale / (type == "void" ? 1 : 2);
         else if (type == "void" && mutations.Corruption.active()) attack *= corruptionScale / 2;
     }
@@ -761,7 +761,7 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
     //Map and Void Corruption
     if (type != "world") {
         //Corruption
-        var corruptionScale = calcCorruptionScale(zone, 10);
+        var corruptionScale = calcCorruptionScale(game.global.world, 10);
         if (mutations.Magma.active()) health *= corruptionScale / (type == "void" ? 1 : 2);
         else if (type == "void" && mutations.Corruption.active()) health *= corruptionScale / 2;
     }
