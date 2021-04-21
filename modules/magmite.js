@@ -181,7 +181,7 @@ function autoGenerator() {
     //Auto Fuel Zone
     if (MODULES.magmite.autoFuelZone) {
         setPageSetting("fuellater", Math.max(230, 230 + 2 * game.generatorUpgrades.Supply.upgrades - MODULES.magmite.zonesBeforeMaxSupply));
-        setPageSetting("fuelend", getPageSetting("fuellater") + MODULES.magmite.zonesToFuel - MODULES.magmite.zonesBeforeMaxSupply);
+        setPageSetting("fuelend", getPageSetting("fuellater") + MODULES.magmite.zonesToFuel);
     }
 
     //Dimensional Generator locked
