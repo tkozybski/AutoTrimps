@@ -5,7 +5,6 @@ MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
 //Psycho-Ray
 MODULES["buildings"].gatewayWall = 100;
-MODULES["buildings"].gatewayWall = 100;
 MODULES["buildings"].nurseryWall = 10;
 MODULES["buildings"].nurserySpireWall = 10;
 MODULES["buildings"].gemEfficiencyIgnoresLimit = true;
@@ -211,13 +210,11 @@ function buyBuildings() {
 	    //Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
             var pierce = getPierceAmt() * (game.global.formation == 3 ? 2 : 1);
-	        var nextGym = game.upgrades.Gymystic.modifier;
+	        var nextGym = game.upgrades.Gymystic.modifier + Math.max(0, game.upgrades.Gymystic.done-1)/100;
             var currentEnemyDamageOK = calcOurBlock(true) > nextGym * calcSpecificEnemyAttack();
-            var zoneDamage = calcEnemyAttack();
-            var zoneEnemyDamageOK = !game.global.mapsActive && (calcOurBlock(true) > zoneDamage * (1 - pierce));
+            var zoneEnemyDamageOK = calcOurBlock(true) > calcEnemyAttack() * (1 - pierce);
             
-            //Stop buying Gyms if we already have enough block for our current enemy
-            //Or if we are on world and have enough block to defeat an C99 Snimp
+            //Stop buying Gyms if we already have enough block for our current enemy and also a C99 Snimp
             if (!game.global.spireActive && currentEnemyDamageOK && zoneEnemyDamageOK) skipGym = true;
 	    }
 	
