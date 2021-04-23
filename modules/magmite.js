@@ -185,8 +185,12 @@ function autoGenerator() {
         setPageSetting("fuelend", getPageSetting("fuellater") + MODULES.magmite.zonesToFuel);
     }
 
-    //Scry starts alongside fueling
-    if (MODULES.magmite.minAtFuel) setPageSetting("ScryerMinZone", getPageSetting("fuellater"));
+    //Scry starts alongside fueling. DieZ is updated if <= minZone
+    if (MODULES.magmite.minAtFuel) {
+        var fuelZone = getPageSetting("fuellater")
+        if (getPageSetting("ScryerDieZ") <= getPageSetting("ScryerMinZone")) setPageSetting("ScryerDieZ", fuelZone);
+        setPageSetting("ScryerMinZone", fuelZone);
+    }
 
     //Dimensional Generator locked
     if (game.global.world < 230) return;
