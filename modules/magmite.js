@@ -3,8 +3,9 @@ MODULES["magmite"].algorithm = 2;
 
 //Psycho
 MODULES["magmite"].autoFuelZone = true;
-MODULES["magmite"].zonesBeforeMaxSupply = 10;
-MODULES["magmite"].zonesToFuel = 20;
+MODULES["magmite"].zonesBeforeMaxSupply = 5; // Start fueling this many zones before your Max Supply Zone
+MODULES["magmite"].zonesToFuel = 20; //Fuel for this number of zones
+MODULES["magmite"].minAtFuel = game.global.highestLevelCleared >= 240; //Starts Scrying once AT starts fueling
 
 var priceIncreases = {
     Efficiency: 8,
@@ -183,6 +184,9 @@ function autoGenerator() {
         setPageSetting("fuellater", Math.max(230, 230 + 2 * game.generatorUpgrades.Supply.upgrades - MODULES.magmite.zonesBeforeMaxSupply));
         setPageSetting("fuelend", getPageSetting("fuellater") + MODULES.magmite.zonesToFuel);
     }
+
+    //Scry starts alongside fueling
+    if (MODULES.magmite.minAtFuel) setPageSetting("ScryerMinZone", getPageSetting("fuellater"));
 
     //Dimensional Generator locked
     if (game.global.world < 230) return;

@@ -1,6 +1,7 @@
 var wantToScry = false;
 var transitionRequired = false;
 
+//Psycho
 var maxZoneCorruptedOnly = true; //Instead of not using scry after reaching the max zone, it'll just disable scry on corrupted
 
 function scryingCorruption() {
@@ -125,7 +126,7 @@ function useScryerStance() {
         wantToScry = false;
         return;
     }
-    
+
     //Default
     var min_zone = getPageSetting('ScryerMinZone');
     var max_zone = getPageSetting('ScryerMaxZone');

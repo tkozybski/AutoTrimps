@@ -171,7 +171,7 @@ function mainLoop() {
         }
         else if (getPageSetting('BuyBuildingsNew') == 2) buyBuildings();
         else if (getPageSetting('BuyBuildingsNew') == 3) buyStorage();
-        if (getPageSetting('UseAutoGen') == true && game.global.world > 229) autoGenerator();
+        if (getPageSetting('UseAutoGen') == true) autoGenerator();
 
         //Jobs
         if (getPageSetting('BuyJobsNew') == 1) {
