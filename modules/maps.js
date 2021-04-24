@@ -25,7 +25,7 @@ MODULES.maps.voidHDMult = 1; //This is a multiplier to your "mapCutOff and farmi
 MODULES.maps.voidHitsMult = 2; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 MODULES.maps.spireHD = 4; //4 is actually 1 hit in D stance
 MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
-MODULES.maps.magmaHitsSurvived = (game.global.challengeActive == "Daily") ? 1 : 2; //> 1 will build nurseries more often, but will NOT farm on maps for more health!
+MODULES.maps.magmaHitsSurvived = 2; //Your geneticists are frequently lagging 1-2 zones behind when speeding through magma, which is why this is important
 
 var isFarming = false;
 var doVoids = false;
@@ -163,6 +163,9 @@ function getMapHealthCutOff(pure) {
 
     //Spire
     if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
+
+    //Magma
+    if (mutations.Magma.active()) cut *= MODULES.maps.magmaHitsSurvived;
 
     //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
     if (preVoidCheck) return cut * MODULES.maps.voidHitsMult;

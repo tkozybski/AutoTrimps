@@ -265,7 +265,7 @@ function autoLevelEquipment() {
     //Check for H & D
     var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
     var enoughDamageE = enoughDamage && oneShotZone(formation) >= 1;
-    var enoughHealthE = calcHealthRatio(false, true) > getMapHealthCutOff() * MODULES.equipment.numHitsMult;
+    var enoughHealthE = calcHealthRatio() > getMapHealthCutOff() * MODULES.equipment.numHitsMult;
 
     //Check mirror dailies
     var mirroredDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.mirrored !== "undefined";
