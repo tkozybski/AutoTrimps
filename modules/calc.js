@@ -12,8 +12,8 @@ function debugCalc() {
     var name = getCurrentEnemy() ? getCurrentEnemy().name : "Chimp";
 
     //Init
-    var displayedMin = calcOurDmg("min", true, true, "never", type != "world", true);
-    var displayedMax = calcOurDmg("max", true, true, "never", type != "world", true);
+    var displayedMin = calcOurDmg("min", true, true, "never", type != "world", true) * (game.global.titimpLeft ? 2 : 1);
+    var displayedMax = calcOurDmg("max", true, true, "never", type != "world", true) * (game.global.titimpLeft ? 2 : 1);
 
     //Trimp Stats
     debug("Our Stats");
@@ -370,7 +370,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (game.goldenUpgrades.Battle.currentBonus > 0) number *= game.goldenUpgrades.Battle.currentBonus + 1;
 
     //Empowerments - Ice (Experimental
-    else if (getEmpowerment() == "Ice") {
+    if (getEmpowerment() == "Ice") {
         //Uses the actual number in some places like Stances
         if (!getPageSetting('fullice') || realDamage) number *= 1 + game.empowerments.Ice.getDamageModifier();
 
