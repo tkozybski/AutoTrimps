@@ -185,7 +185,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     if (game.jobs.Amalgamator.owned > 0) health *= game.jobs.Amalgamator.getHealthMult();
     
     //Void Power
-    if (game.talents.voidPower.purchased && game.global.voidBuff) {
+    if (game.talents.voidPower.purchased && game.global.voidBuff && !realHealth) {
         var amt = (game.talents.voidPower2.purchased) ? ((game.talents.voidPower3.purchased) ? 65 : 35) : 15;
         health *= (1 + (amt / 100));
     }
