@@ -494,9 +494,9 @@ function autoMap() {
         }
     }
 
-    //Farms on "Oneshoot level" + 1
+    //Farms on "Oneshoot level" + 1, except on magma
     var extraConditions = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || siphLvl < minLvl);
-    if (extraConditions && game.global.challengeActive != "Coordinate" && siphLvl < maxLvl) siphLvl++;
+    if (extraConditions && game.global.challengeActive != "Coordinate" && !mutations.Magma.active() && siphLvl < maxLvl) siphLvl++;
 
     //Register the level of every regular map we have
     var obj = {};
