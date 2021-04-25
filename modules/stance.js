@@ -95,11 +95,11 @@ function oneShotPower(stance, offset = 0, maxOrMin) {
 function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower = 2) {
     //Pre-Init
     if (!maxHealth) maxHealth = calcOurHealth(true, false, true);
-    if (!minDamage) minDamage = calcOurDmg("min", true, true, "never", game.global.mapsActive, true);
-    if (!maxDamage) maxDamage = calcOurDmg("max", true, true, "force", game.global.mapsActive, true);
+    if (!minDamage) minDamage = calcOurDmg("min", true, true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
+    if (!maxDamage) maxDamage = calcOurDmg("max", true, true, "force", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
     if (!missingHealth) missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     if (!pierce) pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    if (!block) missingHealth = calcOurBlock(true, true);
+    if (!block) block = calcOurBlock(true, true);
 
     //Enemy
     var enemy = getCurrentEnemy();
@@ -111,6 +111,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, 
     var electricityChallenge = game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse";
     var dailyPlague = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.plague !== "undefined";
     var dailyBogged = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.bogged !== "undefined";
+    var dailyExplosive = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
     var dailyMirrored = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.mirrored !== "undefined";
     var drainChallenge = game.global.challengeActive == "Nom" || game.global.challengeActive == "Toxicity" || dailyPlague || dailyBogged;
     var challengeDamage = 0, harm = 0;
@@ -136,7 +137,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, 
     }
 
     //Explosive Daily
-    if (typeof game.global.dailyChallenge['explosive'] !== 'undefined' && critPower >= 0) {
+    if (dailyExplosive && critPower >= 0) {
         var explosionDmg = enemyDamage * dailyModifiers.explosive.getMult(game.global.dailyChallenge.explosive.strength);
         if (maxDamage >= enemyHealth && maxHealth > block) harm += Math.max(explosionDmg - block, explosionDmg * pierce);
     }
