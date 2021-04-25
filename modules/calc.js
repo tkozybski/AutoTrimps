@@ -370,11 +370,20 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (game.goldenUpgrades.Battle.currentBonus > 0) number *= game.goldenUpgrades.Battle.currentBonus + 1;
 
     //Empowerments
-    if (getEmpowerment() == "Ice" && getPageSetting("fullice") == true) number *= (Fluffy.isRewardActive('naturesWrath')) ? 3 : 2;
     if (getEmpowerment() == "Ice" && getPageSetting('fullice') == false) number *= 1 + game.empowerments.Ice.getDamageModifier();
+
+    //Poison
     if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
         number *= (1 + game.empowerments.Poison.getModifier());
         number *= 4;
+    }
+
+    //Ice - Experimental
+    if (getEmpowerment() == "Ice" && getPageSetting('fullice') == true) {
+        var afterTransfer = 1 + Math.ceil(game.empowerments["Ice"].currentDebuffPower * getRetainModifier("Ice"));
+        var mod = 1 - Math.pow(game.empowerments.Ice.getModifier(), afterTransfer);
+        if (Fluffy.isRewardActive('naturesWrath')) mod *= 2;
+        number *= 1 + mod;
     }
 
     //Masteries - Herbalist, Legs for Days, Magmamancer, Still Rowing II, Void Mastery, Health Strength, Sugar Rush
@@ -679,6 +688,12 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
         var scales = Math.floor((zone - 150) / 6);
         attack *= 14 * Math.pow(1.05, scales);
         attack *= 1.15;
+    }
+
+    //Ice - Experimental
+    if (getEmpowerment() == "Ice" && getPageSetting('fullice') == true) {
+        var afterTransfer = 1 + Math.ceil(game.empowerments["Ice"].currentDebuffPower * getRetainModifier("Ice"));
+        attack *= Math.pow(game.empowerments.Ice.getModifier(), afterTransfer);
     }
     
     return minOrMax ? Math.floor(attack) : Math.ceil(attack);
