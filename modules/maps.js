@@ -469,7 +469,7 @@ function autoMap() {
     //Calculates Siphonology and Extra Map Levels
     var minLvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level);
     var maxLvl = game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
-    var siphLvl = minLvl - 1;
+    var siphLvl = minLvl;
 	
     //If enabled, then
     if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone) {
@@ -489,13 +489,13 @@ function autoMap() {
 
         //Keep increasing map level while we can overkill in that map
         if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 209 && siphLvl == maxLvl) {
-            for (siphLvl = maxLvl; oneShotZone("S", "map", siphLvl+1) == maxOneShotPower(); siphLvl++);
+            for (siphLvl; oneShotZone("S", "map", siphLvl+1) == maxOneShotPower(); siphLvl++);
             if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
         }
     }
 
     //Farms on "Oneshoot level" + 1, except on magma
-    var extraConditions = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || siphLvl < minLvl);
+    var extraConditions = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming);
     if (extraConditions && game.global.challengeActive != "Coordinate" && !mutations.Magma.active() && siphLvl < maxLvl) siphLvl++;
 
     //Register the level of every regular map we have
