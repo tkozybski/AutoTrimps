@@ -7,9 +7,9 @@ MODULES["upgrades"].autoGigas = true;
 MODULES["upgrades"].customTargetZone = undefined;
 MODULES["upgrades"].customMetalRatio = undefined;
 
-//5 or less = very fast run, around 10 = most regular runs, 20 = pushy, 21+ (Usually 50) = really, really pushing, 100 = ...you know you're using Auto Trimps, right?
+//1 = post-magma, 5 - quick run, around 10 = regular run, 20 = pushy, 50 = really, really pushing, 100 = ...you know you're using Auto Trimps, right?
 MODULES["upgrades"].targetFuelZone = true;
-MODULES["upgrades"].customSlowDownFactor = 10;
+MODULES["upgrades"].customSlowDownFactor = 1;
 MODULES["upgrades"].delayFirstGiga = MODULES["upgrades"].customSlowDownFactor > 20;
 
 function gigaTargetZone() {
