@@ -187,9 +187,9 @@ function autoGenerator() {
 
     //Scry starts alongside fueling. DieZ is updated if <= minZone
     if (MODULES.magmite.minAtFuel) {
-        var fuelZone = getPageSetting("fuellater")
-        if (getPageSetting("ScryerDieZ") <= getPageSetting("ScryerMinZone")) setPageSetting("ScryerDieZ", fuelZone);
-        setPageSetting("ScryerMinZone", fuelZone);
+        var fuelZone = getPageSetting("fuellater");
+        setPageSetting("ScryerMinZone", Math.max(fuelZone, getPageSetting("ScryerMinZone")));
+        setPageSetting("ScryerDieZ", Math.max(fuelZone, getPageSetting("ScryerMinZone"), getPageSetting("ScryerDieZ")));
     }
 
     //Dimensional Generator locked
