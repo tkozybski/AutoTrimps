@@ -527,10 +527,11 @@ function badGuyCritMult(enemy, critPower=2, block, health) {
     else return Math.max(regular, challenge);
 }
 
-function calcCorruptionScale(world, base) {
+function calcCorruptionScale(zone, base) {
     var startPoint = (game.global.challengeActive == "Corrupted" || game.global.challengeActive == "Eradicated") ? 1 : 150;
-    var scales = Math.floor((world - startPoint) / 6);
-    return base * Math.pow(1.05, scales);
+    var scales = Math.floor((zone - startPoint) / 6);
+    var realValue = base * Math.pow(1.05, scales);
+    return parseFloat(prettify(realValue));
 }
 
 function calcEnemyBaseAttack(type, zone, cell, name) {
@@ -673,7 +674,7 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;
 
     //Average corrupt impact on World times two - this is to compensate a bit for Corrupted buffs. Improbabilities count as 5.
-    else if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
+    else if (type == "world" && corrupt && !game.global.spireActive) {
         //Corruption during Domination
         if (game.global.challengeActive == "Domination") attack *= calcCorruptionScale(zone, 3);
 
@@ -686,11 +687,12 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
         }
     }
     
-    //Healthy -- DEBUG
+    //Healthy
     else if (type == "world" && healthy && !game.global.spireActive) {
-        var scales = Math.floor((zone - 150) / 6);
-        attack *= 14 * Math.pow(1.05, scales);
-        attack *= 1.15;
+        //Calculates the impact of the Healthy on the average attack on that map.
+        var healthyAmount = Math.min(50, ~~((zone - 300) / 15) + 2); //Integer division
+        var healthyWeight = (100 - healthyAmount) + 2 * healthyAmount * calcCorruptionScale(zone, 5) / calcCorruptionScale(zone, 3);
+        attack *= healthyWeight / 100;
     }
 
     //Ice - Experimental
@@ -856,11 +858,12 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
         }
     }
 
-    //Healthy -- DEBUG
+    //Healthy
     else if (type == "world" && healthy && !game.global.spireActive) {
-        var scales = Math.floor((zone - 150) / 6);
-        health *= 14 * Math.pow(1.05, scales);
-        health *= 1.15;
+        //Calculates the impact of the Healthy on the average attack on that map.
+        var healthyAmount = Math.min(50, ~~((zone - 300) / 15) + 2); //Integer division
+        var healthyWeight = (100 - healthyAmount) + 2 * healthyAmount * calcCorruptionScale(zone, 14) / calcCorruptionScale(zone, 10);
+        health *= healthyWeight / 100;
     }
 
     return health;
@@ -878,7 +881,7 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
     
     //Init
     var corrupt = enemy.hasOwnProperty("corrupted");
-    var healthy = enemy.hasOwnProperty("healthy");
+    var healthy = enemy.hasOwnProperty("corrupted") && enemy.corrupted.startsWith("healthy");
     var name = (corrupt || healthy) ? "Chimp" : (forcedName) ? forcedName : enemy.name;
     var health = calcEnemyHealthCore(type, zone, cell, name);
 
@@ -899,11 +902,10 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
         if (enemy.corrupted == "corruptTough") health *= 5;
     }
 
-    //Healthy -- DEBUG
-    if (type == "world" && healthy) {
-        var scales = Math.floor((zone - 150) / 6);
-        health *= 14 * Math.pow(1.05, scales);
-        health *= 1.15;
+    //Healthy
+    else if (type == "world" && healthy) {
+        health *= calcCorruptionScale(zone, 14);
+        if (enemy.healthy == "healthyTough") health *= 7.5;
     }
 
     return health;
