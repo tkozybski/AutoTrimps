@@ -168,7 +168,10 @@ function getMapHealthCutOff(pure) {
     if (mutations.Magma.active()) cut *= MODULES.maps.magmaHitsSurvived;
 
     //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
-    if (preVoidCheck) return cut * MODULES.maps.voidHitsMult;
+    if (preVoidCheck) {
+        if (getPageSetting("scryvoidmaps")) cut *= MODULES.maps.scryerHitsMult;
+        return cut * MODULES.maps.voidHitsMult;
+    }
 
     //Scryer Multiplier (only if scrying on corrupted)
     if (scryingCorruption() && game.global.challengeActive != "Domination") return cut * MODULES.maps.scryerHitsMult;
