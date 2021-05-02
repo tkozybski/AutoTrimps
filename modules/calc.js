@@ -30,6 +30,45 @@ function debugCalc() {
     debug("Specific Enemy Health: " + calcSpecificEnemyHealth().toExponential(2));
 }
 
+function calcOurBlock(stance, realBlock) {
+    var block = 0;
+
+    //Ignores block gyms/shield that have been brought, but not yet deployed
+    if (realBlock) {
+        block = game.global.soldierCurrentBlock;
+        if (stance || game.global.formation == 0) return block;
+        if (game.global.formation == 3) return block/4;
+        return block * 2;
+    }
+
+    //Gyms
+    var gym = game.buildings.Gym;
+    if (gym.owned > 0) block += gym.owned * gym.increase.by;
+
+    //Shield Block
+    var shield = game.equipment.Shield;
+    if (shield.blockNow && shield.level > 0) block += shield.level * shield.blockCalculated;
+
+    //Trainers
+    var trainer = game.jobs.Trainer;
+    if (trainer.owned > 0) {
+        var trainerStrength = trainer.owned * (trainer.modifier / 100);
+        block *= 1 + calcHeirloomBonus("Shield", "trainerEfficiency", trainerStrength);
+    }
+
+    //Coordination
+    block *= game.resources.trimps.maxSoldiers;
+
+    //Stances
+    if (stance && game.global.formation != 0) block *= game.global.formation == 3 ? 4 : 0.5;
+
+    //Heirloom
+    var heirloomBonus = calcHeirloomBonus("Shield", "trimpBlock", 0, true);
+    if (heirloomBonus > 0) block *= ((heirloomBonus / 100) + 1);
+
+    return block;
+}
+
 function calcEquipment(type = "attack") {
     //Init
     var bonus = 0;
@@ -113,48 +152,6 @@ function getTrimpHealth(realHealth) {
     return health;
 }
 
-function calcOurBlock(stance, realBlock) {
-    var block = 0;
-
-    //Ignores block gyms/shield that have been brought, but not yet deployed
-    if (realBlock) {
-        block = game.global.soldierCurrentBlock;
-        if (stance || game.global.formation == 0) return block;
-        if (game.global.formation == 3) return block/4;
-        return block * 2;
-    }
-    
-    //Gyms
-    var gym = game.buildings.Gym;
-    if (gym.owned > 0) block += gym.owned * gym.increase.by;
-    
-    //Shield Block
-    var shield = game.equipment.Shield;
-    if (shield.blockNow && shield.level > 0) block += shield.level * shield.blockCalculated;
-    
-    //Trainers
-    var trainer = game.jobs.Trainer;
-    if (trainer.owned > 0) {
-        var trainerStrength = trainer.owned * (trainer.modifier / 100);
-        block *= 1 + calcHeirloomBonus("Shield", "trainerEfficiency", trainerStrength);
-    }
-    
-    //Coordination
-    block *= game.resources.trimps.maxSoldiers;
-
-    //Stances
-    if (stance && game.global.formation != 0) block *= game.global.formation == 3 ? 4 : 0.5;
-    
-    //Heirloom
-    var heirloomBonus = calcHeirloomBonus("Shield", "trimpBlock", 0, true);
-    if (heirloomBonus > 0) block *= ((heirloomBonus / 100) + 1);
-    
-    //Radio Stacks
-    //if (game.global.radioStacks > 0) block *= (1 - (game.global.radioStacks * 0.1));
-    
-    return block;
-}
-
 function calcOurHealth(stance, fullGeneticist, realHealth) {
     var health = getTrimpHealth(realHealth);
     
@@ -172,17 +169,10 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
         health *= dailyModifiers.pressure.getMult(game.global.dailyChallenge.pressure.strength, game.global.dailyChallenge.pressure.stacks);
     
     //Magma
-    if (mutations.Magma.active() && !realHealth) {
-        var mult = mutations.Magma.getTrimpDecay();
-        //var zoneDiff = game.global.world - mutations.Magma.start() + 1; DEBUG
-        health *= mult;
-    }
-    
-    //Radio
-    if (game.global.radioStacks > 0) health *= 1 - (game.global.radioStacks * 0.1);
+    if (mutations.Magma.active() && !realHealth) health *= mutations.Magma.getTrimpDecay();
     
     //Amalgamator
-    if (game.jobs.Amalgamator.owned > 0) health *= game.jobs.Amalgamator.getHealthMult();
+    if (game.jobs.Amalgamator.owned > 0 && !realHealth) health *= game.jobs.Amalgamator.getHealthMult();
     
     //Void Power
     if (game.talents.voidPower.purchased && game.global.voidBuff && !realHealth) {
@@ -300,14 +290,14 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (game.global.mapBonus > 0 && !ignoreMapBonus) {
         var mapBonus = game.global.mapBonus;
         if (game.talents.mapBattery.purchased && mapBonus == 10) mapBonus *= 2;
-        number *= ((mapBonus * .2) + 1);
+        number *= 1 + 0.2 * mapBonus;
     }
     
     //Range
     if (game.portal.Range.level > 0) minFluct += 0.02 * game.portal.Range.level;
 
     //Achievements
-    if (game.global.achievementBonus > 0) number *= (1 + (game.global.achievementBonus / 100));
+    if (game.global.achievementBonus > 0) number *= 1 + game.global.achievementBonus/100;
 
     //Anticipation
     if (game.global.antiStacks > 0) number *= getAnticipationBonus();
@@ -316,7 +306,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (!incStance && game.global.formation != 0) number /= (game.global.formation == 2) ? 4 : 0.5;
 
     //Robo Trimp
-    if (game.global.roboTrimpLevel > 0) number *= ((0.2 * game.global.roboTrimpLevel) + 1);
+    if (game.global.roboTrimpLevel > 0) number *= 1 + 0.2 * game.global.roboTrimpLevel;
 
     //Heirlooms
     number = calcHeirloomBonus("Shield", "trimpAttack", number);
@@ -405,7 +395,8 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     }
 
     //Scryhard
-    if (incStance && game.talents.scry.purchased && game.global.formation == 4 && (mutations.Healthy.active() || mutations.Corruption.active()))
+    var fightingCorrupted = getCurrentEnemy().corrupted || !realDamage && (mutations.Healthy.active() || mutations.Corruption.active());
+    if (incStance && game.talents.scry.purchased && game.global.formation == 4 && fightingCorrupted)
         number *= 2;
 
     //Spire Strength Trap
@@ -880,9 +871,9 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
     if (!enemy) return -1;
     
     //Init
-    var corrupt = enemy.hasOwnProperty("corrupted");
-    var healthy = enemy.hasOwnProperty("corrupted") && enemy.corrupted.startsWith("healthy");
-    var name = (corrupt || healthy) ? "Chimp" : (forcedName) ? forcedName : enemy.name;
+    var corrupt = enemy.corrupted && enemy.corrupted != "none";
+    var healthy = corrupt && enemy.corrupted.startsWith("healthy");
+    var name = corrupt ? "Chimp" : (forcedName) ? forcedName : enemy.name;
     var health = calcEnemyHealthCore(type, zone, cell, name);
 
     //Challenges - considers the actual scenario for this enemy
