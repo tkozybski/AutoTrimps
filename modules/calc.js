@@ -395,7 +395,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     }
 
     //Scryhard
-    var fightingCorrupted = getCurrentEnemy().corrupted || !realDamage && (mutations.Healthy.active() || mutations.Corruption.active());
+    var fightingCorrupted = getCurrentEnemy() && getCurrentEnemy().corrupted || !realDamage && (mutations.Healthy.active() || mutations.Corruption.active());
     if (incStance && game.talents.scry.purchased && game.global.formation == 4 && fightingCorrupted)
         number *= 2;
 
