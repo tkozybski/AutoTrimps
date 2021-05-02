@@ -314,9 +314,9 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     //Fluffy
     if (Fluffy.isActive()) number *= Fluffy.getDamageModifier();
 
-    //Gamma Burst
-    if (getHeirloomBonus("Shield", "gammaBurst") > 0 && calcOurHealth() / calcEnemyAttack() >= 5)
-        number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
+    //Gamma Burst - TODO
+    //if (getHeirloomBonus("Shield", "gammaBurst") > 0 && calcOurHealth() / calcEnemyAttack() >= 5)
+        //number *= ((getHeirloomBonus("Shield", "gammaBurst") / 100) + 1) / 5;
     
     //Challenges
     if (game.global.challengeActive == "Life") number *= game.challenges.Life.getHealthMult();
@@ -665,24 +665,24 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;
 
     //Average corrupt impact on World times two - this is to compensate a bit for Corrupted buffs. Improbabilities count as 5.
-    else if (type == "world" && corrupt && !game.global.spireActive) {
+    if (type == "world" && corrupt && !game.global.spireActive) {
         //Corruption during Domination
         if (game.global.challengeActive == "Domination") attack *= calcCorruptionScale(zone, 3);
 
         //Calculates the impact of the corruption on the average attack on that map. Improbabilities count as 5.
         else {
             //It uses the average times two for damage because otherwise trimps would be full pop half of the time, but dead in the other half
-            var corruptionAmount = Math.min(50, ~~((zone - mutations.Corruption.start()) / 3) + 7); //Integer division
-            var corruptionWeight = (104 - corruptionAmount) + 2 * corruptionAmount * calcCorruptionScale(zone, 3);
-            attack *= corruptionWeight / 100;
+            var corruptionAmount = 2 * Math.min(52, 7 + ~~((zone - mutations.Corruption.start()) / 3)); //Integer division
+            var corruptionWeight = (104 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 3);
+            attack *= corruptionWeight / 104;
         }
     }
     
     //Healthy
-    else if (type == "world" && healthy && !game.global.spireActive) {
+    if (type == "world" && healthy && !game.global.spireActive) {
         //Calculates the impact of the Healthy on the average attack on that map.
-        var healthyAmount = Math.min(50, ~~((zone - 300) / 15) + 2); //Integer division
-        var healthyWeight = (100 - healthyAmount) + 2 * healthyAmount * calcCorruptionScale(zone, 5) / calcCorruptionScale(zone, 3);
+        var healthyAmount = 2 * Math.min(50, 2 + ~~((zone - 300) / 15)); //Integer division
+        var healthyWeight = (100 - healthyAmount) + healthyAmount * calcCorruptionScale(zone, 5) / calcCorruptionScale(zone, 3);
         attack *= healthyWeight / 100;
     }
 
@@ -701,8 +701,6 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
     if (!enemy) return 1;
     
     //Init
-    //var corrupt = enemy.hasOwnProperty("corrupted");
-    //var healthy = enemy.hasOwnProperty("healthy");
     var attack  = calcEnemyAttackCore(undefined, undefined, undefined, undefined, undefined, enemy.attack);
         attack *= badGuyCritMult(enemy, critPower, customBlock, customHealth);
     
@@ -837,23 +835,23 @@ function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
     if (type == "void") health *= (zone >= 60) ? 4.5 : 2.5;
 
     //Average corrupt impact on World
-    else if (type == "world" && corrupt && !healthy && !game.global.spireActive) {
+    if (type == "world" && corrupt && !game.global.spireActive) {
         //Corruption during Domination
         if (game.global.challengeActive == "Domination") health *= calcCorruptionScale(zone, 10);
 
         //Calculates the impact of the corruption on the average health on that map times two. Improbabilities count as 5.
         else {
-            var corruptionAmount = Math.min(50, ~~((zone - mutations.Corruption.start()) / 3) + 7); //Integer division
-            var corruptionWeight = (104 - corruptionAmount) + 2 * corruptionAmount * calcCorruptionScale(zone, 10);
-            health *= corruptionWeight/100;
+            var corruptionAmount = 2 * Math.min(52, 7 + ~~((zone - mutations.Corruption.start()) / 3)); //Integer division
+            var corruptionWeight = (104 - corruptionAmount) + corruptionAmount * calcCorruptionScale(zone, 10);
+            health *= corruptionWeight/104;
         }
     }
 
     //Healthy
-    else if (type == "world" && healthy && !game.global.spireActive) {
+    if (type == "world" && healthy && !game.global.spireActive) {
         //Calculates the impact of the Healthy on the average attack on that map.
-        var healthyAmount = Math.min(50, ~~((zone - 300) / 15) + 2); //Integer division
-        var healthyWeight = (100 - healthyAmount) + 2 * healthyAmount * calcCorruptionScale(zone, 14) / calcCorruptionScale(zone, 10);
+        var healthyAmount = 2 * Math.min(50, 2 + ~~((zone - 300) / 15)); //Integer division
+        var healthyWeight = (100 - healthyAmount) + healthyAmount * calcCorruptionScale(zone, 14) / calcCorruptionScale(zone, 10);
         health *= healthyWeight / 100;
     }
 
@@ -896,7 +894,7 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
     //Healthy
     else if (type == "world" && healthy) {
         health *= calcCorruptionScale(zone, 14);
-        if (enemy.healthy == "healthyTough") health *= 7.5;
+        if (enemy.corrupted == "healthyTough") health *= 7.5;
     }
 
     return health;
