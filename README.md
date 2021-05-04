@@ -6,6 +6,7 @@ Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestio
 
 ## Current Version - Ongoing Development!
 - Zek Fork. All changes made by Zek using GenBTC as base. Currently up-to-date as of 06/2020.
+- U1 code heavily rewritten and changed by Psycho-Ray. Please report any bugs you may find.
 
 ## Script Installation
 

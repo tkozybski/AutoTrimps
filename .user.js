@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AutoTrimps-Ray
-// @version      0.2.8.0
+// @version      6.0.0.0
 // @namespace    https://Psycho-Ray.github.io/AutoTrimps
 // @downloadURL  https://Psycho-Ray.github.io/AutoTrimps/.user.js
 // @updateURL    https://Psycho-Ray.github.io/AutoTrimps/.user.js
@@ -8,6 +8,9 @@
 // @author       zininzinin, spindrjr, Ishkaru, genBTC, Zeker0, Psycho-Ray
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
+// @connect      *Zorn192.github.io/AutoTrimps*
+// @connect      *trimps.github.io*
+// @connect      self
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 

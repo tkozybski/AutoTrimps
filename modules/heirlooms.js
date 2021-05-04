@@ -36,13 +36,12 @@ function getHeirloomEff(name, type) {
 }
 
 function evaluateHeirloomMods2(loom, location) {
-
-  var index = loom;
-  var eff = 0;
-  var name;
-  var type;
-  var rarity;
-  var raretokeep = getPageSetting('raretokeep');
+    var index = loom;
+    var eff = 0;
+    var name;
+    var type;
+    var rarity;
+    var raretokeep = getPageSetting('raretokeep');
 	if (raretokeep == 'Any' || raretokeep == 'Common') raretokeep = 0;
 	else if (raretokeep == 'Uncommon') raretokeep = 1;
 	else if (raretokeep == 'Rare') raretokeep = 2;
@@ -53,7 +52,7 @@ function evaluateHeirloomMods2(loom, location) {
 	else if (raretokeep == 'Magmatic') raretokeep = 7;
 	else if (raretokeep == 'Plagued') raretokeep = 8;
 	else if (raretokeep == 'Radiating') raretokeep = 9;
-        else if (raretokeep == 'Hazardous') raretokeep = 10;
+	else if (raretokeep == 'Hazardous') raretokeep = 10;
 
   if (location.includes('Equipped'))
     loom = game.global[location];

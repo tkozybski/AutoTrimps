@@ -279,12 +279,8 @@ function getCritMulti(high, crit) {
     else if (critChance < 1) critDHModifier = (1-critChance + critChance * critD);
     else if (critChance < 2) critDHModifier = ((critChance-1) * getMegaCritDamageMult(2) * critD + (2-critChance) * critD);
     else                     critDHModifier = ((critChance-2) * Math.pow(getMegaCritDamageMult(2),2) * critD + (3-critChance) * getMegaCritDamageMult(2) * critD);
-    var lowTierMulti = getMegaCritDamageMult(Math.floor(critChance));
-    var highTierMulti = getMegaCritDamageMult(Math.ceil(critChance));
-    var highTierChance = critChance - Math.floor(critChance)
 
     return critDHModifier;
-    return ((1 - highTierChance) * lowTierMulti + highTierChance * highTierMulti) * CritD
 }
 
 function getAnticipationBonus(stacks) {

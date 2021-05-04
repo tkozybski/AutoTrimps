@@ -1,4 +1,4 @@
-var ATversion = '0.1-Ray';
+var ATversion = 'Zek v5.0';
 var atscript = document.getElementById('AutoTrimps-script');
 var basepath = 'https://Psycho-Ray.github.io/AutoTrimps/', modulepath='modules/';
 atscript !== null && (basepath = atscript.src.replace(/AutoTrimps2\.js$/,''));
@@ -248,7 +248,7 @@ function mainLoop() {
         if ((getPageSetting('BWraid') == true || getPageSetting('DailyBWraid') == true) && bwraidon) buyWeps();
         if (game.global.mapsActive && getPageSetting('game.global.universe == 1 && BWraid') == true && game.global.world == getPageSetting('BWraidingz') && getCurrentMapObject().level <= getPageSetting('BWraidingmax')) buyWeps();
 
-            //Golden
+        //Golden
         var agu = getPageSetting('AutoGoldenUpgrades');
         var dagu = getPageSetting('dAutoGoldenUpgrades');
         var cagu = getPageSetting('cAutoGoldenUpgrades');

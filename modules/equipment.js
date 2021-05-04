@@ -931,8 +931,8 @@ function buyPrestigeMaybe(equipName) {
     var newStatValue = (newLevel) * Math.round(equipment[equipStat] * Math.pow(1.19, ((equipment.prestige + 1) * game.global.prestige[equipStat]) + 1));
     var currentStatValue = equipment.level * equipment[equipStat + 'Calculated'];
 
-    return newStatValue > currentStatValue 
-    
+    return newStatValue > currentStatValue
+
 }
 
 function RautoEquip() {
@@ -965,7 +965,7 @@ function RautoEquip() {
             if (game.equipment[equip].level < 2) {
                 buyEquipment(equip, null, true, 1);
             }
-        } 
+        }
     }
 
     // Loop through actually getting equips
@@ -988,15 +988,15 @@ function RautoEquip() {
                         if (
                             zoneGo ||
                             underStats ||
-                            Rgetequipcost(equipName, resourceUsed, 1) <= resourceMaxPercent * game.resources[resourceUsed].owned 
+                            Rgetequipcost(equipName, resourceUsed, 1) <= resourceMaxPercent * game.resources[resourceUsed].owned
                         ) {
                             if (!game.equipment[equipName].locked) {
                                 buyEquipment(equipName, null, true, 1);
                                 keepBuying = true;
                             }
-                        } 
-                    } 
-                } 
+                        }
+                    }
+                }
             }
 
             // Set up for Health
@@ -1034,7 +1034,7 @@ function equipfarmdynamicHD() {
     }
     return equipfarmHDmult;
 }
-	
+
 function estimateEquipsForZone() {
     var artBoost = Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.radLevel);
     var MAX_EQUIP_DELTA = 700;
