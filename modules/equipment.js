@@ -168,7 +168,7 @@ function evaluateEquipmentEfficiency(equipName) {
     if (equipName != 'Gym' && game.global.world < 60 && game.global.world >= 58 && MODULES["equipment"].waitTill60) {
         Wall = true;
     }
-    if (gameResource.level < 2 && MODULES["equipment"].alwaysLvl2) {
+    if (gameResource.level < 2 && getPageSetting('always2') == true) {
         Factor = 999 - gameResource.prestige;
     }
     if (equipName == 'Shield' && gameResource.blockNow &&
@@ -360,7 +360,7 @@ function autoLevelEquipment() {
                     buyEquipment(eqName, null, true);
                 }
             }
-            var aalvl2 = MODULES["equipment"].alwaysLvl2;
+            var aalvl2 = getPageSetting('always2');
             if (BuyArmorLevels && (DaThing.Stat == 'health') && aalvl2 && game.equipment[eqName].level < 2) {
                 game.global.buyAmt = 1;
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
@@ -806,3 +806,310 @@ const prestigeZones = [["Supershield","Dagadder","Bootboost"], ["Megamace", "Hel
         }
         return attainablePrestiges / 2
     }
+
+//Shol Territory
+
+function mostEfficientEquipment(fakeLevels = {}) {
+
+    for (var i in RequipmentList) {
+        if (typeof fakeLevels[i] === 'undefined') {
+            fakeLevels[i] = 0;
+        }
+    }
+
+    var mostEfficient = [
+    {
+        name: "",
+        statPerResource: -Infinity,
+    },
+    {
+        name: "",
+        statPerResource: -Infinity,
+    }
+    ];
+
+    var artBoost = Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.radLevel);
+
+    for (var i in RequipmentList) {
+        var nextLevelCost = game.equipment[i].cost[RequipmentList[i].Resource][0] * Math.pow(game.equipment[i].cost[RequipmentList[i].Resource][1], game.equipment[i].level + fakeLevels[i]) * artBoost;
+
+        var nextLevelValue = game.equipment[i][RequipmentList[i].Stat + "Calculated"];
+
+        var isAttack = (RequipmentList[i].Stat === 'attack' ? 0 : 1);
+
+        var safeRatio = Math.log(nextLevelValue + 1) / Math.log(nextLevelCost + 1);
+        if (safeRatio > mostEfficient[isAttack].statPerResource) {
+            mostEfficient[isAttack].name = i;
+            mostEfficient[isAttack].statPerResource = safeRatio;
+        }
+
+    }
+
+    return [mostEfficient[0].name, mostEfficient[1].name];
+
+}
+
+function Requipcalc(capattack, caphealth, level2, zonego, attack, health, name, resource, stat, source, amount, percent) {
+
+    if (canAffordBuilding(name, null, null, true, false, amount) && smithylogic(name, resource, true) &&
+        (
+	 (stat == 'a' && game.equipment[name].level < capattack) ||
+         (stat == 'h' && game.equipment[name].level < caphealth)
+	) &&
+        (
+         (level2 && game.equipment[name].level == 1) ||
+         (zonego) ||
+         (Rgetequipcost(name, resource, amount) <= (percent * source)) ||
+         ((stat == 'a' && !attack) || (stat == 'h' && !health))
+	)
+    ) {
+        RpreBuy3();
+
+        if (level2 && game.equipment[name].level == 1) {
+            buyEquipment(name, null, true, 1);
+        }
+
+	var mostEfficientStuff = mostEfficientEquipment();
+
+	if (mostEfficientStuff != undefined) {
+            buyEquipment(mostEfficientStuff[0], null, true, amount);
+            buyEquipment(mostEfficientStuff[1], null, true, amount);
+	}
+
+        RpostBuy3();
+    }
+}
+
+function getMaxAffordable(baseCost, totalResource, costScaling, isCompounding) {
+
+    if (!isCompounding) {
+        return Math.floor(
+            (costScaling - (2 * baseCost) + Math.sqrt(Math.pow(2 * baseCost - costScaling, 2) + (8 * costScaling * totalResource))) / 2
+        );
+    } else {
+        return Math.floor(Math.log(1 - (1 - costScaling) * totalResource / baseCost) / Math.log(costScaling));
+    }
+}
+
+function buyPrestigeMaybe(equipName) {
+
+    var equipment = game.equipment[equipName];
+    var resource = (equipName == "Shield") ? 'wood' : 'metal'
+    var equipStat = (typeof equipment.attack !== 'undefined') ? 'attack' : 'health';
+
+    var artBoost = Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.radLevel);
+
+    var prestigeUpgradeName = "";
+    var allUpgradeNames = Object.getOwnPropertyNames(game.upgrades);
+    for (var upgrade of allUpgradeNames) {
+        if (game.upgrades[upgrade].prestiges === equipName) {
+            prestigeUpgradeName = upgrade;
+            break;
+        }
+    }
+
+    if (game.upgrades[prestigeUpgradeName].locked) return false;;
+
+    if (game.upgrades[prestigeUpgradeName].cost.resources.science[0] *
+        Math.pow(game.upgrades[prestigeUpgradeName].cost.resources.science[1], game.equipment[equipName].prestige - 1)
+        > game.resources.science.owned) {
+            return false;
+    }
+
+    if (game.upgrades[prestigeUpgradeName].cost.resources.gems[0] *
+        Math.pow(game.upgrades[prestigeUpgradeName].cost.resources.gems[1], game.equipment[equipName].prestige - 1)
+        > game.resources.gems.owned) {
+            return false;
+    }
+
+    var levelOnePrestige = getNextPrestigeCost(prestigeUpgradeName) * artBoost;
+
+    if (levelOnePrestige > game.resources[resource].owned) return false;
+
+    var newLevel = Math.floor(getMaxAffordable(levelOnePrestige * 1.2,game.resources[resource].owned,1.2,true)) + 1;
+
+    var newStatValue = (newLevel) * Math.round(equipment[equipStat] * Math.pow(1.19, ((equipment.prestige + 1) * game.global.prestige[equipStat]) + 1));
+    var currentStatValue = equipment.level * equipment[equipStat + 'Calculated'];
+
+    return newStatValue > currentStatValue 
+    
+}
+
+function RautoEquip() {
+
+    if (!getPageSetting('Requipon')) return;
+
+    var prestigeLeft = false;
+    do {
+        prestigeLeft = false;
+        for (var equipName in game.equipment) {
+            if (buyPrestigeMaybe(equipName)) {
+              if(!game.equipment[equipName].locked) {
+                buyUpgrade(RequipmentList[equipName].Upgrade, true, true);
+                prestigeLeft = true;
+              }
+            }
+        }
+    } while (prestigeLeft)
+    
+    // Gather settings
+    var alwaysLvl2 = getPageSetting('Requip2');
+    var attackEquipCap = ((getPageSetting('Requipcapattack') <= 0) ? Infinity : getPageSetting('Requipcapattack'));
+    var healthEquipCap = ((getPageSetting('Requipcaphealth') <= 0) ? Infinity : getPageSetting('Requipcaphealth'));
+    var zoneGo = game.global.world >= getPageSetting('Requipzone');
+    var resourceMaxPercent = getPageSetting('Requippercent') / 100;
+
+    // Always 2
+    if (alwaysLvl2) {
+        for (var equip in game.equipment) {
+            if (game.equipment[equip].level < 2) {
+                buyEquipment(equip, null, true, 1);
+            }
+        } 
+    }
+
+    // Loop through actually getting equips
+    var keepBuying = false;
+    do {
+        keepBuying = false;
+        var bestBuys = mostEfficientEquipment();
+
+        // Set up for attack
+        var equipName = bestBuys[0];
+        var resourceUsed = resourceUsed = (equipName == 'Shield') ? 'wood' : 'metal';
+        var equipCap = attackEquipCap;
+        var underStats = RcalcHDratio() >= getPageSetting('Rdmgcuntoff');
+
+        for (var i = 0; i < 2; i++){
+            if (canAffordBuilding(equipName, null, null, true, false, 1)) {
+                if (smithylogic(equipName,resourceUsed,true)) {
+                    if (game.equipment[equipName].level < equipCap) {
+                        // Check any of the overrides
+                        if (
+                            zoneGo ||
+                            underStats ||
+                            Rgetequipcost(equipName, resourceUsed, 1) <= resourceMaxPercent * game.resources[resourceUsed].owned 
+                        ) {
+                            if (!game.equipment[equipName].locked) {
+                                buyEquipment(equipName, null, true, 1);
+                                keepBuying = true;
+                            }
+                        } 
+                    } 
+                } 
+            }
+
+            // Set up for Health
+            equipName = bestBuys[1];
+            resourceUsed = (equipName == 'Shield') ? 'wood' : 'metal';
+            equipCap = healthEquipCap;
+            underStats = RcalcOurHealth(true) < getPageSetting('Rhitssurvived') * RcalcBadGuyDmg(null, RgetEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0));
+            
+        }
+
+    } while (keepBuying)
+
+}
+
+function getTotalMultiCost(baseCost, multiBuyCount, costScaling, isCompounding) {
+    if (!isCompounding) {
+        return multiBuyCount * (multiBuyCount * costScaling - costScaling + 2 * baseCost) / 2;
+    } else {
+        return baseCost * ((1 - Math.pow(costScaling, multiBuyCount)) / (1 - costScaling));
+    }
+}
+
+function equipfarmdynamicHD() {
+    var equipfarmzone = 0;
+    var equipfarmHD = 0;
+    var equipfarmmult = 0;
+    var equipfarmHDzone = 0;
+    var equipfarmHDmult = RcalcHDratio() - 1;
+    if (getPageSetting('Requipfarmon') == true && game.global.world > 5 && game.global.world >= (getPageSetting('Requipfarmzone') && getPageSetting('RequipfarmHD') > 0 && getPageSetting('Requipfarmmult') > 0)) {
+        equipfarmzone = getPageSetting('Requipfarmzone');
+        equipfarmHD = getPageSetting('RequipfarmHD');
+        equipfarmmult = getPageSetting('Requipfarmmult');
+	equipfarmHDzone = (game.global.world - equipfarmzone);
+	equipfarmHDmult = (equipfarmHDzone == 0) ? equipfarmHD : Math.pow(equipfarmmult, equipfarmHDzone) * equipfarmHD;
+    }
+    return equipfarmHDmult;
+}
+	
+function estimateEquipsForZone() {
+    var artBoost = Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.radLevel);
+    var MAX_EQUIP_DELTA = 700;
+
+    // calculate stats needed pass zone
+    var enemyDamageBeforeEquality = RcalcBadGuyDmg(null, RgetEnemyMaxAttack(game.global.world, 100, 'Improbability'), true); //game.global.getEnemyAttack(100, 'Snimp', true);
+    var ourHealth = RcalcOurHealth();
+    var hits = (getPageSetting("Rhitssurvived") > 0) ? getPageSetting("Rhitssurvived") : 1;
+
+    var healthNeededMulti = (enemyDamageBeforeEquality * hits) / ourHealth; // The multiplier we need to apply to our health to survive
+
+    // Get a fake ratio pretending that we don't have any equality in.
+    var fakeHDRatio = RgetEnemyMaxHealth(game.global.world, 100) / (RcalcOurDmg('avg', true)); // game.global.getEnemyHealth(100, 'Snimp', true)
+    var attackNeededMulti = fakeHDRatio / (game.global.mapBonus < 10 ? (equipfarmdynamicHD() * 5) : equipfarmdynamicHD());
+
+    //console.log("Health needed no equality: " + healthNeededMulti);
+    //console.log("Attack Needed no equality: " + attackNeededMulti);
+
+    // Something something figure out equality vs health farming
+    var tempEqualityUse = 0;
+    while (
+        (healthNeededMulti > 1 || attackNeededMulti > 1)  // If it's below 1 we don't actually need more
+            &&
+        (healthNeededMulti * game.portal.Equality.modifier > attackNeededMulti / game.portal.Equality.modifier) // Need more health proportionally
+            &&
+        tempEqualityUse < game.portal.Equality.radLevel
+    ) {
+        tempEqualityUse++;
+        healthNeededMulti *= game.portal.Equality.modifier;
+        attackNeededMulti /= game.portal.Equality.modifier;
+    }
+
+    if (healthNeededMulti < 1 && attackNeededMulti < 1) {return [0, {}]};
+
+    var ourAttack = 6;
+    for(var i in RequipmentList){
+        if(game.equipment[i].locked !== 0) continue;
+        var attackBonus = game.equipment[i].attackCalculated;
+        var level       = game.equipment[i].level;
+        ourAttack += (attackBonus !== undefined ? attackBonus : 0)*level;
+    }
+
+    // Amount of stats needed directly from equipment
+    var attackNeeded = ourAttack * attackNeededMulti;
+    var healthNeeded = ourHealth * healthNeededMulti / (getTotalHealthMod() * game.resources.trimps.maxSoldiers);
+
+    var bonusLevels = {}; // How many levels you'll be getting in each shield-gambeson armor slots
+    
+    while (healthNeeded > 0) {
+        var bestArmor = mostEfficientEquipment(bonusLevels)[1];
+        healthNeeded -= game.equipment[bestArmor][RequipmentList[bestArmor].Stat + "Calculated"];
+        if (typeof bonusLevels[bestArmor] === 'undefined') {
+            bonusLevels[bestArmor] = 0;
+        }
+        if (bonusLevels[bestArmor]++ > MAX_EQUIP_DELTA) {
+            return [Infinity, bonusLevels];
+        }
+    }
+    while (attackNeeded > 0) {
+        var bestWeapon = mostEfficientEquipment(bonusLevels)[0];
+        attackNeeded -= game.equipment[bestWeapon][RequipmentList[bestWeapon].Stat + "Calculated"];
+        if (typeof bonusLevels[bestWeapon] === 'undefined') {
+            bonusLevels[bestWeapon] = 0;
+        }
+        if (bonusLevels[bestWeapon]++ >= MAX_EQUIP_DELTA) {
+            return [Infinity, bonusLevels];
+        }
+    }
+
+    var totalCost = 0;
+    for (var equip in bonusLevels) {
+        var equipCost = game.equipment[equip].cost[RequipmentList[equip].Resource];
+        totalCost += getTotalMultiCost(equipCost[0],bonusLevels[equip],equipCost[1],true) * artBoost;
+    }
+
+    return [totalCost, bonusLevels, tempEqualityUse];
+    
+}

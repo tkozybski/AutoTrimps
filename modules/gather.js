@@ -18,7 +18,7 @@ function calcMaxTraps() {
 	var time = getZoneSeconds();
 	if (game.global.world == 1) maxZoneDuration = time;
 	if (time > maxZoneDuration) maxZoneDuration = time;
-	
+
 	//Return enough traps to last 1/4 of the longest duration zone we've seen so far
 	return Math.ceil(calcTPS() * maxZoneDuration/4);
 }
@@ -27,14 +27,14 @@ function calcMaxTraps() {
 function manualLabor2() {
 	//If not using auto-gather, return
 	if (getPageSetting('ManualGather2') == 0) return;
-	
+
 	//Init - Traps config
 	var trapTrimpsOK = getPageSetting('TrapTrimps');
 	var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
 	var minTraps = Math.ceil(calcTPS());
 	var trapsBufferSize = Math.ceil(5 * calcTPS());
 	var maxTraps = calcMaxTraps();
-	
+
 	//Init - Traps control
 	var lowOnTraps = game.buildings.Trap.owned < minTraps;
 	var trapsReady = game.buildings.Trap.owned >= minTraps + trapsBufferSize;
@@ -42,32 +42,32 @@ function manualLabor2() {
 	var maxTrapsReady = game.buildings.Trap.owned >= maxTraps + trapsBufferSize;
 	if (trapsReady) trapBuffering = false;
 	if (maxTrapsReady) maxTrapBuffering = false;
-	
+
 	//Init - Others
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
-	
+
 	//Verifies if trapping is still relevant
 	var trappingIsRelevant = trapperTrapUntilFull || calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 100;
-	
+
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
-		//If not building and not trapping 
+		//If not building and not trapping
 		if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)) {
 			//Gather food or wood
 			if (game.resources.food.owned < 10) {setGather('food'); return;}
 			else if (game.triggers.wood.done && game.resources.wood.owned < 10) {setGather('wood'); return;}
 		}
 	}
-	
+
 	//High Priority Trapping (doing Trapper or without breeding trimps)
 	if (trapTrimpsOK && trappingIsRelevant && ((notFullPop && breedingTrimps < 4) || trapperTrapUntilFull)) {
 		//Bait trimps if we have traps
 		if (!lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
-		
+
 		//Or build them, if they are on the queue
 		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {
 			trapBuffering = true;
@@ -75,7 +75,7 @@ function manualLabor2() {
 			return;
 		}
 	}
-	
+
 	//Highest Priority Science gathering if we have less science than needed to buy scientists
 	if (getPageSetting('ManualGather2') != 2 && game.upgrades.Scientists.allowed && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
 		setGather('science');
@@ -87,28 +87,28 @@ function manualLabor2() {
 		setGather(game.resources.metal.owned < 100 ? "metal" : "wood");
 		return;
 	}
-	
+
 	//Build if we don't have foremany, there are 2+ buildings in the queue, or if we can speed up something other than a trap
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1'))) {
 		setGather('buildings');
 		return;
 	}
-	
+
 	//Also Build if we have storage buildings on top of the queue
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1') {
 		setGather('buildings');
 		return;
 	}
-	
+
 	//Mid Priority Trapping
 	if (trapTrimpsOK && trappingIsRelevant && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
-	
+
 	//High Priority Research - When manual research still has more impact than scientists
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() > getPerSecBeforeManual('Scientist')) {
 		setGather('science');
 		return;
 	}
-	
+
 	//High Priority Trap Building
 	if (trapTrimpsOK && trappingIsRelevant && canAffordBuilding('Trap') && (lowOnTraps || trapBuffering)) {
 		trapBuffering = true;
@@ -116,13 +116,13 @@ function manualLabor2() {
 		setGather('buildings');
 		return;
 	}
-	
+
 	//Metal if Turkimp is active
 	if (hasTurkimp) {setGather('metal'); return;}
-	
+
 	//Mid Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
-	
+
 	//Low Priority Trap Building
 	if (trapTrimpsOK && trappingIsRelevant && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {
 		trapBuffering = !fullOfTraps;
@@ -131,7 +131,7 @@ function manualLabor2() {
 		setGather('buildings');
 		return;
 	}
-	
+
 	//Untouched mess
 	var manualResourceList = {
 		'food': 'Farmer',
@@ -164,10 +164,10 @@ function manualLabor2() {
 			}
 		}
 	}
-	
+
 	//High Priority Gathering - No workers for this resource
 	if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {setGather(lowestResource); return;}
-	
+
 	//Low Priority Research
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && haveWorkers) {
 		if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds) {
@@ -175,7 +175,7 @@ function manualLabor2() {
 			return;
 		}
 	}
-	
+
 	//Just gather whatever has lowest rate
 	setGather(lowestResource);
 }
@@ -190,7 +190,7 @@ function autogather3() {
 
 MODULES["gather"].RminScienceAmount = 200;
 
-function RmanualLabor2() {	
+function RmanualLabor2() {
     //Vars
     var lowOnTraps = game.buildings.Trap.owned < 5;
     var trapTrimpsOK = getPageSetting('RTrapTrimps');
@@ -250,14 +250,20 @@ function RmanualLabor2() {
     else if (game.global.challengeActive == "Quest" && (questcheck() == 14 || questcheck() == 24)) {
 	setGather('science');
     }
-    else if ((Rshouldtimefarm || Rshouldtimefarmbogs) && (autoTrimpSettings.Rtimespecialselection.selected == "ssc" || autoTrimpSettings.Rtimespecialselection.selected == "lsc")) {
+    else if (Rshouldshipfarm) {
 	     setGather('food');
     }
-    else if ((Rshouldtimefarm || Rshouldtimefarmbogs) && (autoTrimpSettings.Rtimespecialselection.selected == "swc" || autoTrimpSettings.Rtimespecialselection.selected == "lwc")) {
+    else if ((Rshouldtimefarm || Rshouldtimefarmbogs) && autoTrimpSettings.Rtimegatherselection.selected == "Food") {
+	     setGather('food');
+    }
+    else if ((Rshouldtimefarm || Rshouldtimefarmbogs) && autoTrimpSettings.Rtimegatherselection.selected == "Wood") {
 	     setGather('wood');
     }
-    else if ((Rshouldtimefarm || Rshouldtimefarmbogs) && (autoTrimpSettings.Rtimespecialselection.selected == "smc" || autoTrimpSettings.Rtimespecialselection.selected == "lmc")) {
+    else if ((Rshouldtimefarm || Rshouldtimefarmbogs) && autoTrimpSettings.Rtimegatherselection.selected == "Metal") {
 	     setGather('metal');
+    }
+    else if ((Rshouldtimefarm || Rshouldtimefarmbogs) && autoTrimpSettings.Rtimegatherselection.selected == "Science") {
+	     setGather('science');
     }
     else if (getPageSetting('RManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].RminScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
              setGather('science');
@@ -323,14 +329,14 @@ function RmanualLabor2() {
          }
         if (game.global.challengeActive == "Transmute" && game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
             if (hasTurkimp)
-                setGather('metal');
+                setGather('food');
             else
                 setGather(lowestResource);
         } else if (getPageSetting('RManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
             if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds && game.global.turkimpTimer < 1 && haveWorkers)
                 setGather('science');
             else if (game.global.challengeActive == "Transmute" && hasTurkimp)
-                     setGather('metal');
+                     setGather('food');
             else
                 setGather(lowestResource);
         }

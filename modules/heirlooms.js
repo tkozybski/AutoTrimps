@@ -53,6 +53,7 @@ function evaluateHeirloomMods2(loom, location) {
 	else if (raretokeep == 'Magmatic') raretokeep = 7;
 	else if (raretokeep == 'Plagued') raretokeep = 8;
 	else if (raretokeep == 'Radiating') raretokeep = 9;
+        else if (raretokeep == 'Hazardous') raretokeep = 10;
 
   if (location.includes('Equipped'))
     loom = game.global[location];
@@ -82,10 +83,10 @@ function evaluateHeirloomMods2(loom, location) {
         eff *= 4;
     }
     if (rarity >= raretokeep) {
-       eff *= 3;
+       eff *= 100;
     }
     else if (rarity < raretokeep) {
-       eff /= 3;
+       eff /= 100;
     }
   }
   return eff;
@@ -436,26 +437,63 @@ function generateHeirloomIcon(heirloom, location, number){
 //Radon
 function Rhsshield1(){for(loom of game.global.heirloomsCarried)if(loom.name==getPageSetting('Rhs1'))return loom;}
 function Rhsshield2(){for(loom of game.global.heirloomsCarried)if(loom.name==getPageSetting('Rhs2'))return loom;}
+function Rhsworldstaff(){for(loom of game.global.heirloomsCarried)if(loom.name==getPageSetting('Rhsworldstaff'))return loom;}
+function Rhsmapstaff(){for(loom of game.global.heirloomsCarried)if(loom.name==getPageSetting('Rhsmapstaff'))return loom;}
+function Rhstributestaff(){for(loom of game.global.heirloomsCarried)if(loom.name==getPageSetting('Rhstributestaff'))return loom;}
 
 function Rhsequip1() {
 	if (Rhsshield1() != "undefined" && game.global.ShieldEquipped.name != getPageSetting('Rhs1')) {
-            selectHeirloom(game.global.heirloomsCarried.indexOf(loom), "heirloomsCarried", true);
-            equipHeirloom();
+		selectHeirloom(game.global.heirloomsCarried.indexOf(loom), "heirloomsCarried", true);
+		equipHeirloom();
+	}
+}
+function Rhsequip2() {
+	if (Rhsshield2() != "undefined" && game.global.ShieldEquipped.name != getPageSetting('Rhs2')) {
+		selectHeirloom(game.global.heirloomsCarried.indexOf(loom), "heirloomsCarried", true);
+		equipHeirloom();
+	}
+}
+function Rhsworldstaffequip() {
+	if (Rhsworldstaff() != "undefined" && game.global.StaffEquipped.name != getPageSetting('Rhsworldstaff')) {
+		selectHeirloom(game.global.heirloomsCarried.indexOf(loom), "heirloomsCarried", true);
+		equipHeirloom();
+	}
+}
+function Rhsmapstaffequip() {
+	if (Rhsmapstaff() != "undefined" && game.global.StaffEquipped.name != getPageSetting('Rhsmapstaff')) {
+		selectHeirloom(game.global.heirloomsCarried.indexOf(loom), "heirloomsCarried", true);
+		equipHeirloom();
 	}
 }
 
-function Rhsequip2() {
-	if (Rhsshield2() != "undefined" && game.global.ShieldEquipped.name != getPageSetting('Rhs2')) {
-            selectHeirloom(game.global.heirloomsCarried.indexOf(loom), "heirloomsCarried", true);
-            equipHeirloom();
+function Rhstributestaffequip() {
+	if (Rhstributestaff() != "undefined" && game.global.StaffEquipped.name != getPageSetting('Rhstributestaff')) {
+		selectHeirloom(game.global.heirloomsCarried.indexOf(loom), "heirloomsCarried", true);
+		equipHeirloom();
 	}
 }
 
 function Rheirloomswap() {
-	if (getPageSetting('Rhsz') > 0 && game.global.world < getPageSetting('Rhsz')) {
-	    Rhsequip1();
+	
+	//Swapping Shields
+	if (getPageSetting('Rhsshield') != false) {
+		if (getPageSetting('Rhsz') > 0 && game.global.world < getPageSetting('Rhsz')) {
+			Rhsequip1();
+		}
+		if (getPageSetting('Rhsz') > 0 && game.global.world >= getPageSetting('Rhsz')) {
+			Rhsequip2();
+		}
 	}
-	if (getPageSetting('Rhsz') > 0 && game.global.world >= getPageSetting('Rhsz')) {
-	    Rhsequip2();
+	//Swapping Staffs
+	if (getPageSetting('Rhsstaff') != false) {
+		if (getPageSetting('Rhsworldstaff') != "undefined" && game.global.mapsActive == false) {
+			Rhsworldstaffequip();
+		}
+		if (getPageSetting('Rhsmapstaff') != "undefined" && (Rshouldtimefarm == false || getPageSetting('Rhstributestaff') == "undefined") && game.global.mapsActive == true) {
+			Rhsmapstaffequip();
+		}
+		if (getPageSetting('Rhstributestaff') != "undefined" && getPageSetting('Rhsstaff') && Rshouldtimefarm == true && game.global.mapsActive == true) {
+			Rhstributestaffequip();
+		}
 	}
 }

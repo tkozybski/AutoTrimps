@@ -12,7 +12,7 @@ function saveSelectedGraphs(){rememberSelectedVisible=[];for(var b,a=0;a<chart1.
 function applyRememberedSelections(){for(var b,a=0;a<chart1.series.length;a++)b=chart1.series[a],!1==rememberSelectedVisible[a]&&b.hide()}
 function toggleSpecificGraphs(){for(var b,a=0;a<chart1.series.length;a++)b=chart1.series[a],b.visible?b.hide():b.show()}
 function toggleAllGraphs(){for(var c,a=0,b=0;b<chart1.series.length;b++)c=chart1.series[b],c.visible&&a++;for(var c,b=0;b<chart1.series.length;b++)c=chart1.series[b],a>chart1.series.length/2?c.hide():c.show()}
-function clearData(portal,clrall) {
+/*function clearData(portal,clrall) {
     if(!portal)
         portal = 0;
     if (!clrall) {
@@ -24,7 +24,26 @@ function clearData(portal,clrall) {
             allSaveData.shift();
         }
     }
-}function deleteSpecific(){var a=document.getElementById("deleteSpecificTextBox").value;if(""!=a)if(0>parseInt(a))clearData(Math.abs(a));else for(var b=allSaveData.length-1;0<=b;b--)allSaveData[b].totalPortals==a&&allSaveData.splice(b,1)}
+}*/
+function clearData(portal,clrall = false) {
+    if (clrall) {
+        var currentPortalNumber = getTotalPortals(true);
+        while (allSaveData[0].totalPortals != currentPortalNumber) {
+            allSaveData.shift();
+        }
+    } else {
+        var keepSaveDataIndex = allSaveData.length - 1;
+        for (var i = 0; i <= portal; i++) {
+            keepSaveDataIndex -= allSaveData[keepSaveDataIndex].world;
+            if (keepSaveDataIndex <= 0) {
+                return;
+            }
+        }
+
+        allSaveData.splice(0, keepSaveDataIndex + 1);
+    }
+}
+function deleteSpecific(){var a=document.getElementById("deleteSpecificTextBox").value;if(""!=a)if(0>parseInt(a))clearData(Math.abs(a));else for(var b=allSaveData.length-1;0<=b;b--)allSaveData[b].totalPortals==a&&allSaveData.splice(b,1)}
 function autoToggleGraph(){game.options.displayed&&toggleSettingsMenu();var a=document.getElementById('autoSettings');a&&'block'===a.style.display&&(a.style.display='none');var a=document.getElementById('autoTrimpsTabBarMenu');a&&'block'===a.style.display&&(a.style.display='none');var b=document.getElementById('graphParent');'block'===b.style.display?b.style.display='none':(b.style.display='block',setGraph())}
 function escapeATWindows(){var a=document.getElementById('tooltipDiv');if('none'!=a.style.display)return void cancelTooltip();game.options.displayed&&toggleSettingsMenu();var b=document.getElementById('autoSettings');'block'===b.style.display&&(b.style.display='none');var b=document.getElementById('autoTrimpsTabBarMenu');'block'===b.style.display&&(b.style.display='none');var c=document.getElementById('graphParent');'block'===c.style.display&&(c.style.display='none')}document.addEventListener('keydown',function(a){1!=game.options.menu.hotkeys.enabled||game.global.preMapsActive||game.global.lockTooltip||ctrlPressed||heirloomsShown||27!=a.keyCode||escapeATWindows()},!0);
 function getTotalDarkEssenceCount(){return game.global.spentEssence+game.global.essence}

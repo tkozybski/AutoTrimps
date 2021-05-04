@@ -67,7 +67,13 @@ function RgetEnemyMaxHealth(world, level) {
 			if (world < 60) amt *= 0.75;
 			if (world > 5 && game.global.mapsActive) amt *= 1.1;
 			amt *= game.badGuys["Grimp"].health;
-			if (game.global.universe == 2) amt *= Math.pow(1.4, world);
+			if (game.global.universe == 2){
+				var part1 = (world > 60) ? 60 : world;
+				var part2 = (world - 60);
+				if (part2 < 0) part2 = 0;
+				amt *= Math.pow(1.4, part1);
+				amt *= Math.pow(1.32, part2);
+			}
 			return Math.floor(amt);
 }
 function getPotencyMod(howManyMoreGenes) {

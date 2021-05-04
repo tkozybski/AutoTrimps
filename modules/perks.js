@@ -500,7 +500,7 @@ AutoPerks.applyCalculationsRespec = function(perks,remainingHelium){
         for(var i in perks) {
             var capitalized = AutoPerks.capitaliseFirstLetter(perks[i].name);
             game.global.buyAmt = perks[i].level;
-            if (getPortalUpgradePrice(capitalized) <= remainingHelium) {
+            if (getPortalUpgradePrice(capitalized) <= remainingHelium || perks[i].fixed) {
                 if (MODULES["perks"].showDetails)
                     debug("AutoPerks-Respec Buying: " + capitalized + " " + perks[i].level, "perks");
                 buyPortalUpgrade(capitalized);
@@ -737,11 +737,11 @@ var Rqueuescript = document.createElement('script');
 queuescript.type = 'text/javascript';
 queuescript.src = 'https://Zorn192.github.io/AutoTrimps/FastPriorityQueue.js';
 head.appendChild(queuescript);
-//[looting,toughness,power,motivation,pheromones,artisanistry,carpentry,prismal,equality,criticality,resilience,tenacity,greed]
-var preset_Rspace = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-var preset_RZek059 = [7, 10, 5, 1, 0.5, 2, 12, 9, 0.5, 2, 5, 0, 0];
-var preset_RZekmelt = [10, 0.5, 2, 0.5, 0.3, 1.2, 3, 0.5, 1, 3, 6, 18, 20];
-var preset_RZekquag = [8, 0.7, 1.8, 0.8, 0.2, 1.3, 3.3, 0.6, 0.8, 2.8, 6.2, 18, 27];
+//[looting,toughness,power,motivation,pheromones,artisanistry,carpentry,prismal,equality,criticality,resilience,tenacity,greed,frenzy]
+var preset_Rspace = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var preset_RZek059 = [7, 10, 5, 1, 0.5, 2, 12, 9, 0.5, 2, 5, 0, 0, 0];
+var preset_RZekmelt = [10, 0.5, 2, 0.5, 0.3, 1.2, 3, 0.5, 1, 3, 6, 18, 20, 0];
+var preset_RZekquag = [8, 0.7, 1.8, 0.8, 0.2, 1.3, 3.3, 0.6, 0.8, 2.8, 6.2, 18, 27, 12];
 var RpresetList = [preset_RZek059,preset_RZekmelt,preset_RZekquag,preset_Rspace];
 var RpresetListHtml = "\
 <option id='preset_RZek059'>Zek (z1-59)</option>\
@@ -806,7 +806,7 @@ RAutoPerks.displayGUI = function() {
     //Line 3 of the UI
     apGUI.$ratiosLine3 = document.createElement("DIV");
     apGUI.$ratiosLine3.setAttribute('style', 'display: inline-block; text-align: left; width: 100%');
-    var listratiosLine3 = ["Resilience","Tenacity","Greed"];
+    var listratiosLine3 = ["Resilience","Tenacity","Greed","Frenzy"];
     for (var i in listratiosLine3)
         RAutoPerks.createInput(listratiosLine3[i],apGUI.$ratiosLine3);
     //Create dump perk dropdown
@@ -1354,7 +1354,8 @@ RAutoPerks.initializePerks = function () {
     var bait = new RAutoPerks.FixedPerk("bait", 4, 30);
     var trumps = new RAutoPerks.FixedPerk("trumps", 3, 30);
     var packrat = new RAutoPerks.FixedPerk("packrat", 3, 30);
-    var overkill = new RAutoPerks.FixedPerk("overkill", 1000000, 30);
+    var hunger = new RAutoPerks.FixedPerk("hunger", 1000000, 30);
+    //var overkill = new RAutoPerks.FixedPerk("overkill", 1000000, 30);
     //variable
     var looting = new RAutoPerks.VariablePerk("looting", 1, false,             0, 0.05);
     var toughness = new RAutoPerks.VariablePerk("toughness", 1, false,         1, 0.05);
@@ -1369,13 +1370,14 @@ RAutoPerks.initializePerks = function () {
     var resilience = new RAutoPerks.VariablePerk("resilience", 100, true,       10, 0.1);
     var tenacity = new RAutoPerks.VariablePerk("tenacity", 50000000, true,      11, 0.1, 40);
     var greed = new RAutoPerks.VariablePerk("greed", 10000000000, true,      12, 0.1, 40);
+    var frenzy = new RAutoPerks.VariablePerk("frenzy", 1000000000000000, true,      13, 0.1);
     
     equality.exprate = 1.5;
     //scruffy
 	//no
     //tier2
 	//no
-    RAutoPerks.perkHolder = [range, agility, bait, trumps, packrat, overkill, looting, toughness, power, motivation, pheromones, artisanistry, carpentry, prismal, resilience, criticality, tenacity, greed, equality];
+    RAutoPerks.perkHolder = [range, agility, bait, trumps, packrat, hunger, /*overkill,*/ looting, toughness, power, motivation, pheromones, artisanistry, carpentry, prismal, resilience, criticality, tenacity, greed, frenzy, equality];
     for(var i in RAutoPerks.perkHolder) {
         RAutoPerks.perkHolder[i].radLevel = 0;
         RAutoPerks.perkHolder[i].spent = 0;
