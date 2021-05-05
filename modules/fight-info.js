@@ -142,11 +142,9 @@
 				$cell.style.textShadow = '0px 0px 10px #8c0000';
 			}
 
-      			else if(M["fightinfo"].fast.indexOf(cell.name) > -1)				// Fast imp
+      			else if(M["fightinfo"].fast.indexOf(cell.name) > -1 && !cell.corrupted || !cell.corrupted.startsWith("corrupt"))				// Fast imp
 			{
-				if(!cell.corrupted || !cell.corrupted.startsWith("corrupt"))
-					$cell.innerHTML = "<span class=\"glyphicon glyphicon-forward\"></span> ";
-
+				$cell.innerHTML = "<span class=\"glyphicon glyphicon-forward\"></span> ";
 				$cell.title = cell.name;
 				//$cell.style.color = M["fightinfo"].colors.fast; //(This changes the colour of the glyph - bad bc it overrides trimps and looks bad against corruption etc)
 				$cell.style.textShadow = '0px 0px 10px #ffffff';
