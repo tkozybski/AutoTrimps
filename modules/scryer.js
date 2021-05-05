@@ -13,7 +13,8 @@ function scryingCorruption() {
 
 function readyToSwitch(stance = "S") {
     //Suicide to Scry
-    var die = (getPageSetting('ScryerDieZ') != -1 && game.global.world >= getPageSetting('ScryerDieZ')) ;
+    var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
+    var die = getPageSetting('ScryerDieZ') != -1 && game.global.world >= getPageSetting('ScryerDieZ') && essenceLeft;
     var willSuicide = getPageSetting('ScryerDieZ');
 
     //Check if we are allowed to suicide in our current cell and zone
