@@ -28,7 +28,7 @@
 		"Chronoimp"
 	];
 
-        // Fast imps
+	// Fast imps
 	M["fightinfo"].fast =
 	[
 		"Snimp",
@@ -144,7 +144,7 @@
 
       			else if(M["fightinfo"].fast.indexOf(cell.name) > -1)				// Fast imp
 			{
-				//if(cell.special.length === 0)
+				if(!cell.corrupted || !cell.corrupted.startsWith("corrupt"))
 					$cell.innerHTML = "<span class=\"glyphicon glyphicon-forward\"></span> ";
 
 				$cell.title = cell.name;
