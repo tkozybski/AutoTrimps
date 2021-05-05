@@ -216,10 +216,10 @@ function buyBuildings() {
             var zoneEnemyDamageOK = calcOurBlock(true) > calcEnemyAttack() * (1 - pierce);
 
             //Challenge stats
-            var moreBlockThanHealth = calcOurBlock(true) >= calcOurHealth(true, true);
-            var crushedOK = game.global.dailyChallenge != "Crushed";
-            var explosiveOK = game.global.dailyChallenge != "Daily" || typeof game.global.dailyChallenge.explosive == "undefined";
-            //var critDailyOK = game.global.dailyChallenge != "Daily" || typeof game.global.dailyChallenge.crits == "undefined";
+            var moreBlockThanHealth = calcOurBlock(true) >= nextGym * calcOurHealth(true, true);
+            var crushedOK = game.global.challengeActive != "Crushed";
+            var explosiveOK = game.global.challengeActive != "Daily" || typeof game.global.dailyChallenge.explosive == "undefined";
+            //var critDailyOK = game.global.challengeActive != "Daily" || typeof game.global.dailyChallenge.crits == "undefined";
             var challengeOK = moreBlockThanHealth || crushedOK && explosiveOK;
 
             //Stop buying Gyms if we already have enough block for our current enemy and also a C99 Snimp
