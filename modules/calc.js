@@ -181,7 +181,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     }
 
     //Masteries
-    if (game.talents.mapHealth.purchased && game.global.mapsActive && realHealth) health *= 2;
+    if (game.talents.mapHealth.purchased && game.global.mapsActive && !realHealth) health *= 2;
 
     return health;
 }
@@ -217,13 +217,16 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
             else if (game.talents.voidPower.purchased)  voidDamage /= 1.65;
         }
 
-        //Map health
+        //Map health compensation
         if (game.talents.mapHealth.purchased && type == "world") voidDamage /= 2;
     }
 
     //Pierce & Voids
     var pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
     if (!stance && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+
+    //Cancel Map Health influence, even for void maps (they are set above)
+    if (game.talents.mapHealth.purchased && game.global.mapsActive && type != "map");
 
     //The Resulting Ratio
     var finalDmg = Math.max(worldDamage - block, voidDamage, worldDamage * pierce, 0);
