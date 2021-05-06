@@ -142,7 +142,7 @@
 				$cell.style.textShadow = '0px 0px 10px #8c0000';
 			}
 
-      			else if(M["fightinfo"].fast.indexOf(cell.name) > -1 && !cell.corrupted || !cell.corrupted.startsWith("corrupt"))				// Fast imp
+      			else if(M["fightinfo"].fast.indexOf(cell.name) > -1 && (!cell.corrupted || !cell.corrupted.startsWith("corrupt")))				// Fast imp
 			{
 				$cell.innerHTML = "<span class=\"glyphicon glyphicon-forward\"></span> ";
 				$cell.title = cell.name;
