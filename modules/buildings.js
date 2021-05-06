@@ -210,13 +210,14 @@ function buyBuildings() {
 	    //Dynamic Gyms
         if (getPageSetting('DynamicGyms')) {
             //Enemy stats
+            var block = calcOurBlock() / (game.global.formation != 3 ? (game.global.formation != 0 ? 1 : 2) : 8);
             var pierce = getPierceAmt() * (game.global.formation == 3 ? 2 : 1);
 	        var nextGym = game.upgrades.Gymystic.modifier + Math.max(0, game.upgrades.Gymystic.done-1)/100;
-            var currentEnemyDamageOK = calcOurBlock(true) > nextGym * calcSpecificEnemyAttack();
-            var zoneEnemyDamageOK = calcOurBlock(true) > calcEnemyAttack() * (1 - pierce);
+            var currentEnemyDamageOK = block > nextGym * calcSpecificEnemyAttack();
+            var zoneEnemyDamageOK = block > calcEnemyAttack() * (1 - pierce);
 
             //Challenge stats
-            var moreBlockThanHealth = calcOurBlock(true) >= nextGym * calcOurHealth(true, true);
+            var moreBlockThanHealth = block >= nextGym * calcOurHealth(true, true);
             var crushedOK = game.global.challengeActive != "Crushed";
             var explosiveOK = game.global.challengeActive != "Daily" || typeof game.global.dailyChallenge.explosive == "undefined";
             //var critDailyOK = game.global.challengeActive != "Daily" || typeof game.global.dailyChallenge.crits == "undefined";
