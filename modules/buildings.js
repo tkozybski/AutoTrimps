@@ -61,7 +61,7 @@ function safeBuyBuilding(building) {
     }
     debug('Building ' + building, "buildings", '*hammer2');
     if (!game.buildings[building].locked && canAffordBuilding(building)) {
-	buyBuilding(building, true, true);
+	    buyBuilding(building, true, true);
     }
     postBuy2(oldBuy);
     return true;

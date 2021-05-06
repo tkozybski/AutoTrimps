@@ -180,6 +180,9 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
         health *= (1 + (amt / 100));
     }
 
+    //Masteries
+    if (game.talents.mapHealth.purchased && game.global.mapsActive && realHealth) health *= 2;
+
     return health;
 }
 
@@ -204,15 +207,18 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
 
     //Enemy Damage on Void Maps
     if (type == "void") {
-        //Void Damage
-        voidDamage = calcEnemyAttack("void", targetZone);
+        //Void Damage may actually be lower than world damage, so it needs to be calculated here to be compared later
+        voidDamage = calcEnemyAttack("void", targetZone) - block;
 
         //Void Power compensation
         if (!game.global.mapsActive || getCurrentMapObject().location != "Void") {
-            if      (game.talents.voidPower3.purchased) health *= 1.15;
-            else if (game.talents.voidPower2.purchased) health *= 1.35;
-            else if (game.talents.voidPower.purchased)  health *= 1.65;
+            if      (game.talents.voidPower3.purchased) voidDamage /= 1.15;
+            else if (game.talents.voidPower2.purchased) voidDamage /= 1.35;
+            else if (game.talents.voidPower.purchased)  voidDamage /= 1.65;
         }
+
+        //Map health
+        if (game.talents.mapHealth.purchased && type == "world") voidDamage /= 2;
     }
 
     //Pierce & Voids
@@ -220,7 +226,7 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
     if (!stance && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //The Resulting Ratio
-    var finalDmg = Math.max(worldDamage - block, voidDamage - block, worldDamage * pierce, 0);
+    var finalDmg = Math.max(worldDamage - block, voidDamage, worldDamage * pierce, 0);
     return health / finalDmg;
 }
 
