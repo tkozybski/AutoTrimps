@@ -256,6 +256,19 @@ function autoMap() {
         return;
     }
 
+    //MAZ
+    vanillaMapatZone = false;
+    if (game.options.menu.mapAtZone.enabled && game.global.canMapAtZone && !isActiveSpireAT() && !disActiveSpireAT()) {
+        for (var x = 0; x < game.options.menu.mapAtZone.setZone.length; x++) {
+            var option = game.options.menu.mapAtZone.setZone[x];
+            if (option.world == game.global.world && option.cell == game.global.lastClearedCell+1) vanillaMapatZone = true;
+        }
+        if (vanillaMapatZone) {
+            updateAutoMapsStatus();
+            return;
+        }
+    }
+
     //Vars
     var customVars = MODULES["maps"];
     var prestige = autoTrimpSettings.Prestige.selected;
@@ -461,15 +474,6 @@ function autoMap() {
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < getPageSetting("MaxMapBonuslimit") && game.global.world >= maxMapBonusZ);
     if (doMaxMapBonus)
         shouldDoMaps = true;
-
-    //Maps
-    vanillaMapatZone = (game.options.menu.mapAtZone.enabled && game.global.canMapAtZone && !isActiveSpireAT() && !disActiveSpireAT());
-    if (vanillaMapatZone) {
-        for (var x = 0; x < game.options.menu.mapAtZone.setZone.length; x++) {
-            if (game.global.world == game.options.menu.mapAtZone.setZone[x].world)
-                shouldDoMaps = true;
-        }
-    }
 
     //Calculates Siphonology and Extra Map Levels
     var minLvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level);
