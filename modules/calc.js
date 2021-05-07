@@ -226,7 +226,7 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
     if (!stance && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //Cancel Map Health influence, even for void maps (they are set above)
-    if (game.talents.mapHealth.purchased && game.global.mapsActive && type != "map");
+    if (game.talents.mapHealth.purchased && game.global.mapsActive && type != "map") health /= 2;
 
     //The Resulting Ratio
     var finalDmg = Math.max(worldDamage - block, voidDamage, worldDamage * pierce, 0);
