@@ -1816,10 +1816,8 @@ if (game.portal.Anticipation.level > 0) {
 
 function avoidempower() {
 	if (!debugStance() || debugStance() != debugStance(true, true)) {
-		if (typeof game.global.dailyChallenge.bogged === 'undefined' && typeof game.global.dailyChallenge.plague === 'undefined'){
-			mapsClicked(true);
-			return;
-		}
+		mapsClicked(true);
+		return;
 	}
 }
 
