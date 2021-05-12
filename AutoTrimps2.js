@@ -203,7 +203,7 @@ function mainLoop() {
         //Portal
         if (autoTrimpSettings.AutoPortal.selected != "Off" && game.global.challengeActive != "Daily" && !game.global.runningChallengeSquared) autoPortal();
         if (getPageSetting('AutoPortalDaily') > 0 && game.global.challengeActive == "Daily") dailyAutoPortal();
-        if (getPageSetting('c2runnerstart') == true && getPageSetting('c2runnerportal') > 0 && game.global.runningChallengeSquared && game.global.world > getPageSetting('c2runnerportal')) c2runnerportal();
+        if (getPageSetting('c2runnerstart') == true && getPageSetting('c2runnerportal') > 0 && game.global.runningChallengeSquared && getPageSetting('c2runnerportal')) c2runnerportal();
     
         //Combat
         if (getPageSetting('ForceAbandon') == true || getPageSetting('fuckanti') > 0) trimpcide();
