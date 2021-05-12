@@ -258,7 +258,7 @@ function autoMap() {
 
     //MAZ
     vanillaMapatZone = false;
-    if (game.options.menu.mapAtZone.enabled && game.global.canMapAtZone && !isActiveSpireAT() && !disActiveSpireAT()) {
+    if (game.options.menu.mapAtZone.enabled && game.global.canMapAtZone) {
         for (var x = 0; x < game.options.menu.mapAtZone.setZone.length; x++) {
             var option = game.options.menu.mapAtZone.setZone[x];
             if (option.world == game.global.world && option.cell == game.global.lastClearedCell+2) vanillaMapatZone = true;
