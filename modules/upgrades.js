@@ -92,7 +92,7 @@ function firstGiga(forced) {
     //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C)* Lacking Health or Damage & D)* Has run at least 1 map or if forced to
     var s = !MODULES["upgrades"].delayFirstGiga;
     var a = game.buildings.Warpstation.owned >= 2;
-    var b = !canAffordCoordinationTrimps();
+    var b = !canAffordTwoLevel(game.upgrades.Coordination);
     var c = s || !enoughHealth || !enoughDamage;
     var d = s || game.global.mapBonus >= 2 || game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     if (!forced && !(a && b && c && d)) return false;
@@ -142,9 +142,7 @@ function buyUpgrades() {
         
         //Gigastations
         if (upgrade == 'Gigastation' && !fuckbuildinggiga) {
-            if (MODULES.upgrades.autoGigas && game.upgrades.Gigastation.done == 0) {
-		if (!firstGiga()) continue;
-	    }
+            if (MODULES.upgrades.autoGigas && game.upgrades.Gigastation.done == 0 && !firstGiga()) continue;
             else if (game.buildings.Warpstation.owned < (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation'))) continue;
         }
           
