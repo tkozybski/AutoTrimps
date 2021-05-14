@@ -5,7 +5,7 @@ var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedl
 MODULES["upgrades"] = {};
 MODULES["upgrades"].autoGigas = true;
 MODULES["upgrades"].customTargetZone = undefined;
-MODULES["upgrades"].customMetalRatio = undefined;
+MODULES["upgrades"].customMetalRatio = 0.1;
 
 //1 = post-magma, 5 - quick run, around 10 = regular run, 20 = pushy, 50 = really, really pushing, 100 = ...you know you're using Auto Trimps, right?
 MODULES["upgrades"].targetFuelZone = true;
@@ -92,7 +92,7 @@ function firstGiga(forced) {
     //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C)* Lacking Health or Damage & D)* Has run at least 1 map or if forced to
     var s = !MODULES["upgrades"].delayFirstGiga;
     var a = game.buildings.Warpstation.owned >= 2;
-    var b = game.upgrades.Coordination.allowed > game.upgrades.Coordination.done;
+    var b = !canAffordCoordinationTrimps();
     var c = s || !enoughHealth || !enoughDamage;
     var d = s || game.global.mapBonus >= 2 || game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     if (!forced && !(a && b && c && d)) return false;
