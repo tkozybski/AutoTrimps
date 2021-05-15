@@ -29,6 +29,7 @@ function manualLabor2() {
 	if (getPageSetting('ManualGather2') == 0) return;
 
 	//Init - Traps config
+	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
 	var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
 	var trapTrimpsOK = getPageSetting('TrapTrimps') && (trapperTrapUntilFull || game.jobs.Geneticist.owned == 0);
 	var minTraps = Math.ceil(calcTPS());
@@ -45,7 +46,6 @@ function manualLabor2() {
 
 	//Init - Others
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
-	var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
