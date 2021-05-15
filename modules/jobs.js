@@ -193,7 +193,7 @@ function buyJobs() {
             return false;
     }
 
-    //Trapper challenge
+    //FLM according to ratio, except when doing Trapper challenge (according to settings)
     if (game.global.challengeActive != "Trapper" || !getPageSetting("buynojobsc")) {
         ratiobuy('Farmer', farmerRatio);
         if (!ratiobuy('Miner', minerRatio) && breedFire && game.global.turkimpTimer === 0)
