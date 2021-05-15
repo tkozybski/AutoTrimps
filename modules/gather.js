@@ -29,8 +29,8 @@ function manualLabor2() {
 	if (getPageSetting('ManualGather2') == 0) return;
 
 	//Init - Traps config
-	var trapTrimpsOK = getPageSetting('TrapTrimps');
 	var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
+	var trapTrimpsOK = getPageSetting('TrapTrimps') && (trapperTrapUntilFull || game.jobs.Geneticist.owned == 0);
 	var minTraps = Math.ceil(calcTPS());
 	var trapsBufferSize = Math.ceil(5 * calcTPS());
 	var maxTraps = calcMaxTraps();
@@ -51,7 +51,7 @@ function manualLabor2() {
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 
 	//Verifies if trapping is still relevant
-	var trappingIsRelevant = trapperTrapUntilFull || calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 100;
+	var trappingIsRelevant = trapperTrapUntilFull || calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 10;
 
 	//Highest Priority Trapping (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
