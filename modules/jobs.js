@@ -192,11 +192,15 @@ function buyJobs() {
         } else
             return false;
     }
-    ratiobuy('Farmer', farmerRatio);
-    if (!ratiobuy('Miner', minerRatio) && breedFire && game.global.turkimpTimer === 0)
-        safeBuyJob('Miner', game.jobs.Miner.owned * -1);
-    if (!ratiobuy('Lumberjack', lumberjackRatio) && breedFire)
-        safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
+
+    //Trapper challenge
+    if (game.global.challengeActive != "Trapper" || !getPageSetting("buynojobsc")) {
+        ratiobuy('Farmer', farmerRatio);
+        if (!ratiobuy('Miner', minerRatio) && breedFire && game.global.turkimpTimer === 0)
+            safeBuyJob('Miner', game.jobs.Miner.owned * -1);
+        if (!ratiobuy('Lumberjack', lumberjackRatio) && breedFire)
+            safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
+    }
 
     if (game.jobs.Magmamancer.locked) return;
     var timeOnZone = Math.floor((new Date().getTime() - game.global.zoneStarted) / 60000);
