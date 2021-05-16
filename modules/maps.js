@@ -15,9 +15,9 @@ MODULES.maps.SkipNumUnboughtPrestiges = 2;
 MODULES.maps.UnearnedPrestigesRequired = 2;
 
 //Psycho
-MODULES.maps.numHitsSurvived = 5; //How many hits you must be able to survive before exiting a map (Snimp on C99)
-MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
+MODULES.maps.numHitsSurvived = 7.5; //Recommended: 5, or 7.5 if you have a certain 45 stacks thing
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
+MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.scryerHDMult = 4; //This is a divisor to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON (Domination ignores this)
 MODULES.maps.scryerHitsMult = 8; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON (Domination ignores this)
@@ -755,6 +755,7 @@ function autoMap() {
         var doDefaultMapBonus = game.global.mapBonus < getPageSetting('MaxMapBonuslimit') - 1;
         if (selectedMap == game.global.currentMapId && !getCurrentMapObject().noRecycle && (doDefaultMapBonus || vanillaMapatZone || doMaxMapBonus || shouldFarm || needPrestige || shouldDoSpireMaps || mapExiting)) {
             //Start with Repeat on
+            console.log("debug0");
             if (!game.global.repeatMap) {
                 repeatClicked();
             }
@@ -768,43 +769,52 @@ function autoMap() {
 
             //End Prestige
             if (!shouldDoMaps && endPrestige && (game.global.world + extraMapLevels) <= lastPrestige + (getScientistLevel() >= 4 && lastPrestige%10 < 6 ? 14 : 9)) {
+                console.log("debug1");
                 repeatClicked();
             }
 
             //Health Farming
             if (shouldDoHealthMaps && game.global.mapBonus >= getPageSetting('MaxMapBonushealth') - 1) {
+                console.log("debug2");
                 repeatClicked();
                 shouldDoHealthMaps = false;
             }
 
             //Damage Farming
             if (doMaxMapBonus && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') - 1) {
+                console.log("debug3");
                 repeatClicked();
                 doMaxMapBonus = false;
             }
 
             //Want to recreate the map
             if (tryBetterMod && game.resources.fragments.owned >= fragmentsNeeded) {
+                console.log("debug4");
                 repeatClicked();
             }
 
             //Want to exit the current map to pRaid
             if (mapExiting) {
+                console.log("debug5");
                 repeatClicked();
             }
         } else {
+            console.log("debugx");
             //Start with Repeat Off
             if (game.global.repeatMap) {
+                console.log("debugx1");
                 repeatClicked();
             }
 
             //Turn if back on if it want to recreate a map, but doesn't have the fragments to do it
             if (tryBetterMod && game.resources.fragments.owned < fragmentsNeeded) {
+                console.log("debugx2");
                 repeatClicked();
             }
 
             //Force Abandon to restart void maps
             if (restartVoidMap) {
+                console.log("debugx3");
                 mapsClicked(true);
             }
         }
