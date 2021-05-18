@@ -218,7 +218,7 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
     var harm = directDamage(block, pierce, health - missingHealth, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower);
 
     //Updated Genes and Block
-    var blockier = calcOurBlock(false, false) / block;
+    var blockier = calcOurBlock(false, false);
     var healthier = health * Math.pow(1.01, game.jobs.Geneticist.owned - game.global.lastLowGen);
     var maxHealthier = maxHealth * Math.pow(1.01, game.jobs.Geneticist.owned - game.global.lastLowGen);
     var harm2 = directDamage(blockier, pierce, healthier, minDamage, critPower) + challengeDamage(maxHealthier, minDamage, maxDamage, 0, blockier, pierce, critPower);
