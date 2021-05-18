@@ -277,11 +277,17 @@ function autoMap() {
 
     //Reset to defaults
     if (prestige != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
-    if (game.global.repeatMap == true && !game.global.mapsActive && !game.global.preMapsActive) repeatClicked();
-    if (document.getElementById('advExtraLevelSelect').value > 0 && !game.global.mapsActive && !game.global.preMapsActive) document.getElementById('advExtraLevelSelect').value = "0";
     if ((game.options.menu.repeatUntil.enabled == 1 || game.options.menu.repeatUntil.enabled == 2 || game.options.menu.repeatUntil.enabled == 3) && !game.global.mapsActive && !game.global.preMapsActive) toggleSetting('repeatUntil');
     if (game.options.menu.exitTo.enabled != 0) toggleSetting('exitTo');
     if (game.options.menu.repeatVoids.enabled != 0) toggleSetting('repeatVoids');
+
+    //Reset to defaults when on world grid
+    if (!game.global.mapsActive && !game.global.preMapsActive) {
+        if (game.global.repeatMap == true) repeatClicked();
+        if (game.global.selectedMapPreset >= 4) game.global.selectedMapPreset = 1;
+        if (document.getElementById('advExtraLevelSelect').value > 0)
+            document.getElementById('advExtraLevelSelect').value = "0";
+    }
 
     //Void Vars
     var minVoidZone = 0;
