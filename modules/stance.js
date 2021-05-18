@@ -68,10 +68,10 @@ function oneShotZone(stance, type, zone, maxOrMin) {
     return power-1;
 }
 
-function oneShotPower(stance, offset = 0, maxOrMin) {
+function oneShotPower(specificStance, offset = 0, maxOrMin) {
     //Calculates our minimum damage
-    var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", game.global.mapsActive, true);
-    if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
+    var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !specificStance, true, maxOrMin ? "force" : "never", game.global.mapsActive, true);
+    if (specificStance && specificStance != "X") damageLeft *= (specificStance == "D") ? 4 : 0.5; //TODO - Scryhard I?
 
     //Calculates how many enemies we can one shot + overkill
     for (var power=1; power <= maxOneShotPower(); power++) {
@@ -144,7 +144,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, 
 
     //Mirrored (Daily) -- Unblockable, unpredictable
     if (dailyMirrored && critPower >= -1)
-        harm += maxDamage * dailyModifiers.mirrored.getMult(game.global.dailyChallenge.mirrored.strength);
+        harm += Math.min(maxDamage, enemyHealth) * dailyModifiers.mirrored.getMult(game.global.dailyChallenge.mirrored.strength);
 
     return harm;
 }
@@ -216,7 +216,7 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
     //Decides if the trimps can survive in this formation
     var notSpire = game.global.mapsActive || !game.global.spireActive;
     var harm = directDamage(block, pierce, health - missingHealth, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower);
-    return (newSquadRdy && notSpire && health > harm) || (health - missingHealth > harm);
+    return (newSquadRdy && notSpire && health > harm) || (health - missingHealth > harm); //TODO - Better "New Squad Ready"
 }
 
 function autoStance() {
