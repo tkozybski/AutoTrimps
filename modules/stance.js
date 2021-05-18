@@ -216,7 +216,14 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
     //Decides if the trimps can survive in this formation
     var notSpire = game.global.mapsActive || !game.global.spireActive;
     var harm = directDamage(block, pierce, health - missingHealth, minDamage, critPower) + challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower);
-    return (newSquadRdy && notSpire && health > harm) || (health - missingHealth > harm); //TODO - Better "New Squad Ready"
+
+    //Updated Genes and Block
+    var blockier = calcOurBlock(false, false) / block;
+    var healthier = health * Math.pow(1.01, game.jobs.Geneticist.owned - game.global.lastLowGen);
+    var maxHealthier = maxHealth * Math.pow(1.01, game.jobs.Geneticist.owned - game.global.lastLowGen);
+    var harm2 = directDamage(blockier, pierce, healthier, minDamage, critPower) + challengeDamage(maxHealthier, minDamage, maxDamage, 0, blockier, pierce, critPower);
+
+    return (newSquadRdy && notSpire && healthier > harm2) || (health - missingHealth > harm);
 }
 
 function autoStance() {
