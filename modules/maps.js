@@ -53,8 +53,11 @@ function updateAutoMapsStatus(get) {
     var wantedDamage = calcHDRatio() / getMapCutOff();
     var wantedFarmDmg = calcHDRatio() / getFarmCutOff();
 
+    //Running MAZ
+    if (vanillaMapatZone) status = "Running&nbspVanilla MAZ";
+
     //Raiding
-    if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic") status = 'Prestige Raiding';
+    else if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic") status = 'Prestige Raiding';
     else if (game.global.mapsActive && autoTrimpSettings["AutoMaps"].value == 0 && getCurrentMapObject().level > game.global.world && getCurrentMapObject().location == "Bionic") status = 'BW Raiding';
 
     //Fail Safes
@@ -243,6 +246,7 @@ function getMapRatio(map, customLevel, customDiff) {
 function autoMap() {
     //Failsafes
     if (!game.global.mapsUnlocked || calcOurDmg("avg", false, true) <= 0) {
+        vanillaMapatZone = false;
         enoughDamage = true;
         enoughHealth = true;
         shouldFarm = false;
@@ -252,6 +256,7 @@ function autoMap() {
 
     //No Mapology Credits HUD Update
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) {
+        vanillaMapatZone = false;
         updateAutoMapsStatus();
         return;
     }
