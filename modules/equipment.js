@@ -232,6 +232,24 @@ function postBuy3() {
     game.global.lastCustomAmt = preBuyCustomLast2;
 }
 
+function weaponCapped() {
+    var capped = areWeAttackLevelCapped();
+    var prestigeItemsLeft;
+    if (game.global.mapsActive)
+        prestigeItemsLeft = addSpecials(true, true, getCurrentMapObject());
+    else if (lastMapWeWereIn)
+        prestigeItemsLeft = addSpecials(true, true, lastMapWeWereIn);
+
+    const prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest'];
+    var numUnbought = 0;
+    for (var i = 0, len = prestigeList.length; i < len; i++) {
+        var p = prestigeList[i];
+        if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+            numUnbought++;
+    }
+    return capped && prestigeItemsLeft == 0 && numUnbought == 0;
+}
+
 function autoLevelEquipment() {
     var gearamounttobuy = (getPageSetting('gearamounttobuy') > 0) ? getPageSetting('gearamounttobuy') : 1;
 
