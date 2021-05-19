@@ -452,26 +452,10 @@ function autoMap() {
     }
 
     //Prestige
-    if (shouldFarm && !needPrestige) {
-        var capped = areWeAttackLevelCapped();
-        var prestigeitemsleft;
-        if (game.global.mapsActive) {
-            prestigeitemsleft = addSpecials(true, true, getCurrentMapObject());
-        } else if (lastMapWeWereIn) {
-            prestigeitemsleft = addSpecials(true, true, lastMapWeWereIn);
-        }
-        const prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest'];
-        var numUnbought = 0;
-        for (var i = 0, len = prestigeList.length; i < len; i++) {
-            var p = prestigeList[i];
-            if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
-                numUnbought++;
-        }
-        if (capped && prestigeitemsleft == 0 && numUnbought == 0) {
-            shouldFarm = false;
-            if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') && !shouldFarm)
-                shouldDoMaps = false;
-        }
+    if (shouldFarm && !needPrestige && weaponCapped) {
+        shouldFarm = false;
+        if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit'))
+            shouldDoMaps = false;
     }
 
     //Spire
