@@ -452,7 +452,7 @@ function autoMap() {
     }
 
     //Prestige
-    if (shouldFarm && !needPrestige && weaponCapped) {
+    if (shouldFarm && !needPrestige && weaponCapped()) {
         shouldFarm = false;
         if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit'))
             shouldDoMaps = false;
