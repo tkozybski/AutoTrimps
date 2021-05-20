@@ -405,7 +405,7 @@ function autoMap() {
 
     //Farm Flags
     shouldFarm = false;
-    shouldFarmDamage = calcHDRatio() >= getFarmCutOff();
+    shouldFarmDamage = calcHDRatio() >= getFarmCutOff() && !weaponCapped();
 
     //Only actually trigger farming after doing map bonuses
     if (getPageSetting('DisableFarm') > 0 && (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || enoughDamage && game.global.mapBonus >= getPageSetting('MaxMapBonusHealth'))) {
