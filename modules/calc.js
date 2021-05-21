@@ -160,7 +160,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
 
     //Geneticists
     var geneticist = game.jobs.Geneticist;
-    if (fullGeneticist && geneticist.owned > 0) health *= (Math.pow(1.01, geneticist.owned - game.global.lastLowGen));
+    if (fullGeneticist && geneticist.owned > 0) health *= Math.pow(1.01, geneticist.owned - game.global.lastLowGen);
 
     //Challenges
     if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
@@ -391,7 +391,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     //Battle Goldens
     if (game.goldenUpgrades.Battle.currentBonus > 0) number *= game.goldenUpgrades.Battle.currentBonus + 1;
 
-    //Empowerments - Ice (Experimental
+    //Empowerments - Ice (Experimental)
     if (getEmpowerment() == "Ice") {
         //Uses the actual number in some places like Stances
         if (!getPageSetting('fullice') || realDamage) number *= 1 + game.empowerments.Ice.getDamageModifier();
@@ -405,11 +405,20 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
         }
     }
 
-    //Empowerments - Poison
-    if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
-        number *= (1 + game.empowerments.Poison.getModifier());
-        number *= 4;
+    //Empowerments - Poison (Experimental) //TODO - Multiple iterations based on HD Ratio
+    if (getEmpowerment() == "Poison") {
+        if (realDamage) number += game.empowerments.Poison.getDamage();
+        else if (getPageSetting("addpoison")) {
+            var afterTransfer = game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
+            number += afterTransfer;
+        }
     }
+
+    //Empowerments - Poison (Old One)
+    /*if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
+        number *= (1 + game.empowerments.Poison.getModifier());
+        number *= getMapCutOff();
+    }*/
 
     //Masteries - Herbalist, Legs for Days, Magmamancer, Still Rowing II, Void Mastery, Health Strength, Sugar Rush
     if (game.talents.herbalist.purchased) number *= game.talents.herbalist.getBonus();
