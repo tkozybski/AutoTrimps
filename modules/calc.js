@@ -427,29 +427,6 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     var avg = number * getCritMulti(false, (critMode) ? critMode : "maybe");
     var max = number * getCritMulti(false, (critMode) ? critMode : "force");
 
-    //Damage Range
-    if (incFlucts) {
-        //Apply fluctuation
-        min *= minFluct;
-        max *= maxFluct;
-        avg *= (maxFluct + minFluct)/2;
-    }
-
-    //Empowerments - Poison (Old One)
-    /*if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
-        number *= (1 + game.empowerments.Poison.getModifier());
-        number *= getMapCutOff();
-    }*/
-
-    //Empowerments - Poison (Experimental) //TODO - Multiple iterations based on HD Ratio
-    if (getEmpowerment() == "Poison") {
-        if (realDamage) number += game.empowerments.Poison.getDamage();
-        else if (getPageSetting("addpoison")) {
-            var afterTransfer = game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
-            number += afterTransfer;
-        }
-    }
-
     //Empowerments - Ice (Experimental)
     if (getEmpowerment() == "Ice") {
         //Uses the actual number in some places like Stances
@@ -461,6 +438,31 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
             var mod = 1 - Math.pow(game.empowerments.Ice.getModifier(), afterTransfer);
             if (Fluffy.isRewardActive('naturesWrath')) mod *= 2;
             number *= 1 + mod;
+        }
+    }
+
+    //Empowerments - Poison (Old One)
+    /*if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
+        number *= (1 + game.empowerments.Poison.getModifier());
+        number *= getMapCutOff();
+    }*/
+
+    //Damage Range
+    if (incFlucts) {
+        //Apply fluctuation
+        min *= minFluct;
+        max *= maxFluct;
+        avg *= (maxFluct + minFluct)/2;
+    }
+
+    //Empowerments - Poison (Experimental) //TODO - Multiple iterations based on HD Ratio
+    if (getEmpowerment() == "Poison") {
+        if (realDamage) number += game.empowerments.Poison.getDamage();
+        else if (getPageSetting("addpoison")) {
+            var afterTransfer = game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
+            min += afterTransfer;
+            max += afterTransfer;
+            avg += afterTransfer;
         }
     }
 
