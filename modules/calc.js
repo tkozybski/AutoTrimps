@@ -3,7 +3,6 @@ var critDD = 1;
 var trimpAA = 1;
 
 //Helium
-
 function debugCalc() {
     //Pre-Init
     var type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
@@ -391,35 +390,6 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     //Battle Goldens
     if (game.goldenUpgrades.Battle.currentBonus > 0) number *= game.goldenUpgrades.Battle.currentBonus + 1;
 
-    //Empowerments - Ice (Experimental)
-    if (getEmpowerment() == "Ice") {
-        //Uses the actual number in some places like Stances
-        if (!getPageSetting('fullice') || realDamage) number *= 1 + game.empowerments.Ice.getDamageModifier();
-
-        //Otherwise, use the number we would have after a transfer
-        else {
-            var afterTransfer = 1 + Math.ceil(game.empowerments["Ice"].currentDebuffPower * getRetainModifier("Ice"));
-            var mod = 1 - Math.pow(game.empowerments.Ice.getModifier(), afterTransfer);
-            if (Fluffy.isRewardActive('naturesWrath')) mod *= 2;
-            number *= 1 + mod;
-        }
-    }
-
-    //Empowerments - Poison (Experimental) //TODO - Multiple iterations based on HD Ratio
-    if (getEmpowerment() == "Poison") {
-        if (realDamage) number += game.empowerments.Poison.getDamage();
-        else if (getPageSetting("addpoison")) {
-            var afterTransfer = game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
-            number += afterTransfer;
-        }
-    }
-
-    //Empowerments - Poison (Old One)
-    /*if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
-        number *= (1 + game.empowerments.Poison.getModifier());
-        number *= getMapCutOff();
-    }*/
-
     //Masteries - Herbalist, Legs for Days, Magmamancer, Still Rowing II, Void Mastery, Health Strength, Sugar Rush
     if (game.talents.herbalist.purchased) number *= game.talents.herbalist.getBonus();
     if (game.global.challengeActive == "Daily" && game.talents.daily.purchased) number *= 1.5;
@@ -463,6 +433,35 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
         min *= minFluct;
         max *= maxFluct;
         avg *= (maxFluct + minFluct)/2;
+    }
+
+    //Empowerments - Poison (Old One)
+    /*if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
+        number *= (1 + game.empowerments.Poison.getModifier());
+        number *= getMapCutOff();
+    }*/
+
+    //Empowerments - Poison (Experimental) //TODO - Multiple iterations based on HD Ratio
+    if (getEmpowerment() == "Poison") {
+        if (realDamage) number += game.empowerments.Poison.getDamage();
+        else if (getPageSetting("addpoison")) {
+            var afterTransfer = game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
+            number += afterTransfer;
+        }
+    }
+
+    //Empowerments - Ice (Experimental)
+    if (getEmpowerment() == "Ice") {
+        //Uses the actual number in some places like Stances
+        if (!getPageSetting('fullice') || realDamage) number *= 1 + game.empowerments.Ice.getDamageModifier();
+
+        //Otherwise, use the number we would have after a transfer
+        else {
+            var afterTransfer = 1 + Math.ceil(game.empowerments["Ice"].currentDebuffPower * getRetainModifier("Ice"));
+            var mod = 1 - Math.pow(game.empowerments.Ice.getModifier(), afterTransfer);
+            if (Fluffy.isRewardActive('naturesWrath')) mod *= 2;
+            number *= 1 + mod;
+        }
     }
 
     //Well, finally, huh?
