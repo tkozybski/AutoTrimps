@@ -262,6 +262,8 @@ function addPoison(realDamage, zone) {
 
     //Dynamically determines how much we are benefiting from poison based on Current Amount * Transfer Rate
     if (getPageSetting("addpoison")) return game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
+
+    return 0;
 }
 
 //TODO - Very Important!
@@ -467,13 +469,11 @@ function calcOurDmg(minMaxAvg = "avg", specificStance, realDamage, ignoreMapBonu
         number *= getMapCutOff();
     }*/
 
-    //Damage Range
-    if (incFlucts) {
-        //Apply fluctuation
-        min *= minFluct;
-        max *= maxFluct;
-        avg *= (maxFluct + minFluct)/2;
-    }
+    //Damage Fluctuation
+    min *= minFluct;
+    max *= maxFluct;
+    avg *= (maxFluct + minFluct)/2;
+
 
     //Well, finally, huh?
     if (minMaxAvg == "min") return Math.floor(min);
