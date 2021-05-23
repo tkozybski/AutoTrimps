@@ -260,7 +260,7 @@ function autoLevelEquipment() {
     if (getEmpowerment() == 'Wind' && game.global.challengeActive == "Daily" && !game.global.runningChallengeSquared && (getPageSetting("AutoStance") == 3 || getPageSetting("use3daily") == true) && getPageSetting("dWindStackingMin") > 0 && game.global.world >= getPageSetting("dWindStackingMin") && getPageSetting("dwindcutoff") > 0)
         enoughDamageCutoff = getPageSetting("dwindcutoff");
 
-    if (calcOurDmg("avg", false, true) <= 0) return;
+    if (calcOurDmg() <= 0) return;
     resourcesNeeded = {
         "food": 0,
         "wood": 0,

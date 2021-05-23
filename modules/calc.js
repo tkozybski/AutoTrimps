@@ -11,8 +11,8 @@ function debugCalc() {
     var name = getCurrentEnemy() ? getCurrentEnemy().name : "Chimp";
 
     //Init
-    var displayedMin = calcOurDmg("min", true, true, "never", type != "world", true) * (game.global.titimpLeft ? 2 : 1);
-    var displayedMax = calcOurDmg("max", true, true, "never", type != "world", true) * (game.global.titimpLeft ? 2 : 1);
+    var displayedMin = calcOurDmg("min", false, true, type != "world", "never") * (game.global.titimpLeft ? 2 : 1);
+    var displayedMax = calcOurDmg("max", false, true, type != "world", "never") * (game.global.titimpLeft ? 2 : 1);
 
     //Trimp Stats
     debug("Our Stats");
@@ -245,6 +245,25 @@ function highDamageShield() {
     }
 }
 
+function isPoisonZone(zone) {
+    if (zone < 236) return false;
+    return (zone - 236) % 15 < 5;
+}
+
+function addPoison(realDamage, zone) {
+    //Init
+    if (!zone) zone = game.global.world;
+
+    //Poison is inactive
+    if (!isPoisonZone(zone)) return 0;
+
+    //Real amount to be added in the next attack
+    if (realDamage) return game.empowerments.Poison.getDamage();
+
+    //Dynamically determines how much we are benefiting from poison based on Current Amount * Transfer Rate
+    if (getPageSetting("addpoison")) return game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
+}
+
 //TODO - Very Important!
 function newGetCritMulti(high) {
 
@@ -306,7 +325,7 @@ function getAnticipationBonus(stacks) {
     return 1 + 45 * perkMult;
 }
 
-function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, realDamage) {
+function calcOurDmg(minMaxAvg = "avg", specificStance, realDamage, ignoreMapBonus, critMode) {
     //Init
     var number = getTrimpAttack(realDamage);
     var minFluct = 0.8;
@@ -334,7 +353,8 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
     if (game.global.antiStacks > 0) number *= getAnticipationBonus();
 
     //Formation
-    if (!incStance && game.global.formation != 0) number /= (game.global.formation == 2) ? 4 : 0.5;
+    if (specificStance && game.global.formation != 0) number /= (game.global.formation == 2) ? 4 : 0.5;
+    if (specificStance && specificStance != "X") number *= (specificStance == "D") ? 4 : 0.5;
 
     //Robo Trimp
     if (game.global.roboTrimpLevel > 0) number *= 1 + 0.2 * game.global.roboTrimpLevel;
@@ -407,7 +427,7 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
 
     //Scryhard
     var fightingCorrupted = getCurrentEnemy() && getCurrentEnemy().corrupted || !realDamage && (mutations.Healthy.active() || mutations.Corruption.active());
-    if (incStance && game.talents.scry.purchased && game.global.formation == 4 && fightingCorrupted)
+    if (game.talents.scry.purchased && fightingCorrupted && !specificStance && game.global.formation == 4)
         number *= 2;
 
     //Spire Strength Trap
@@ -453,17 +473,6 @@ function calcOurDmg(minMaxAvg, incStance, incFlucts, critMode, ignoreMapBonus, r
         min *= minFluct;
         max *= maxFluct;
         avg *= (maxFluct + minFluct)/2;
-    }
-
-    //Empowerments - Poison (Experimental) //TODO - Multiple iterations based on HD Ratio
-    if (getEmpowerment() == "Poison") {
-        if (realDamage) number += game.empowerments.Poison.getDamage();
-        else if (getPageSetting("addpoison")) {
-            var afterTransfer = game.empowerments["Poison"].getDamage() * getRetainModifier("Poison");
-            min += afterTransfer;
-            max += afterTransfer;
-            avg += afterTransfer;
-        }
     }
 
     //Well, finally, huh?
@@ -949,7 +958,7 @@ function calcHDRatio(targetZone, type) {
 
     //Init
     var ignoreMapBonus = type != "world" || (game.global.challengeActive == "Lead" && targetZone%2 == 1);
-    var ourBaseDamage = calcOurDmg("avg", false, true, "maybe", ignoreMapBonus);
+    var ourBaseDamage = calcOurDmg("avg", "X", false, ignoreMapBonus);
 
     //Shield
     highDamageShield();
@@ -988,12 +997,16 @@ function calcHDRatio(targetZone, type) {
             ourBaseDamage *= getAnticipationBonus(anti);
         }
 
+        //Empowerments - Poison
+        ourBaseDamage += addPoison(false, targetZone);
+        voidDamage += addPoison();
+
         //Return whatever gives the worst H:D ratio, an odd zone void map or farming for the next even zone
         return Math.max(voidHealth / voidDamage, calcEnemyHealth("world", targetZone) / ourBaseDamage);
     }
 
     //Return H:D for a regular, sane, not f-ing Lead zone (sorry, Lead just took a lot of me)
-    return calcEnemyHealth(type, targetZone) / ourBaseDamage;
+    return calcEnemyHealth(type, targetZone) / (ourBaseDamage + addPoison());
 }
 
 function calcCurrentStance() {
@@ -1008,8 +1021,8 @@ function calcCurrentStance() {
         //Base Calc
         var eHealth = 1;
         if (game.global.fighting) eHealth = (getCurrentEnemy().maxHealth - getCurrentEnemy().health);
-        var attackLow = calcOurDmg("max", false, true);
-        var attackHigh = calcOurDmg("max", false, true);
+        var attackLow = calcOurDmg("max", "X");
+        var attackHigh = calcOurDmg("max", "X");
 
         //Heirloom Calc
         highDamageShield();

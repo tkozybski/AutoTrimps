@@ -2,9 +2,9 @@ var baseMinDamage = 0;
 var baseMaxDamage = 0;
 
 function calcBaseDamageInX() {
-    baseMinDamage = calcOurDmg("min", false, true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
-    baseMaxDamage = calcOurDmg("max", false, true, "force", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
-    baseDamage = calcOurDmg("avg", false, true, "maybe", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
+    baseMinDamage = calcOurDmg("min", "X", true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseMaxDamage = calcOurDmg("max", "X", true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseDamage = calcOurDmg("avg", "X", true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
     baseHealth = calcOurHealth(false, false, true);
     baseBlock  = calcOurBlock(false, true);
 }
@@ -44,14 +44,14 @@ function maxOneShotPower(considerEdges) {
     return 2;
 }
 
-function oneShotZone(stance, type, zone, maxOrMin) {
+function oneShotZone(specificStance, type, zone, maxOrMin) {
     //Pre-Init
     if (!type) type = preVoidCheck ? "void" : "world";
     if (!zone) zone = game.global.world;
 
     //Calculates our minimum damage
-    var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !stance, true, maxOrMin ? "force" : "never", type != "world", true);
-    if (stance && stance != "X") damageLeft *= (stance == "D") ? 4 : 0.5;
+    var baseDamage = calcOurDmg(maxOrMin ? "max" : "min", specificStance, true, type != "world");
+    var damageLeft = baseDamage + addPoison(false, (type == "world") ? zone : game.global.world);
 
     //Calculates how many enemies we can one shot + overkill
     for (var power=1; power <= maxOneShotPower(); power++) {
@@ -70,8 +70,8 @@ function oneShotZone(stance, type, zone, maxOrMin) {
 
 function oneShotPower(specificStance, offset = 0, maxOrMin) {
     //Calculates our minimum damage
-    var damageLeft = calcOurDmg(maxOrMin ? "max" : "min", !specificStance, true, maxOrMin ? "force" : "never", game.global.mapsActive, true);
-    if (specificStance && specificStance != "X") damageLeft *= (specificStance == "D") ? 4 : 0.5; //TODO - Scryhard I?
+    var baseDamage = calcOurDmg(maxOrMin ? "max" : "min", specificStance, true, game.global.mapsActive);
+    var damageLeft = baseDamage + addPoison(true);
 
     //Calculates how many enemies we can one shot + overkill
     for (var power=1; power <= maxOneShotPower(); power++) {
@@ -95,8 +95,8 @@ function oneShotPower(specificStance, offset = 0, maxOrMin) {
 function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower = 2) {
     //Pre-Init
     if (!maxHealth) maxHealth = calcOurHealth(true, false, true);
-    if (!minDamage) minDamage = calcOurDmg("min", true, true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
-    if (!maxDamage) maxDamage = calcOurDmg("max", true, true, "force", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
+    if (!minDamage) minDamage = calcOurDmg("min", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1) + addPoison(true);
+    if (!maxDamage) maxDamage = calcOurDmg("max", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1) + addPoison(true);
     if (!missingHealth) missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     if (!pierce) pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (!block) block = calcOurBlock(true, true);
@@ -144,7 +144,7 @@ function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, 
 
     //Mirrored (Daily) -- Unblockable, unpredictable
     if (dailyMirrored && critPower >= -1)
-        harm += Math.min(maxDamage, enemyHealth) * dailyModifiers.mirrored.getMult(game.global.dailyChallenge.mirrored.strength);
+        harm += Math.min(maxDamage - addPoison(true), enemyHealth) * dailyModifiers.mirrored.getMult(game.global.dailyChallenge.mirrored.strength);
 
     return harm;
 }
@@ -154,7 +154,7 @@ function directDamage(block, pierce, currentHealth, minDamage, critPower = 2) {
     if (!block) block = calcOurBlock(true, true);
     if (!pierce) pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (!currentHealth) currentHealth = calcOurHealth(true, false, true) - (game.global.soldierHealthMax - game.global.soldierHealth);
-    if (!minDamage) minDamage = calcOurDmg("min", true  , true, "never", game.global.mapsActive, true) * (game.global.titimpLeft ? 2 : 1);
+    if (!minDamage) minDamage = calcOurDmg("min", true, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1) + addPoison(true);
     
     //Enemy
     var enemy = getCurrentEnemy();
@@ -208,6 +208,10 @@ function survive(formation = "S", critPower = 2, ignoreArmy) {
     
     //Max health for XB formation
     var maxHealth = health * (formation == "XB" ? 2 : 1);
+
+    //Empowerments - Poison
+    minDamage += addPoison(true)
+    maxDamage += addPoison(true)
 
     //Pierce
     var pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;

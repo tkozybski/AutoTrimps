@@ -245,7 +245,7 @@ function getMapRatio(map, customLevel, customDiff) {
 
 function autoMap() {
     //Failsafes
-    if (!game.global.mapsUnlocked || calcOurDmg("avg", false, true) <= 0) {
+    if (!game.global.mapsUnlocked || calcOurDmg() <= 0) {
         vanillaMapatZone = false;
         enoughDamage = true;
         enoughHealth = true;
@@ -388,7 +388,7 @@ function autoMap() {
     }
 
     //H:D Calc
-    var ourBaseDamage = calcOurDmg("avg", false, true);
+    var ourBaseDamage = calcOurDmg("avg", "X");
 
     //Shield Calc
     highDamageShield();
