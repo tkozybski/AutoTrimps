@@ -232,6 +232,24 @@ function postBuy3() {
     game.global.lastCustomAmt = preBuyCustomLast2;
 }
 
+function armorCapped() {
+    var capped = areWeHealthLevelCapped();
+    var prestigeItemsLeft;
+    if (game.global.mapsActive)
+        prestigeItemsLeft = addSpecials(true, true, getCurrentMapObject());
+    else if (lastMapWeWereIn)
+        prestigeItemsLeft = addSpecials(true, true, lastMapWeWereIn);
+
+    const prestigeList = ['Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Greatersword', 'GamesOP'];
+    var numUnbought = 0;
+    for (var i = 0, len = prestigeList.length; i < len; i++) {
+        var p = prestigeList[i];
+        if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+            numUnbought++;
+    }
+    return capped && prestigeItemsLeft == 0 && numUnbought == 0;
+}
+
 function weaponCapped() {
     var capped = areWeAttackLevelCapped();
     var prestigeItemsLeft;
@@ -398,6 +416,7 @@ function autoLevelEquipment() {
     postBuy3();
 }
 function areWeAttackLevelCapped(){var a=[];for(var b in equipmentList){var c=equipmentList[b],d=c.Equip?game.equipment[b]:game.buildings[b];if(!d.locked){var e=evaluateEquipmentEfficiency(b);"attack"==e.Stat&&a.push(e)}}return a.every(f=>0==f.Factor&&!0==f.Wall)}
+function areWeHealthLevelCapped(){var a=[];for(var b in equipmentList){var c=equipmentList[b],d=c.Equip?game.equipment[b]:game.buildings[b];if(!d.locked){var e=evaluateEquipmentEfficiency(b);"health"==e.Stat&&"metal"==c.Resource&&a.push(e)}}return a.every(f=>0==f.Factor&&!0==f.Wall)}
 
 //Radon
 
