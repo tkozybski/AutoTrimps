@@ -34,14 +34,26 @@ function debugStance(maxPower, ignoreArmy) {
 }
 
 function maxOneShotPower(considerEdges) {
-    //No enemy to attack
+    var power = 2;
+
+    //No enemy to kill
     if (considerEdges && !getCurrentEnemy()) return 0;
 
-    //No Overkill at all
-    if (game.portal.Overkill.level == 0 || considerEdges && !getCurrentEnemy(2)) return 1;
-    
-    //Regular Overkills
-    return 2;
+    //No overkill perk
+    if (game.portal.Overkill.level == 0) return 1;
+
+    //Mastery
+    if (game.talents.overkill.purchased) power++;
+
+    //Ice
+    if (game.global.uberNature == "Poison") power += 2;
+    if (getEmpowerment() == "Ice" && game.empowerments.Ice.getLevel() >=  50) power++;
+    if (getEmpowerment() == "Ice" && game.empowerments.Ice.getLevel() >= 100) power++;
+
+    //No enemy to attack
+    if (considerEdges) for (var i=power; i > 1 && !getCurrentEnemy(i); i--);
+
+    return power;
 }
 
 function oneShotZone(specificStance, type, zone, maxOrMin) {
