@@ -27,6 +27,8 @@ MODULES.maps.spireHD = 4; //4 is actually 1 hit in D stance
 MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.magmaHitsSurvived = 2; //Your geneticists are frequently lagging 1-2 zones behind when speeding through magma, which is why this is important
 
+var enoughDamage = true;
+var enoughHealth = true;
 var isFarming = false;
 var doVoids = false;
 var needToVoid = false;
@@ -737,11 +739,11 @@ function autoMap() {
                     selectedMap = "create";
             } else if (siphonMap != -1) {
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
-                if (MODULES.maps.forceModifier && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
+                if (game.global.world >= 59 && MODULES.maps.forceModifier && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
             }
             else if (altSiphMap != -1) {
                 selectedMap = "create";
-                tryBetterMod = MODULES.maps.forceModifier;
+                tryBetterMod = game.global.world >= 59 && MODULES.maps.forceModifier;
             }
             else
                 selectedMap = "create";

@@ -5,7 +5,7 @@ MODULES["equipment"].waitTill60 = true;
 MODULES["equipment"].equipHealthDebugMessage = false;
 
 //Psycho
-MODULES["equipment"].numHitsMult = 2;
+MODULES["equipment"].numHitsMult = 2; //This will multiply your maps.numHits, so beware
 MODULES["equipment"].mirroredDailyCap = false; //NOT needed since 5.5.0. By the way, I had JUST finished this feature =(
 
 var equipmentList = {

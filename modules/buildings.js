@@ -442,7 +442,7 @@ function mostEfficientHousing() {
             var baseCost = game.buildings[housing].cost[resource][0];
             var costScaling = game.buildings[housing].cost[resource][1];
             var avgProduction = getPsString(resource, true);
-	    if (avgProduction <= 0) avgProduction = 1;
+	        if (avgProduction <= 0) avgProduction = 1;
             var housingBonus = game.buildings.Hut.increase.by;
             if (!game.buildings.Hub.locked) { housingBonus += 500;}
 

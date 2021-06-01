@@ -245,17 +245,12 @@ function highDamageShield() {
     }
 }
 
-function isPoisonZone(zone) {
-    if (zone < 236) return false;
-    return (zone - 236) % 15 < 5;
-}
-
 function addPoison(realDamage, zone) {
     //Init
     if (!zone) zone = game.global.world;
 
     //Poison is inactive
-    if (!isPoisonZone(zone)) return 0;
+    if (getEmpowerment(zone) != "Poison") return 0;
 
     //Real amount to be added in the next attack
     if (realDamage) return game.empowerments.Poison.getDamage();
