@@ -15,7 +15,7 @@ MODULES.maps.SkipNumUnboughtPrestiges = 2;
 MODULES.maps.UnearnedPrestigesRequired = 2;
 
 //Psycho
-MODULES.maps.numHitsSurvived = 7.5; //Recommended: 5, or 7.5 if you have a certain 45 stacks thing
+MODULES.maps.numHitsSurvived = 5; //Recommended: 5, or 7.5 if you have a certain 45 stacks thing
 MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)

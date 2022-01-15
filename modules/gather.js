@@ -44,29 +44,36 @@ function manualLabor2() {
 	if (trapsReady) trapBuffering = false;
 	if (maxTrapsReady) maxTrapBuffering = false;
 
+	//Init - Science
+	var needBattle = !game.upgrades.Battle.done && game.resources.science.owned < 10
+	var scienceButtonAvailable = document.getElementById('science').style.visibility != 'hidden'
+	var researchButtonAvailable = document.getElementById('scienceCollectBtn').style.display != 'none'
+	var needScientists = game.upgrades.Scientists.allowed && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && scienceButtonAvailable
+
 	//Init - Others
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 	var needScience = game.resources.science.owned < scienceNeeded;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 
+
 	//Verifies if trapping is still relevant
 	var trappingIsRelevant = trapperTrapUntilFull || calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 10;
 
-	//Highest Priority Trapping (Early Game, when trapping is mandatory)
+	//Highest Priority Food/Wood for traps (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
 		//If not building and not trapping
 		if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)) {
 			//Gather food or wood
-			if (game.resources.food.owned < 10) {setGather('food'); return;}
-			else if (game.triggers.wood.done && game.resources.wood.owned < 10) {setGather('wood'); return;}
+			if (game.resources.food.owned < 10) { setGather('food'); return; }
+			else if (game.triggers.wood.done && game.resources.wood.owned < 10) { setGather('wood'); return; }
 		}
 	}
 
 	//High Priority Trapping (doing Trapper or without breeding trimps)
 	if (trapTrimpsOK && trappingIsRelevant && ((notFullPop && breedingTrimps < 4) || trapperTrapUntilFull)) {
 		//Bait trimps if we have traps
-		if (!lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
+		if (!lowOnTraps && !trapBuffering) { setGather('trimps'); return; }
 
 		//Or build them, if they are on the queue
 		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {
@@ -76,8 +83,9 @@ function manualLabor2() {
 		}
 	}
 
-	//Highest Priority Science gathering if we have less science than needed to buy scientists
-	if (getPageSetting('ManualGather2') != 2 && game.upgrades.Scientists.allowed && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
+	//Highest Priority Science gathering if we have less science than needed to buy Battle
+	if (getPageSetting('ManualGather2') != 2 && researchButtonAvailable && (needBattle || needScientists)) {
+		if (!game.upgrades.Battle.done && game.resources.science.owned < 10)
 		setGather('science');
 		return;
 	}
