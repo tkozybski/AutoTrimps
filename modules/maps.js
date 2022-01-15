@@ -15,8 +15,6 @@ MODULES.maps.SkipNumUnboughtPrestiges = 2;
 MODULES.maps.UnearnedPrestigesRequired = 2;
 
 //Psycho
-MODULES.maps.numHitsSurvived = 5; //Recommended: 5, or 7.5 if you have a certain 45 stacks thing
-MODULES.maps.farmOnLowHealth = true; //Will force farming for health
 MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.scryerHDMult = 4; //This is a divisor to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON (Domination ignores this)
@@ -164,7 +162,7 @@ function testMapSpecialModController(noLog) {
 
 function getMapHealthCutOff(pure) {
     //Base and Spire cutOffs
-    var cut = MODULES.maps.numHitsSurvived;
+    var cut = getPageSetting('NumHitsSurvived');
     if (pure) return cut;
 
     //Spire
@@ -415,7 +413,7 @@ function autoMap() {
     //Only actually trigger farming after doing map bonuses
     if (getPageSetting('DisableFarm') > 0 && (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || enoughDamage && game.global.mapBonus >= getPageSetting('MaxMapBonusHealth'))) {
         //Farm on Low Health
-        shouldFarm = shouldFarmDamage || (MODULES.maps.farmOnLowHealth && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
+        shouldFarm = shouldFarmDamage || (getPageSetting('FarmOnLowHealth') && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
 
         //Toggle "Repeat Until"
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm) toggleSetting('repeatUntil');

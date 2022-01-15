@@ -106,7 +106,7 @@ function manualLabor2() {
 	}
 
 	//Mid Priority Trapping
-	if (trapTrimpsOK && trappingIsRelevant && notFullPop && !lowOnTraps && !trapBuffering) {setGather('trimps'); return;}
+	if (trapTrimpsOK && trappingIsRelevant && notFullPop && !lowOnTraps && !trapBuffering) { setGather('trimps'); return; }
 
 	//High Priority Research - When manual research still has more impact than scientists
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience && getPlayerModifier() > getPerSecBeforeManual('Scientist')) {
@@ -123,10 +123,10 @@ function manualLabor2() {
 	}
 
 	//Metal if Turkimp is active
-	if (hasTurkimp) {setGather('metal'); return;}
+	if (hasTurkimp) { setGather('metal'); return; }
 
 	//Mid Priority Research
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) {setGather('science'); return;}
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && needScience) { setGather('science'); return; }
 
 	//Low Priority Trap Building
 	if (trapTrimpsOK && trappingIsRelevant && canAffordBuilding('Trap') && (!fullOfTraps || maxTrapBuffering)) {

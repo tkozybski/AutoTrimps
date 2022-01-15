@@ -27,7 +27,8 @@ function initializeAutoTrimps() {
 }
 
 var changelogList = [];
-changelogList.push({date: "09/05/2021", version: "v5.0.0", description: "<b>v6.0.0</b> Psycho-Ray (Nevereth) here. This is a big overhaul for U1 :) ", isNew: true});
+changelogList.push({date: "15/01/2022", version: "v5.1.0", description: "<b>v6.0.1</b> This is the day that Psycho-Ray learned how to do buttons! (UI improvements incoming)", isNew: true});
+changelogList.push({date: "09/05/2021", version: "v5.0.0", description: "<b>v6.0.0</b> Psycho-Ray (Nevereth) here. This is a big overhaul for U1 :) ", isNew: false});
 changelogList.push({date: "15/09/2020", version: "v4.4.1", description: "<b>v5.4.0</b> Fixed things. Check your TF settings U2 people i added a toggle", isNew: false});
 changelogList.push({date: "06/09/2020", version: "v4.4.0", description: "<b>v5.4.0</b> There is not enough space to describe how much stuff has changed. But its got all 5.4 content ready. <b>CHANGED THE WAY JOBS\, GEAR\, BUILDINGS WORKS! CHECK SETTINGS!</b> ", isNew: false});
 changelogList.push({date: "28/05/2020", version: "v4.3.2", description: "<b>v5.3.8</b> Various bug fixes. <b>CHANGED THE WAY TF GATHER WORKS! CHECK TF SETTINGS!</b> ", isNew: false});
