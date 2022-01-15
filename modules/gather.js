@@ -44,17 +44,15 @@ function manualLabor2() {
 	if (trapsReady) trapBuffering = false;
 	if (maxTrapsReady) maxTrapBuffering = false;
 
-	//Init - Science
-	var needBattle = !game.upgrades.Battle.done && game.resources.science.owned < 10
-	var scienceButtonAvailable = document.getElementById('science').style.visibility != 'hidden'
-	var researchButtonAvailable = document.getElementById('scienceCollectBtn').style.display != 'none'
-	var needScientists = game.upgrades.Scientists.allowed && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && scienceButtonAvailable
+	// Init - Science
+	var needScience = game.resources.science.owned < scienceNeeded;
+	var needBattle = !game.upgrades.Battle.done && game.resources.science.owned < 10;
+	var needScientists = game.upgrades.Scientists.allowed && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && document.getElementById('science').style.visibility != 'hidden';
+	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 
 	//Init - Others
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
-	var needScience = game.resources.science.owned < scienceNeeded;
-	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 
 
 	//Verifies if trapping is still relevant
@@ -84,8 +82,7 @@ function manualLabor2() {
 	}
 
 	//Highest Priority Science gathering if we have less science than needed to buy Battle
-	if (getPageSetting('ManualGather2') != 2 && researchButtonAvailable && (needBattle || needScientists)) {
-		if (!game.upgrades.Battle.done && game.resources.science.owned < 10)
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists)) {
 		setGather('science');
 		return;
 	}
