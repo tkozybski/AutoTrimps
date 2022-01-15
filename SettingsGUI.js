@@ -548,7 +548,7 @@ function initializeAllSettings() {
 
     //Line 4
     createSetting('NumHitsSurvived', 'Num Hits Survived', 'One of the most important settings in this version of AT. It roughly translates to how many your trimps can take from a C99 Snimp, on average. Keep in mind that this number is further multiplied by other variables according to the situation, like VoidHitMult when preparing to go to a Void Map. The recommended values are 1.5~~3.0 for very early game, 5 with geneticists and 7.5 with 45 stacks, but the actual recommendation is to use a number that would give your trimps a good survivability without farming too much for it. Values close too close to 1 or below it are usually not recommended, since they will get you stuck.', 'value', '5', null, 'Maps');
-    createSetting('FarmOnLowHealth', 'Farm On Low Health', "If your trimps do not have enough health to pass the NumHitsSurvived criteria, then it will activate farming mode, which means it will stay on maps after getting its map stacks. Recommended: Always on. Lower your NumHitsSurvived if you needed.", 'boolean', true, null, 'Maps');
+    createSetting('FarmOnLowHealth', 'Farm On Low Health', "If your trimps do not have enough health to pass the Num Hits Survived criteria, then it will activate farming mode, which means it will stay on maps after getting its map stacks. Recommended: Always on. Lower your Num Hits Survived if you needed.", 'boolean', true, null, 'Maps');
 
 
     //RMaps

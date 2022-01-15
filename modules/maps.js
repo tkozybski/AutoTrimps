@@ -301,6 +301,7 @@ function autoMap() {
     var minVoidZone = 0;
     var maxVoidZone = 0;
     var voidCell = 0;
+    var poisonOK;
 
     //Regular Run Voids
     if (game.global.challengeActive != "Daily") {
@@ -308,7 +309,7 @@ function autoMap() {
         voidCell = ((getPageSetting('voidscell') > 0) ? getPageSetting('voidscell') : 70);
 
         //What Zone Range to run Voids at
-        var poisonOK = !getPageSetting('runnewvoidspoison') || getEmpowerment() == 'Poison';
+        poisonOK = !getPageSetting('runnewvoidspoison') || getEmpowerment() == 'Poison';
         if (getPageSetting('VoidMaps') > 0) minVoidZone = getPageSetting('VoidMaps');
         if (getPageSetting('RunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('RunNewVoidsUntilNew');
     }
@@ -319,12 +320,12 @@ function autoMap() {
         voidCell = ((getPageSetting('dvoidscell') > 0) ? getPageSetting('dvoidscell') : 70);
 
         //What Zone Range to run Voids at
-        var poisonOK = !getPageSetting('drunnewvoidspoison') || getEmpowerment() == 'Poison';
+        poisonOK = !getPageSetting('drunnewvoidspoison') || getEmpowerment() == 'Poison';
         if (getPageSetting('DailyVoidMod') > 0) minVoidZone = getPageSetting('DailyVoidMod');
         if (getPageSetting('dRunNewVoidsUntilNew') > 0 && poisonOK) maxVoidZone = getPageSetting('dRunNewVoidsUntilNew');
     }
 
-    //Convert maxZone from an modificer (+1, +2...) to an fixed zone value (65, 66...)
+    //Convert maxZone from an modifier (+1, +2...) to an fixed zone value (65, 66...)
     maxVoidZone += minVoidZone;
 
     //Checks if it's on the right zone range and with voids available
@@ -473,11 +474,10 @@ function autoMap() {
     //Map Bonus
     var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < getPageSetting("MaxMapBonuslimit") && game.global.world >= maxMapBonusZ);
-    if (doMaxMapBonus)
-        shouldDoMaps = true;
+    if (doMaxMapBonus) shouldDoMaps = true;
 
     //Calculates Siphonology and Extra Map Levels
-    var minLvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level);
+    var minLvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level)
     var maxLvl = game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
     var siphLvl = minLvl;
 
@@ -507,6 +507,9 @@ function autoMap() {
     //Farms on "Oneshoot level" + 1, except on magma
     var extraConditions = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming);
     if (extraConditions && game.global.challengeActive != "Coordinate" && !mutations.Magma.active() && siphLvl < maxLvl) siphLvl++;
+
+    //SiphLvl must be at least 6
+    siphLvl = Math.max(siphLvl, 6)
 
     //Register the level of every regular map we have
     var obj = {};
@@ -842,10 +845,12 @@ function autoMap() {
                 mapsClicked();
             }
         }
-    } else if (game.global.preMapsActive) {
+    }
+    else if (game.global.preMapsActive) {
         if (selectedMap == "world") {
             mapsClicked();
-        } else if (selectedMap == "create" || tryBetterMod) {
+        }
+        else if (selectedMap == "create" || tryBetterMod) {
             var $mapLevelInput = document.getElementById("mapLevelInput");
             $mapLevelInput.value = (needPrestige || siphLvl > game.global.world) ? game.global.world : siphLvl;
             if (preSpireFarming && MODULES["maps"].SpireFarm199Maps)
@@ -855,16 +860,20 @@ function autoMap() {
             if (game.global.world >= customVars.MapTierZone[0]) {
                 tier = customVars.MapTier0Sliders;
                 decrement = [];
-            } else if (game.global.world >= customVars.MapTierZone[1]) {
+            }
+            else if (game.global.world >= customVars.MapTierZone[1]) {
                 tier = customVars.MapTier1Sliders;
                 decrement = ['loot'];
-            } else if (game.global.world >= customVars.MapTierZone[2]) {
+            }
+            else if (game.global.world >= customVars.MapTierZone[2]) {
                 tier = customVars.MapTier2Sliders;
                 decrement = ['loot'];
-            } else {
+            }
+            else {
                 tier = customVars.MapTier3Sliders;
                 decrement = ['diff', 'loot'];
             }
+
             sizeAdvMapsRange.value = tier[0];
             adjustMap('size', tier[0]);
             difficultyAdvMapsRange.value = tier[1];
@@ -959,8 +968,8 @@ function autoMap() {
                 runMap();
                 lastMapWeWereIn = getCurrentMapObject();
             } else {
-                debug("Buying a Map, level: #" + mapLvlPicked + " for " + updateMapCost(true).toExponential(2) + " fragments", "maps", 'th-large');
                 var result = buyMap();
+                debug("Buying a Map, level: #" + mapLvlPicked + " for " + updateMapCost(true).toExponential(2) + " fragments", "maps", 'th-large');
                 if (result == -2) {
                     debug("Too many maps, recycling now: ", "maps", 'th-large');
                     recycleBelow(true);
