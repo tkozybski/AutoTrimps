@@ -35,6 +35,7 @@ var needPrestige = false;
 var skippedPrestige = false;
 var scryerStuck = false;
 var shouldDoMaps = false;
+var shouldFarm = false;
 var shouldFarmDamage = false;
 var mapTimeEstimate = 0;
 var lastMapWeWereIn = null;
@@ -250,14 +251,12 @@ function autoMap() {
         enoughDamage = true;
         enoughHealth = true;
         shouldFarm = false;
-        updateAutoMapsStatus();
         return;
     }
 
     //No Mapology Credits HUD Update
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) {
-        vanillaMapatZone = false;
-        updateAutoMapsStatus();
+        vanillaMapatZone = false
         return;
     }
 
@@ -271,10 +270,9 @@ function autoMap() {
             var mazZone = validRange && (world == option.world && option.times == -1 || (world - option.world) % option.times == 0);
             if (mazZone && option.cell == game.global.lastClearedCell+2) vanillaMapatZone = true;
         }
-        if (vanillaMapatZone) {
-            updateAutoMapsStatus();
-            return;
-        }
+
+        //MAZ is active
+        if (vanillaMapatZone) return;
     }
 
     //Vars
