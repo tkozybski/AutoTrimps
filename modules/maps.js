@@ -878,7 +878,7 @@ function autoMap() {
             adjustMap('difficulty', tier[1]);
             lootAdvMapsRange.value = tier[2];
             adjustMap('loot', tier[2]);
-            biomeAdvMapsSelect.value = autoTrimpSettings.mapselection.selected == "Gardens" ? "Plentiful" : autoTrimpSettings.mapselection.selected;
+            biomeAdvMapsSelect.value = autoTrimpSettings.mapselection.selected == "Gardens" ? (game.global.decayDone ? "Plentiful" : "Random") : autoTrimpSettings.mapselection.selected;
             updateMapCost();
             if (shouldFarm || game.global.challengeActive == 'Metal') {
                 biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";
