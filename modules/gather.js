@@ -51,6 +51,7 @@ function manualLabor2() {
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 
 	//Init - Others
+	var needMiner = !game.upgrades.Miners.done && game.global.challengeActive != "Metal";
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 
@@ -81,15 +82,9 @@ function manualLabor2() {
 		}
 	}
 
-	//Highest Priority Science gathering if we have less science than needed to buy Battle
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists)) {
+	//Highest Priority Science gathering if we have less science than needed to buy Battle, Miner and Scientists
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists || needMiner && game.resources.science < 60)) {
 		setGather('science');
-		return;
-	}
-
-	//Gather resources for Miner
-	if (!game.upgrades.Miners.done && game.global.challengeActive != "Metal" && (game.resources.metal.owned < 100 || game.resources.wood.owned < 300)) {
-		setGather(game.resources.metal.owned < 100 ? "metal" : "wood");
 		return;
 	}
 
@@ -102,6 +97,12 @@ function manualLabor2() {
 	//Also Build if we have storage buildings on top of the queue
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1') {
 		setGather('buildings');
+		return;
+	}
+
+	//Gather resources for Miner
+	if (needMiner && (game.resources.metal.owned < 100 || game.resources.wood.owned < 300)) {
+		setGather(game.resources.metal.owned < 100 ? "metal" : "wood");
 		return;
 	}
 
