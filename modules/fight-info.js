@@ -7,7 +7,7 @@
 	M["fightinfo"].changeCellColor = false;
 
 	//This option reverts to AT's old way of giving an unique icon for each of the ten exotic imps
-	M["fightinfo"].allExoticIcons = false;
+	M["fightinfo"].allExoticIcons = true;
 
 	M["fightinfo"].imp = {
 		skel     : {icon: '"glyphicon glyphicon-italic"',      shadow: "0px 0px 10px #ffffff", color: '#ffffff'},
@@ -87,7 +87,8 @@
 		$cell.style.textShadow = pallet.shadow;
 
 		//Glyph Icon
-		if (overrideSpecial || cell.special.length == 0) $cell.innerHTML = (customIcon) ? customIcon : pallet.icon;
+		var icon = (customIcon) ? customIcon : pallet.icon
+		if (overrideSpecial || cell.special.length == 0) $cell.innerHTML = "<span class="+icon+"></span>";
 	}
 
 	function Update() {
