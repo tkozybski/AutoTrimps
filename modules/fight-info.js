@@ -7,7 +7,7 @@
 	M["fightinfo"].changeCellColor = false;
 
 	//This option reverts to AT's old way of giving an unique icon for each of the ten exotic imps
-	M["fightinfo"].allExoticIcons = true;
+	M["fightinfo"].allExoticIcons = false;
 
 	M["fightinfo"].imp = {
 		skel     : {icon: '"glyphicon glyphicon-italic"',      shadow: "0px 0px 10px #ffffff", color: '#ffffff'},
