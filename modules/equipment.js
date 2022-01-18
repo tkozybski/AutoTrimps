@@ -142,13 +142,14 @@ function evaluateEquipmentEfficiency(equipName) {
 
         if (!CanAfford) {
             StatusBorder = 'yellow';
-        } else {
+        }
+        else {
             if (!equip.Equip) {
 
                 StatusBorder = 'red';
             } else {
-                var CurrEffect = gameResource.level * Effect;
-                var NeedLevel = Math.ceil(CurrEffect / NextEffect);
+                var CurrEffect = gameResource.level * Effect / getPageSetting('gearamounttobuy');
+                var NeedLevel = ceilToNearestMultipleOf(CurrEffect / NextEffect, getPageSetting('gearamounttobuy'), 1)
                 var Ratio = gameResource.cost[equip.Resource][1];
                 var NeedResource = NextCost * (Math.pow(Ratio, NeedLevel) - 1) / (Ratio - 1);
                 if (game.resources[equip.Resource].owned > NeedResource) {
@@ -368,7 +369,7 @@ function autoLevelEquipment() {
                 BuyArmorUpgrades &= DelayArmorWhenNeeded || !enoughHealth || enoughDamage || equipmentList[equipName].Resource == "wood";
 
                 //Buy Prestiges
-                if (BuyWeaponUpgrades && equipStat == "attack" || BuyArmorUpgrades && (equipStat == "health" || equipStat == "block")) {
+                if (BuyWeaFponUpgrades && equipStat == "attack" || BuyArmorUpgrades && (equipStat == "health" || equipStat == "block")) {
                     var upgrade = equipmentList[equipName].Upgrade;
                     if (upgrade != "Gymystic")
                         debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, "equips", '*upload');
