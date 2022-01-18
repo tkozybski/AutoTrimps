@@ -104,8 +104,8 @@ function manualLabor2() {
 		return;
 	}
 
-	//Highest Priority Metal gathering for Metal Challenge
-	if (game.global.challengeActive != "Metal" && !game.global.mapsUnlocked) {
+	//High Priority Metal gathering for Metal Challenge
+	if (game.global.challengeActive == "Metal" && !game.global.mapsUnlocked) {
 		setGather('metal');
 		return;
 	}
