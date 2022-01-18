@@ -74,7 +74,7 @@ function advancedNurseries() {
 
 function buyFoodEfficientHousing() {
     //Init
-    var ignoresLimit = getPageSetting('FoodEfficiencyIgnoresLimit')
+    var ignoresLimit = getPageSetting('FoodEfficiencyIgnoresMax')
     var unlockedHousing = ["Hut", "House", "Mansion", "Hotel", "Resort"].filter(b => !game.buildings[b].locked);
 
     //Resets Border Color
@@ -132,7 +132,7 @@ function buyGemEfficientHousing() {
     for (var best in keysSorted) {
         var max = getPageSetting('Max' + keysSorted[best]);
         if (max === false) max = -1;
-        if (game.buildings[keysSorted[best]].owned < max || max == -1 || (getPageSetting('GemEfficiencyIgnoresLimit') && keysSorted[best] != "Gateway")) {
+        if (game.buildings[keysSorted[best]].owned < max || max == -1 || (getPageSetting('GemEfficiencyIgnoresMax') && keysSorted[best] != "Gateway")) {
             bestBuilding = keysSorted[best];
             document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
 

@@ -397,8 +397,8 @@ function initializeAllSettings() {
     createSetting('BuyBuildingsNew', ['Buy Neither', 'Buy Buildings & Storage', 'Buy Buildings', 'Buy Storage'], 'AutoBuys Storage when it is almost full (it even anticipates Jestimp) and Non-Storage Buildings (As soon as they are available). Takes cost efficiency into account before buying Non-Storage Buildings.', 'multitoggle', 1, null, "Buildings");
     createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', true, null, 'Buildings');
     createSetting('WarpstationCoordBuy', 'Buy Warp to Hit Coord', 'If we are very close to hitting the next coordination, and we can afford the warpstations it takes to do it, Do it! (even if we are over the Cap/Wall). Recommended with WarpCap/WarpWall. (has no point otherwise) ', 'boolean', true, null, 'Buildings');
-    createSetting('GemEfficiencyIgnoresLimit', 'Gem Eff Ignores Limit', "If enabled, AT will buy gem housing (Mansion, Hotel, ..., Collectors) above the limits defined by MaxMansion, MaxHotel, etc, as long as that building is the most efficient thing to buy in Housing/Gem. <b>This is mostly cosmetic</b>, since by the time you start limiting those buildings, they are only the most efficient if they cost almost nothing. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
-    createSetting('FoodEfficiencyIgnoresLimit', 'Food Eff Ignores Limit', "Similar to Gem Efficiency Ignores Limit, but with one big difference. It considers all forms of housing that uses food, but it only buys Huts and Houses, which means that if another building is the most food efficient one, it'll wait until it isn't anymore (because something else brought them, like Gem Efficiency or the user). This behavior saves food, and actually does so by enforcing gem efficiency. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('GemEfficiencyIgnoresMax', 'Gem Eff Ignores Max', "If enabled, AT will buy gem housing (Mansion, Hotel, ..., Collectors) above the limits defined by MaxMansion, MaxHotel, etc, as long as that building is the most efficient thing to buy in Housing/Gem. <b>This is mostly cosmetic</b>, since by the time you start limiting those buildings, they are only the most efficient if they cost almost nothing. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('FoodEfficiencyIgnoresMax', 'Food Eff Ignores Max', "Similar to Gem Efficiency Ignores Limit, but with one big difference. It considers all forms of housing that uses food, but it only buys Huts and Houses, which means that if another building is the most food efficient one, it'll wait until it isn't anymore (because something else brought them, like Gem Efficiency or the user). This behavior saves food, and actually does so by enforcing gem efficiency. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
     createSetting('FirstGigastation', 'First Gigastation', 'How many warpstations to buy before your first gigastation', 'value', '20', null, "Buildings");
     createSetting('DeltaGigastation', 'Delta Gigastation', '<b>YOU MUST HAVE BUY UPGRADES ENABLED!</b><br> How many extra warpstations to buy for each gigastation. Supports decimal values. For example 2.5 will buy +2/+3/+2/+3...', 'value', '2', null, "Buildings");
 
@@ -1535,10 +1535,9 @@ function updateCustomButtons() {
     !radonon && getPageSetting('c2runnerstart') == true ? turnOn("c2runnerpercent"): turnOff("c2runnerpercent");
 
 
-
     //Buildings
-    var gemNoLimit = getPageSetting('GemEfficiencyIgnoresLimit');
-    var foodNoLimit = getPageSetting('FoodEfficiencyIgnoresLimit');
+    var gemNoLimit = getPageSetting('GemEfficiencyIgnoresMax');
+    var foodNoLimit = getPageSetting('FoodEfficiencyIgnoresMax');
     var fuckbuilding = (bwRewardUnlocked("AutoStructure") == true && game.talents.deciBuild.purchased && getPageSetting('hidebuildings')==true && getPageSetting('BuyBuildingsNew')==0);
     !radonon ? turnOn("BuyBuildingsNew"): turnOff("BuyBuildingsNew");
     !radonon ? turnOn("MaxGym"): turnOff("MaxGym");
