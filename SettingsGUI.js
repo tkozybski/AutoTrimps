@@ -397,33 +397,33 @@ function initializeAllSettings() {
     createSetting('BuyBuildingsNew', ['Buy Neither', 'Buy Buildings & Storage', 'Buy Buildings', 'Buy Storage'], 'AutoBuys Storage when it is almost full (it even anticipates Jestimp) and Non-Storage Buildings (As soon as they are available). Takes cost efficiency into account before buying Non-Storage Buildings.', 'multitoggle', 1, null, "Buildings");
     createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', true, null, 'Buildings');
     createSetting('WarpstationCoordBuy', 'Buy Warp to Hit Coord', 'If we are very close to hitting the next coordination, and we can afford the warpstations it takes to do it, Do it! (even if we are over the Cap/Wall). Recommended with WarpCap/WarpWall. (has no point otherwise) ', 'boolean', true, null, 'Buildings');
+    createSetting('GemEfficiencyIgnoresLimit', 'Gem Eff Ignores Limit', "If enabled, AT will buy gem housing (Mansion, Hotel, ..., Collectors) above the limits defined by MaxMansion, MaxHotel, etc, as long as that building is the most efficient thing to buy in Housing/Gem. <b>This is mostly cosmetic</b>, since by the time you start limiting those buildings, they are only the most efficient if they cost almost nothing. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('FoodEfficiencyIgnoresLimit', 'Food Eff Ignores Limit', "Similar to Gem Efficiency Ignores Limit, but with one big difference. It considers all forms of housing that uses food, but it only buys Huts and Houses, which means that if another building is the most food efficient one, it'll wait until it isn't anymore (because something else brought them, like Gem Efficiency or the user). This behavior saves food, and actually does so by enforcing gem efficiency. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('FirstGigastation', 'First Gigastation', 'How many warpstations to buy before your first gigastation', 'value', '20', null, "Buildings");
+    createSetting('DeltaGigastation', 'Delta Gigastation', '<b>YOU MUST HAVE BUY UPGRADES ENABLED!</b><br> How many extra warpstations to buy for each gigastation. Supports decimal values. For example 2.5 will buy +2/+3/+2/+3...', 'value', '2', null, "Buildings");
+
+    //Line 2
     createSetting('MaxHut', 'Max Huts', 'Huts', 'value', '100', null, "Buildings");
     createSetting('MaxHouse', 'Max Houses', 'Houses', 'value', '100', null, "Buildings");
     createSetting('MaxMansion', 'Max Mansions', 'Mansions', 'value', '100', null, "Buildings");
     createSetting('MaxHotel', 'Max Hotels', 'Hotels', 'value', '100', null, "Buildings");
-
-    //Line 2
     createSetting('MaxResort', 'Max Resorts', 'Resorts', 'value', '100', null, "Buildings");
     createSetting('MaxGateway', 'Max Gateways', 'Gateways', 'value', '25', null, "Buildings");
-    createSetting('MaxWormhole', 'Max Wormholes', 'WARNING: Wormholes cost helium! Values below 0 do nothing.', 'value', '0', null, "Buildings");
     createSetting('MaxCollector', 'Max Collectors', 'recommend: -1', 'value', '-1', null, "Buildings");
-    createSetting('MaxGym', 'Max Gyms', 'Advanced. recommend: -1', 'value', '-1', null, "Buildings");
-    createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1', null, "Buildings");
-    createSetting('GymWall', 'Gym Wall', 'Conserves Wood. Only buys 1 Gym when you can afford <b>X</b> gyms wood cost (at the first one\'s price, simple math). -1 or 0 to disable. In other words, only allows gyms that cost less than 1/nth your currently owned wood. (to save wood for nurseries for new z230+ Magma nursery strategy). Takes decimal numbers. (Identical to the Warpstation wall setting which is why its called that). Setting to 1 does nothing besides stopping gyms from being bought 2 at a time due to the mastery.', 'value', -1, null, 'Buildings');
 
     //Line 3
-    createSetting('FirstGigastation', 'First Gigastation', 'How many warpstations to buy before your first gigastation', 'value', '20', null, "Buildings");
-    createSetting('DeltaGigastation', 'Delta Gigastation', '<b>YOU MUST HAVE BUY UPGRADES ENABLED!</b><br> How many extra warpstations to buy for each gigastation. Supports decimal values. For example 2.5 will buy +2/+3/+2/+3...', 'value', '2', null, "Buildings");
+    createSetting('MaxWormhole', 'Max Wormholes', 'WARNING: Wormholes cost helium! Values below 0 do nothing.', 'value', '0', null, "Buildings");
+    createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1', null, "Buildings");
+    createSetting('MaxGym', 'Max Gyms', 'Advanced. recommend: -1', 'value', '-1', null, "Buildings");
+    createSetting('GymWall', 'Gym Wall', 'Conserves Wood. Only buys 1 Gym when you can afford <b>X</b> gyms wood cost (at the first one\'s price, simple math). -1 or 0 to disable. In other words, only allows gyms that cost less than 1/nth your currently owned wood. (to save wood for nurseries for new z230+ Magma nursery strategy). Takes decimal numbers. (Identical to the Warpstation wall setting which is why its called that). Setting to 1 does nothing besides stopping gyms from being bought 2 at a time due to the mastery.', 'value', -1, null, 'Buildings');
+    createSetting('GatewayWall', 'Gateway Wall', "Same as Gym Wall and Nursery Wall, but for Gateways.", 'value', '100', null, 'Buildings');
     createSetting('WarpstationWall3', 'Warpstation Wall', 'Conserves Metal. Only buys 1 Warpstation when you can afford <b>X</b> warpstations metal cost (at the first one\'s price, simple math). -1, 0, 1 = disable. In other words, only allows warps that cost less than 1/nth your currently owned metal. (to save metal for prestiges)', 'value', -1, null, 'Buildings');
-    createSetting('MaxNursery', 'Max Nurseries', 'Advanced. Recommend: -1 until you reach Magma (z230+)', 'value', '-1', null, "Buildings");
-    createSetting('NoNurseriesUntil', 'No Nurseries Until z', 'Builds Nurseries starting from this zone. -1 to build from when they are unlocked. ', 'value', '-1', null, 'Buildings');
     createSetting('NurseryWall', 'Nursery Wall', "Same as Gym Wall, but for nurseries. This setting works along the other nursery limiters, including advanced nurseries.", 'value', '100', null, 'Buildings');
-    createSetting('AdvancedNurseries', 'Advanced Nurseries', "If enabled AND your HZE is higher than 230 (it acts as if disabled otherwise), AT will only buy nurseries if you need more health, don't need more damage (because then you'd have to farm anyway), AND you have more map stacks than the <b>Map MapBonus Health</b> setting. Also, it won't buy nurseries while farming for the spire. <b>Recommended: Always On.</b>", 'boolean', 'true', null, 'Buildings');
 
     //Line 4
-    createSetting('GatewayWall', 'Gateway Wall', "Same as Gym Wall and Nursery Wall, but for Gateways.", 'value', '100', null, 'Buildings');
-    createSetting('GemEfficiencyIgnoresLimit', 'Gem Eff Ignores Limit', "If enabled, AT will buy gem housing (Mansion, Hotel, ..., Collectors) above the limits defined by MaxMansion, MaxHotel, etc, as long as that building is the most efficient thing to buy in Housing/Gem. <b>This is mostly cosmetic</b>, since by the time you start limiting those buildings, they are only the most efficient if they cost almost nothing. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
-    createSetting('FoodEfficiencyIgnoresLimit', 'Food Eff Ignores Limit', "Similar to Gem Efficiency Ignores Limit, but with one big difference. It considers all forms of housing that uses food, but it only buys Huts and Houses, which means that if another building is the most food efficient one, it'll wait until it isn't anymore (because something else brought them, like Gem Efficiency or the user). This behavior saves food, and actually does so by enforcing gem efficiency. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('MaxNursery', 'Max Nurseries', 'Advanced. Recommend: -1 until you reach Magma (z230+)', 'value', '-1', null, "Buildings");
+    createSetting('NoNurseriesUntil', 'No Nurseries Until z', 'Builds Nurseries starting from this zone. -1 to build from when they are unlocked. ', 'value', '-1', null, 'Buildings');
+    createSetting('AdvancedNurseries', 'Advanced Nurseries', "If enabled AND your HZE is higher than 230 (it acts as if disabled otherwise), AT will only buy nurseries if you need more health, don't need more damage (because then you'd have to farm anyway), AND you have more map stacks than the <b>Map MapBonus Health</b> setting. Also, it won't buy nurseries while farming for the spire. <b>Recommended: Always On.</b>", 'boolean', 'true', null, 'Buildings');
 
 
     //RBuildings
@@ -1546,9 +1546,9 @@ function updateCustomButtons() {
     (!radonon && bwRewardUnlocked("AutoStructure") == true && game.talents.deciBuild.purchased) ? turnOn("hidebuildings") : turnOff("hidebuildings");
     (!radonon && !fuckbuilding && !foodNoLimit) ? turnOn("MaxHut") : turnOff("MaxHut");
     (!radonon && !fuckbuilding && !foodNoLimit) ? turnOn("MaxHouse") : turnOff("MaxHouse");
-    (!radonon && !fuckbuilding && !gemNoLimit && !foodNoLimit) ? turnOn("MaxMansion") : turnOff("MaxMansion");
-    (!radonon && !fuckbuilding && !gemNoLimit && !foodNoLimit) ? turnOn("MaxHotel") : turnOff("MaxHotel");
-    (!radonon && !fuckbuilding && !gemNoLimit && !foodNoLimit) ? turnOn("MaxResort") : turnOff("MaxResort");
+    (!radonon && !fuckbuilding && (!gemNoLimit || !foodNoLimit)) ? turnOn("MaxMansion") : turnOff("MaxMansion");
+    (!radonon && !fuckbuilding && (!gemNoLimit || !foodNoLimit)) ? turnOn("MaxHotel") : turnOff("MaxHotel");
+    (!radonon && !fuckbuilding && (!gemNoLimit || !foodNoLimit)) ? turnOn("MaxResort") : turnOff("MaxResort");
     (!radonon && !fuckbuilding) ? turnOn("MaxGateway") : turnOff("MaxGateway");
     (!radonon && !fuckbuilding) ? turnOn("MaxWormhole") : turnOff("MaxWormhole");
     (!radonon && !fuckbuilding && !gemNoLimit) ? turnOn("MaxCollector") : turnOff("MaxCollector");
