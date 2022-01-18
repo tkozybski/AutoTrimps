@@ -94,10 +94,21 @@ var equipmentList = {
         Equip: false
     }
 };
-var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"}; 
-function equipEffect(a,b){if(b.Equip)return a[b.Stat+'Calculated'];var c=a.increase.by*a.owned,d=game.upgrades.Gymystic.done?game.upgrades.Gymystic.modifier+0.01*(game.upgrades.Gymystic.done-1):1,e=a.increase.by*(a.owned+1)*d;return e-c}
-function equipCost(a,b){var c=parseFloat(getBuildingItemPrice(a,b.Resource,b.Equip,1));return c=b.Equip?Math.ceil(c*Math.pow(1-game.portal.Artisanistry.modifier,game.portal.Artisanistry.level)):Math.ceil(c*Math.pow(1-game.portal.Resourceful.modifier,game.portal.Resourceful.level)),c}
+var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};
 function PrestigeValue(a){var b=game.upgrades[a].prestiges,c=game.equipment[b],d;d=c.blockNow?"block":"undefined"==typeof c.health?"attack":"health";var e=Math.round(c[d]*Math.pow(1.19,c.prestige*game.global.prestige[d]+1));return e}
+
+function equipEffect(equip, equipInfo, levelsToBuy = 1) {
+    if (equipInfo.Equip) return equip[equipInfo.Stat + 'Calculated'] * levelsToBuy;
+    var c = equip.increase.by * equip.owned,
+        d = game.upgrades.Gymystic.done ? game.upgrades.Gymystic.modifier + 0.01 * (game.upgrades.Gymystic.done - 1) : 1,
+        e = equip.increase.by * (equip.owned + 1) * d;
+    return e - c
+}
+
+function equipCost(a, b, levelsToBuy = 1) {
+    var c = parseFloat(getBuildingItemPrice(a, b.Resource, b.Equip, levelsToBuy));
+    return c = b.Equip ? Math.ceil(c * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)) : Math.ceil(c * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)), c
+}
 
 function evaluateEquipmentEfficiency(equipName) {
     var equip = equipmentList[equipName];
