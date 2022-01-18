@@ -3,13 +3,6 @@ MODULES["buildings"].storageMainCutoff = 0.85;
 MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
-//Psycho-Ray
-MODULES["buildings"].gatewayWall = 1000;
-MODULES["buildings"].nurseryWall = 10;
-MODULES["buildings"].gemEfficiencyIgnoresLimit = true;
-MODULES["buildings"].foodEfficiencyIgnoresLimit = true;
-MODULES["buildings"].advancedNurseries = true; //Use on Magma. HIGHLY EXPERIMENTAL
-
 //Helium
 
 var housingList = ['Hut', 'House', 'Mansion', 'Hotel', 'Resort', 'Gateway', 'Collector', 'Warpstation'];
@@ -74,21 +67,21 @@ function advancedNurseries() {
     var c = game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
     var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getMapCutOff();
     var e = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || getPageSetting('MaxMapBonushealth') == 0;
-    var f = !preSpireFarming || !MODULES.buildings.advancedNurseries;
-    var off = !MODULES["buildings"].advancedNurseries || game.stats.highestLevel.valueTotal() < 230;
+    var f = !preSpireFarming || !getPageSetting('AdvancedNurseries');
+    var off = !getPageSetting('AdvancedNurseries') || game.stats.highestLevel.valueTotal() < 230;
     return off || (a && b && c && d && e && f);
 }
 
 function buyFoodEfficientHousing() {
     //Init
-    var ignoreLimit = MODULES["buildings"].foodEfficiencyIgnoresLimit
+    var ignoresLimit = getPageSetting('FoodEfficiencyIgnoresLimit')
     var unlockedHousing = ["Hut", "House", "Mansion", "Hotel", "Resort"].filter(b => !game.buildings[b].locked);
 
     //Resets Border Color
     unlockedHousing.forEach(b => document.getElementById(b).style.border = "1px solid #FFFFFF")
 
     //Checks for Limits
-    if (!ignoreLimit) {
+    if (!ignoresLimit) {
         unlockedHousing.filter(b => {
             //Filter out buildings that are past the limits
             if (game.buildings[b].owned < getPageSetting('Max' + b) || getPageSetting('Max' + b) < 1)
@@ -103,14 +96,14 @@ function buyFoodEfficientHousing() {
     //Determines Food Efficiency for each housing
     var buildOrder = unlockedHousing.map(b => ({
         'name': b,
-        'ratio': getBuildingItemPrice(game.buildings[b], "food", false, 1) / building.increase.by
+        'ratio': getBuildingItemPrice(game.buildings[b], "food", false, 1) / game.buildings[b].increase.by
     }));
 
     //Grabs the most Food Efficient Housing
     bestFoodBuilding = buildOrder.reduce((best, current) => current.ratio < best.ratio ? current : best)
 
     //If Food Efficiency Ignores Limit is enabled, then it only buy Huts and Houses here
-    if (!ignoreLimit || bestFoodBuilding.name in ["Hut", "House"]) {
+    if (!ignoresLimit || bestFoodBuilding.name in ["Hut", "House"]) {
         document.getElementById(bestFoodBuilding.name).style.border = "1px solid #00CC01";
         safeBuyBuilding(bestFoodBuilding.name);
     }
@@ -139,13 +132,13 @@ function buyGemEfficientHousing() {
     for (var best in keysSorted) {
         var max = getPageSetting('Max' + keysSorted[best]);
         if (max === false) max = -1;
-        if (game.buildings[keysSorted[best]].owned < max || max == -1 || (MODULES["buildings"].gemEfficiencyIgnoresLimit && keysSorted[best] != "Gateway")) {
+        if (game.buildings[keysSorted[best]].owned < max || max == -1 || (getPageSetting('GemEfficiencyIgnoresLimit') && keysSorted[best] != "Gateway")) {
             bestBuilding = keysSorted[best];
             document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
 
             //Gateway Wall
-            if (bestBuilding == "Gateway" && MODULES["buildings"].gatewayWall > 1) {
-                if (getBuildingItemPrice(game.buildings.Gateway, "fragments", false, 1) > (game.resources.fragments.owned / MODULES["buildings"].gatewayWall)) {
+            if (bestBuilding == "Gateway" && getPageSetting('GatewayWall') > 1) {
+                if (getBuildingItemPrice(game.buildings.Gateway, "fragments", false, 1) > (game.resources.fragments.owned / getPageSetting('GatewayWall'))) {
                     document.getElementById(bestBuilding).style.border = "1px solid orange";
                     bestBuilding = null;
                     continue;
@@ -267,7 +260,7 @@ function buyBuildings() {
     //Nurseries
     if (game.buildings.Nursery.locked == 0 && !hidebuild && (advancedNurseries() && nurseryZoneOk && maxNurseryOk || nurseryPreSpire || dailyNurseryPreSpire)) {
         //Nursery Wall
-        var nurseryWallpct = MODULES["buildings"].nurseryWall;
+        var nurseryWallpct = getPageSetting('NurseryWall');
         if (nurseryWallpct <= 1 || getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) < (game.resources.gems.owned / nurseryWallpct))
             safeBuyBuilding('Nursery');
     }

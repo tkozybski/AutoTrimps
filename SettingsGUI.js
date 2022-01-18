@@ -418,12 +418,12 @@ function initializeAllSettings() {
     createSetting('MaxNursery', 'Max Nurseries', 'Advanced. Recommend: -1 until you reach Magma (z230+)', 'value', '-1', null, "Buildings");
     createSetting('NoNurseriesUntil', 'No Nurseries Until z', 'Builds Nurseries starting from this zone. -1 to build from when they are unlocked. ', 'value', '-1', null, 'Buildings');
     createSetting('NurseryWall', 'Nursery Wall', "Same as Gym Wall, but for nurseries. This setting works along the other nursery limiters, including advanced nurseries.", 'value', '100', null, 'Buildings');
-    createSetting('Advanced Nurseries', 'No VMs', "If enabled AND your HZE is higher than 230 (it acts as if disabled otherwise), AT will only buy nurseries if you need more health, don't need more damage (because then you'd have to farm anyway), AND you have more map stacks than the <b>Map MapBonus Health</b> setting. Also, it won't buy nurseries while farming for the spire. <b>Recommended: Always On.</b>", 'boolean', 'true', null, 'Buildings');
+    createSetting('AdvancedNurseries', 'Advanced Nurseries', "If enabled AND your HZE is higher than 230 (it acts as if disabled otherwise), AT will only buy nurseries if you need more health, don't need more damage (because then you'd have to farm anyway), AND you have more map stacks than the <b>Map MapBonus Health</b> setting. Also, it won't buy nurseries while farming for the spire. <b>Recommended: Always On.</b>", 'boolean', 'true', null, 'Buildings');
 
     //Line 4
     createSetting('GatewayWall', 'Gateway Wall', "Same as Gym Wall and Nursery Wall, but for Gateways.", 'value', '100', null, 'Buildings');
-    createSetting('GemEfficiencyIgnoreLimit', 'Gem Efficiency Ignores Limit', "If enabled, AT will buy gem housing (Mansion, Hotel, ..., Collectors) above the limits defined by MaxMansion, MaxHotel, etc, as long as that building is the most efficient thing to buy in Housing/Gem. <b>This is mostly cosmetic</b>, since by the time you start limiting those buildings, they are only the most efficient if they cost almost nothing. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
-    createSetting('FoodEfficiencyIgnoreLimit', 'Food Efficiency Ignores Limit', "Similar to Gem Efficiency Ignores Limit, but with one big difference. It considers all forms of housing that uses food, but it only buys Huts and Houses, which means that if another building is the most food efficient one, it'll wait until it isn't anymore (because something else brought them, like Gem Efficiency or the user). This behavior saves food, and actually does so by enforcing gem efficiency. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('GemEfficiencyIgnoresLimit', 'Gem Eff Ignores Limit', "If enabled, AT will buy gem housing (Mansion, Hotel, ..., Collectors) above the limits defined by MaxMansion, MaxHotel, etc, as long as that building is the most efficient thing to buy in Housing/Gem. <b>This is mostly cosmetic</b>, since by the time you start limiting those buildings, they are only the most efficient if they cost almost nothing. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('FoodEfficiencyIgnoresLimit', 'Food Eff Ignores Limit', "Similar to Gem Efficiency Ignores Limit, but with one big difference. It considers all forms of housing that uses food, but it only buys Huts and Houses, which means that if another building is the most food efficient one, it'll wait until it isn't anymore (because something else brought them, like Gem Efficiency or the user). This behavior saves food, and actually does so by enforcing gem efficiency. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
 
 
     //RBuildings
@@ -1535,21 +1535,23 @@ function updateCustomButtons() {
     !radonon && getPageSetting('c2runnerstart') == true ? turnOn("c2runnerpercent"): turnOff("c2runnerpercent");
 
 
-    
+
     //Buildings
+    var gemNoLimit = getPageSetting('GemEfficiencyIgnoresLimit');
+    var foodNoLimit = getPageSetting('FoodEfficiencyIgnoresLimit');
+    var fuckbuilding = (bwRewardUnlocked("AutoStructure") == true && game.talents.deciBuild.purchased && getPageSetting('hidebuildings')==true && getPageSetting('BuyBuildingsNew')==0);
     !radonon ? turnOn("BuyBuildingsNew"): turnOff("BuyBuildingsNew");
     !radonon ? turnOn("MaxGym"): turnOff("MaxGym");
     !radonon ? turnOn("GymWall"): turnOff("GymWall");
-    var fuckbuilding = (bwRewardUnlocked("AutoStructure") == true && game.talents.deciBuild.purchased && getPageSetting('hidebuildings')==true && getPageSetting('BuyBuildingsNew')==0);
     (!radonon && bwRewardUnlocked("AutoStructure") == true && game.talents.deciBuild.purchased) ? turnOn("hidebuildings") : turnOff("hidebuildings");
-    (!radonon && !fuckbuilding) ? turnOn("MaxHut") : turnOff("MaxHut");
-    (!radonon && !fuckbuilding) ? turnOn("MaxHouse") : turnOff("MaxHouse");
-    (!radonon && !fuckbuilding) ? turnOn("MaxMansion") : turnOff("MaxMansion");
-    (!radonon && !fuckbuilding) ? turnOn("MaxHotel") : turnOff("MaxHotel");
-    (!radonon && !fuckbuilding) ? turnOn("MaxResort") : turnOff("MaxResort");
+    (!radonon && !fuckbuilding && !foodNoLimit) ? turnOn("MaxHut") : turnOff("MaxHut");
+    (!radonon && !fuckbuilding && !foodNoLimit) ? turnOn("MaxHouse") : turnOff("MaxHouse");
+    (!radonon && !fuckbuilding && !gemNoLimit && !foodNoLimit) ? turnOn("MaxMansion") : turnOff("MaxMansion");
+    (!radonon && !fuckbuilding && !gemNoLimit && !foodNoLimit) ? turnOn("MaxHotel") : turnOff("MaxHotel");
+    (!radonon && !fuckbuilding && !gemNoLimit && !foodNoLimit) ? turnOn("MaxResort") : turnOff("MaxResort");
     (!radonon && !fuckbuilding) ? turnOn("MaxGateway") : turnOff("MaxGateway");
     (!radonon && !fuckbuilding) ? turnOn("MaxWormhole") : turnOff("MaxWormhole");
-    (!radonon && !fuckbuilding) ? turnOn("MaxCollector") : turnOff("MaxCollector");
+    (!radonon && !fuckbuilding && !gemNoLimit) ? turnOn("MaxCollector") : turnOff("MaxCollector");
     (!radonon && !fuckbuilding) ? turnOn("MaxTribute") : turnOff("MaxTribute");
     (!radonon && !fuckbuilding) ? turnOn("MaxNursery") : turnOff("MaxNursery");
     (!radonon && !fuckbuilding) ? turnOn("NoNurseriesUntil") : turnOff("NoNurseriesUntil");
