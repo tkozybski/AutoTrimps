@@ -120,8 +120,8 @@ function evaluateEquipmentEfficiency(equipName) {
             equip.Stat = 'health';
         }
     }
-    var Effect = equipEffect(gameResource, equip);
-    var Cost = equipCost(gameResource, equip);
+    var Effect = equipEffect(gameResource, equip, getPageSetting('gearamounttobuy'));
+    var Cost = equipCost(gameResource, equip, getPageSetting('gearamounttobuy'));
     var Factor = Effect / Cost;
     var StatusBorder = 'white';
     var Wall = false;
