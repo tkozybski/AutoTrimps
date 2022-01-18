@@ -409,7 +409,7 @@ function initializeAllSettings() {
     createSetting('MaxCollector', 'Max Collectors', 'recommend: -1', 'value', '-1', null, "Buildings");
     createSetting('MaxGym', 'Max Gyms', 'Advanced. recommend: -1', 'value', '-1', null, "Buildings");
     createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1', null, "Buildings");
-    createSetting('GymWall', 'Gym Wall', 'Conserves Wood. Only buys 1 Gym when you can afford <b>X</b> gyms wood cost (at the first one\'s price, simple math). -1 or 0 to disable. In other words, only allows gyms that cost less than 1/nth your currently owned wood. (to save wood for nurseries for new z230+ Magma nursery strategy). Takes decimal numbers. (Identical to the Warpstation wall setting which is why its called that). Setting to 1 does nothing besides stopping gyms from being bought 2 at a time due to the mastery.', 'value', -1, null, 'Buildings'); //remove?
+    createSetting('GymWall', 'Gym Wall', 'Conserves Wood. Only buys 1 Gym when you can afford <b>X</b> gyms wood cost (at the first one\'s price, simple math). -1 or 0 to disable. In other words, only allows gyms that cost less than 1/nth your currently owned wood. (to save wood for nurseries for new z230+ Magma nursery strategy). Takes decimal numbers. (Identical to the Warpstation wall setting which is why its called that). Setting to 1 does nothing besides stopping gyms from being bought 2 at a time due to the mastery.', 'value', -1, null, 'Buildings');
 
     //Line 3
     createSetting('FirstGigastation', 'First Gigastation', 'How many warpstations to buy before your first gigastation', 'value', '20', null, "Buildings");
@@ -417,6 +417,14 @@ function initializeAllSettings() {
     createSetting('WarpstationWall3', 'Warpstation Wall', 'Conserves Metal. Only buys 1 Warpstation when you can afford <b>X</b> warpstations metal cost (at the first one\'s price, simple math). -1, 0, 1 = disable. In other words, only allows warps that cost less than 1/nth your currently owned metal. (to save metal for prestiges)', 'value', -1, null, 'Buildings');
     createSetting('MaxNursery', 'Max Nurseries', 'Advanced. Recommend: -1 until you reach Magma (z230+)', 'value', '-1', null, "Buildings");
     createSetting('NoNurseriesUntil', 'No Nurseries Until z', 'Builds Nurseries starting from this zone. -1 to build from when they are unlocked. ', 'value', '-1', null, 'Buildings');
+    createSetting('NurseryWall', 'Nursery Wall', "Same as Gym Wall, but for nurseries. This setting works along the other nursery limiters, including advanced nurseries.", 'value', '100', null, 'Buildings');
+    createSetting('Advanced Nurseries', 'No VMs', "If enabled AND your HZE is higher than 230 (it acts as if disabled otherwise), AT will only buy nurseries if you need more health, don't need more damage (because then you'd have to farm anyway), AND you have more map stacks than the <b>Map MapBonus Health</b> setting. Also, it won't buy nurseries while farming for the spire. <b>Recommended: Always On.</b>", 'boolean', 'true', null, 'Buildings');
+
+    //Line 4
+    createSetting('GatewayWall', 'Gateway Wall', "Same as Gym Wall and Nursery Wall, but for Gateways.", 'value', '100', null, 'Buildings');
+    createSetting('GemEfficiencyIgnoreLimit', 'Gem Efficiency Ignores Limit', "If enabled, AT will buy gem housing (Mansion, Hotel, ..., Collectors) above the limits defined by MaxMansion, MaxHotel, etc, as long as that building is the most efficient thing to buy in Housing/Gem. <b>This is mostly cosmetic</b>, since by the time you start limiting those buildings, they are only the most efficient if they cost almost nothing. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+    createSetting('FoodEfficiencyIgnoreLimit', 'Food Efficiency Ignores Limit', "Similar to Gem Efficiency Ignores Limit, but with one big difference. It considers all forms of housing that uses food, but it only buys Huts and Houses, which means that if another building is the most food efficient one, it'll wait until it isn't anymore (because something else brought them, like Gem Efficiency or the user). This behavior saves food, and actually does so by enforcing gem efficiency. If this option is enabled, you may actually disable the regular limiters for these buildings.", 'boolean', 'true', null, 'Buildings');
+
 
     //RBuildings
 

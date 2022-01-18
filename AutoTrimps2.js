@@ -103,6 +103,7 @@ var ATMODULES = {};
 var ATmoduleList = [];
 
 var bestBuilding;
+var bestFoodBuilding;
 var scienceNeeded;
 var RscienceNeeded;
 var breedFire = false;

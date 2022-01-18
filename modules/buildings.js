@@ -6,7 +6,6 @@ MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 //Psycho-Ray
 MODULES["buildings"].gatewayWall = 1000;
 MODULES["buildings"].nurseryWall = 10;
-MODULES["buildings"].nurserySpireWall = 10;
 MODULES["buildings"].gemEfficiencyIgnoresLimit = true;
 MODULES["buildings"].foodEfficiencyIgnoresLimit = true;
 MODULES["buildings"].advancedNurseries = true; //Use on Magma. HIGHLY EXPERIMENTAL
@@ -81,36 +80,39 @@ function advancedNurseries() {
 }
 
 function buyFoodEfficientHousing() {
-    var foodHousing = ["Hut", "House", "Mansion", "Hotel", "Resort"];
-    var unlockedHousing = [];
-    for (var foodHouse in foodHousing) {
-        if (game.buildings[foodHousing[foodHouse]].locked === 0) {
-            unlockedHousing.push(foodHousing[foodHouse]);
-        }
+    //Init
+    var ignoreLimit = MODULES["buildings"].foodEfficiencyIgnoresLimit
+    var unlockedHousing = ["Hut", "House", "Mansion", "Hotel", "Resort"].filter(b => !game.buildings[b].locked);
+
+    //Resets Border Color
+    unlockedHousing.forEach(b => document.getElementById(b).style.border = "1px solid #FFFFFF")
+
+    //Checks for Limits
+    if (!ignoreLimit) {
+        unlockedHousing.filter(b => {
+            //Filter out buildings that are past the limits
+            if (game.buildings[b].owned < getPageSetting('Max' + b) || getPageSetting('Max' + b) < 1)
+                return true;
+
+            //But paints their border before removing them
+            document.getElementById(b).style.border = "1px solid orange"
+            return false
+        })
     }
-    var buildorder = [];
-    for (var house in unlockedHousing) {
-        var building = game.buildings[unlockedHousing[house]];
-        var cost = getBuildingItemPrice(building, "food", false, 1);
-        var ratio = cost / building.increase.by;
-        buildorder.push({
-            'name': unlockedHousing[house],
-            'ratio': ratio
-        });
-        document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
-    }
-    buildorder.sort(function (a, b) {
-        return a.ratio - b.ratio;
-    });
-    var bestfoodBuilding = null;
-    var bb = buildorder[0];
-    var max = getPageSetting('Max' + bb.name);
-    if (game.buildings[bb.name].owned < max || max == -1 || MODULES["buildings"].foodEfficiencyIgnoresLimit && (bb.name == "Hut" || bb.name == "House")) {
-        bestfoodBuilding = bb.name;
-    }
-    if (bestfoodBuilding) {
-        document.getElementById(bestfoodBuilding).style.border = "1px solid #00CC01";
-        safeBuyBuilding(bestfoodBuilding);
+
+    //Determines Food Efficiency for each housing
+    var buildOrder = unlockedHousing.map(b => ({
+        'name': b,
+        'ratio': getBuildingItemPrice(game.buildings[b], "food", false, 1) / building.increase.by
+    }));
+
+    //Grabs the most Food Efficient Housing
+    bestFoodBuilding = buildOrder.reduce((best, current) => current.ratio < best.ratio ? current : best)
+
+    //If Food Efficiency Ignores Limit is enabled, then it only buy Huts and Houses here
+    if (!ignoreLimit || bestFoodBuilding.name in ["Hut", "House"]) {
+        document.getElementById(bestFoodBuilding.name).style.border = "1px solid #00CC01";
+        safeBuyBuilding(bestFoodBuilding.name);
     }
 }
 
@@ -140,15 +142,15 @@ function buyGemEfficientHousing() {
         if (game.buildings[keysSorted[best]].owned < max || max == -1 || (MODULES["buildings"].gemEfficiencyIgnoresLimit && keysSorted[best] != "Gateway")) {
             bestBuilding = keysSorted[best];
             document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
-            
+
             //Gateway Wall
             if (bestBuilding == "Gateway" && MODULES["buildings"].gatewayWall > 1) {
                 if (getBuildingItemPrice(game.buildings.Gateway, "fragments", false, 1) > (game.resources.fragments.owned / MODULES["buildings"].gatewayWall)) {
                     document.getElementById(bestBuilding).style.border = "1px solid orange";
-	                bestBuilding = null;
+                    bestBuilding = null;
                     continue;
                 }
-	        }
+            }
 
             var skipWarp = false;
             if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
@@ -170,13 +172,13 @@ function buyGemEfficientHousing() {
                     var howMany = calculateMaxAfford(game.buildings["Warpstation"], true);
                     var needCoord = game.upgrades.Coordination.allowed - game.upgrades.Coordination.done > 0;
                     var coordReplace = (game.portal.Coordinated.level) ? (25 * Math.pow(game.portal.Coordinated.modifier, game.portal.Coordinated.level)).toFixed(3) : 25;
-                    if (!canAffordCoordinationTrimps()){
+                    if (!canAffordCoordinationTrimps()) {
                         var nextCount = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : game.resources.trimps.maxSoldiers;
                         var amtToGo = ((nextCount * 3) - game.resources.trimps.realMax());
                         var increase = toTip.increase.by;
                         if (game.portal.Carpentry.level && toTip.increase.what == "trimps.max") increase *= Math.pow(1.1, game.portal.Carpentry.level);
                         if (game.portal.Carpentry_II.level && toTip.increase.what == "trimps.max") increase *= (1 + (game.portal.Carpentry_II.modifier * game.portal.Carpentry_II.level));
-                        if (amtToGo < increase*howMany)
+                        if (amtToGo < increase * howMany)
                             bestBuilding = "Warpstation";
                     }
                 }

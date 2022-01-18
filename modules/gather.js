@@ -13,7 +13,6 @@ function calcTPS() {
 }
 
 function calcMaxTraps() {
-	//TODO consider minZone > 1
 	//Tries to keep in mind the longest duration any zone has lasted in this portal
 	var time = getZoneSeconds();
 	if (game.global.world == 1) maxZoneDuration = time;
@@ -54,7 +53,6 @@ function manualLabor2() {
 	var needMiner = !game.upgrades.Miners.done && game.global.challengeActive != "Metal";
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
-
 
 	//Verifies if trapping is still relevant
 	var trappingIsRelevant = trapperTrapUntilFull || calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 10;
