@@ -104,6 +104,12 @@ function manualLabor2() {
 		return;
 	}
 
+	//Highest Priority Metal gathering for Metal Challenge
+	if (game.global.challengeActive != "Metal" && !game.global.mapsUnlocked) {
+		setGather('metal');
+		return;
+	}
+
 	//Mid Priority Trapping
 	if (trapTrimpsOK && trappingIsRelevant && notFullPop && !lowOnTraps && !trapBuffering) { setGather('trimps'); return; }
 
