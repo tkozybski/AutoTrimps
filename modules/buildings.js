@@ -100,6 +100,7 @@ function buyFoodEfficientHousing() {
     }));
 
     //Grabs the most Food Efficient Housing
+    if (buildOrder.length == 0) return;
     bestFoodBuilding = buildOrder.reduce((best, current) => current.ratio < best.ratio ? current : best)
 
     //If Food Efficiency Ignores Limit is enabled, then it only buy Huts and Houses here
