@@ -44,10 +44,12 @@ function manualLabor2() {
 	if (maxTrapsReady) maxTrapBuffering = false;
 
 	// Init - Science
-	var needScience = game.resources.science.owned < scienceNeeded;
-	var needBattle = !game.upgrades.Battle.done && game.resources.science.owned < 10;
-	var needScientists = game.upgrades.Scientists.allowed && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && document.getElementById('science').style.visibility != 'hidden';
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
+	var scienceAvailable = document.getElementById('science').style.visibility != 'hidden';
+	var needBattle = !game.upgrades.Battle.done && game.resources.science.owned < 10;
+	var needScience = game.resources.science.owned < scienceNeeded;
+	var needScientists = game.global.challengeActive != 'Scientist' && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && scienceAvailable;
+
 
 	//Init - Others
 	var needMiner = !game.upgrades.Miners.done && game.global.challengeActive != "Metal";
