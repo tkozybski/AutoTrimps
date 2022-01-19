@@ -151,7 +151,7 @@ function buyUpgrades() {
         var needScientists = game.global.challengeActive != 'Scientist' && !game.upgrades.Scientists.done;
         if (upgrade == 'Shieldblock' && !getPageSetting('BuyShieldblock')) continue;
         if (upgrade == 'Bloodlust' && game.global.challengeActive == 'Scientist' && getPageSetting('BetterAutoFight')) continue;
-        if (upgrade == 'Bloodlust' && needScientists && game.resources.science.owned < 160 && game.resources.food.owned < 250) continue;
+        if (upgrade == 'Bloodlust' && needScientists && game.resources.science.owned < 160 && game.resources.food.owned < 450) continue;
         if (upgrade == 'Bloodlust' && needMiner && needScientists && game.resources.science.owned < 220) continue;
         if (upgrade == 'Bloodlust' && needMiner && game.resources.science.owned < 120) continue;
 
