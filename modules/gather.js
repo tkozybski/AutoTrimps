@@ -81,7 +81,7 @@ function manualLabor2() {
 	}
 
 	//Highest Priority Science gathering if we have less science than needed to buy Battle, Miner and Scientists
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists || needMiner && game.resources.science < 60)) {
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists || needMiner && game.resources.science.owned < 60)) {
 		setGather('science');
 		return;
 	}
