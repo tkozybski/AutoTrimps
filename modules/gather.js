@@ -52,7 +52,7 @@ function manualLabor2() {
 
 
 	//Init - Others
-	var needMiner = !game.upgrades.Miners.done && game.global.challengeActive != "Metal";
+	var needMiner = game.global.challengeActive != "Metal" && !game.upgrades.Miners.done;
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 
