@@ -104,7 +104,7 @@ function buyFoodEfficientHousing() {
     bestFoodBuilding = buildOrder.reduce((best, current) => current.ratio < best.ratio ? current : best)
 
     //If Food Efficiency Ignores Limit is enabled, then it only buy Huts and Houses here
-    if (!ignoresLimit || bestFoodBuilding.name in ["Hut", "House"]) {
+    if (!ignoresLimit || ["Hut", "House"].includes(bestFoodBuilding.name)) {
         document.getElementById(bestFoodBuilding.name).style.border = "1px solid #00CC01";
         safeBuyBuilding(bestFoodBuilding.name);
     }
