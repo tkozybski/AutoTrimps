@@ -149,7 +149,9 @@ function buyUpgrades() {
         //Other
         if (upgrade == 'Shieldblock' && !getPageSetting('BuyShieldblock')) continue;
         if (upgrade == 'Bloodlust' && game.global.challengeActive == 'Scientist' && getPageSetting('BetterAutoFight')) continue;
-        
+        if (upgrade == 'Bloodlust' && game.global.challengeActive != 'Scientist' && !game.upgrades.Scientists.done && game.resources.science < 220 && game.resources.food < 250) continue;
+        if (upgrade == 'Bloodlust' && game.global.challengeActive != "Metal" && !game.upgrades.Miners.done && game.resources.science < 120) continue;
+
         if (game.upgrades.Scientists.done < game.upgrades.Scientists.allowed && upgrade != 'Scientists' && upgrade != 'Miners') continue;
         buyUpgrade(upgrade, true, true);
         debug('Upgraded ' + upgrade, "upgrades", "*upload2");
