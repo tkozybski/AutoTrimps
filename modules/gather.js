@@ -82,12 +82,6 @@ function manualLabor2() {
 		}
 	}
 
-	//Highest Priority Science gathering if we have less science than needed to buy Battle, Miner and Scientists
-	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists || needMiner && game.resources.science.owned < 60)) {
-		setGather('science');
-		return;
-	}
-
 	//Build if we don't have foremany, there are 2+ buildings in the queue, or if we can speed up something other than a trap
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 100 && game.global.buildingsQueue[0] != 'Trap.1'))) {
 		setGather('buildings');
@@ -97,6 +91,12 @@ function manualLabor2() {
 	//Also Build if we have storage buildings on top of the queue
 	if (!bwRewardUnlocked("Foremany") && game.global.buildingsQueue.length && game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1') {
 		setGather('buildings');
+		return;
+	}
+
+	//Highest Priority Science gathering if we have less science than needed to buy Battle, Miner and Scientists
+	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists || needMiner && game.resources.science.owned < 60)) {
+		setGather('science');
 		return;
 	}
 
