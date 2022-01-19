@@ -60,7 +60,7 @@ function manualLabor2() {
 	//Highest Priority Food/Wood for traps (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
 		//If not building and not trapping
-		if (!fullOfTraps && game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)) {
+		if (!trapsReady && game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)) {
 			//Gather food or wood
 			if (game.resources.food.owned < 10) { setGather('food'); return; }
 			else if (game.triggers.wood.done && game.resources.wood.owned < 10) { setGather('wood'); return; }
@@ -69,13 +69,16 @@ function manualLabor2() {
 
 	//High Priority Trapping (doing Trapper or without breeding trimps)
 	if (trapTrimpsOK && trappingIsRelevant && ((notFullPop && breedingTrimps < 4) || trapperTrapUntilFull)) {
-		//Bait trimps if we have traps
-		if (!lowOnTraps && !trapBuffering) { setGather('trimps'); return; }
-
-		//Or build them, if they are on the queue
-		else if (isBuildingInQueue('Trap') || safeBuyBuilding('Trap')) {
+		//Build traps if needed
+		if ((lowOnTraps || trapBuffering && !trapsReady) && (isBuildingInQueue('Trap') || safeBuyBuilding('Trap'))) {
 			trapBuffering = true;
 			setGather('buildings');
+			return;
+		}
+
+		//Or Bait if we have enough traps
+		else if (!lowOnTraps && !trapBuffering) {
+			setGather('trimps');
 			return;
 		}
 	}
