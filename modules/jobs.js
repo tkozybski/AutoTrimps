@@ -89,19 +89,16 @@ function buyJobs() {
     }
 
     if (game.global.world == 1 && game.global.totalHeliumEarned <= 5000) {
-        //if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9) {
-            if (game.resources.food.owned > 5 && freeWorkers > 0) {
-                if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned)
-                    safeBuyJob('Farmer', 1);
-                else if (game.jobs.Farmer.owned > game.jobs.Lumberjack.owned && !game.jobs.Lumberjack.locked)
-                    safeBuyJob('Lumberjack', 1);
-            }
-            freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (game.resources.food.owned > 20 && freeWorkers > 0) {
-                if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned && !game.jobs.Miner.locked)
-                    safeBuyJob('Miner', 1);
-            }
-        //}
+        if (game.resources.food.owned > 5 && freeWorkers > 0) {
+            if (getPageSetting('MaxScientists') != 0 && game.jobs.Scientist.owned < 1)
+                safeBuyJob('Scientist', 1);
+            else if (!game.jobs.Miner.locked && game.jobs.Miner.owned < game.jobs.Lumberjack.owned)
+                safeBuyJob('Miner', 1);
+            else if (!game.jobs.Lumberjack.locked && game.jobs.Lumberjack.owned < game.jobs.Farmer.owned)
+                safeBuyJob('Lumberjack', 1);
+            else
+                safeBuyJob('Farmer', 1);
+        }
         return;
     } else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) {
         safeBuyJob('Farmer', 1);
