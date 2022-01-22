@@ -57,7 +57,7 @@ function manualLabor2() {
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 
 	//Verifies if trapping is still relevant
-	var trappingIsRelevant = trapperTrapUntilFull || calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 10;
+	var trappingIsRelevant = trapperTrapUntilFull || calcTPS() * (game.portal.Bait.level + 1) > breedingPS() / 10 && breedTimeRemaining() >= (1 / breedingPS());
 
 	//Highest Priority Food/Wood for traps (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
@@ -94,7 +94,7 @@ function manualLabor2() {
 		return;
 	}
 
-	//Highest Priority Science gathering if we have less science than needed to buy Battle, Miner and Scientists
+	//Highest Priority Research if we have less science than needed to buy Battle, Miner and Scientists
 	if (getPageSetting('ManualGather2') != 2 && researchAvailable && (needBattle || needScientists || needMiner && game.resources.science.owned < 60)) {
 		setGather('science');
 		return;

@@ -90,7 +90,7 @@ function buyJobs() {
 
     if (game.global.world == 1 && game.global.totalHeliumEarned <= 5000) {
         if (game.resources.food.owned > 5 && freeWorkers > 0) {
-            if (!game.jobs.Scientist.locked && game.jobs.Scientist.owned < 1 && getPageSetting('MaxScientists') != 0)
+            if (!game.jobs.Scientist.locked && game.jobs.Scientist.owned < 2 && getPageSetting('MaxScientists') != 0)
                 safeBuyJob('Scientist', 1);
             else if (!game.jobs.Miner.locked && game.jobs.Miner.owned < game.jobs.Lumberjack.owned)
                 safeBuyJob('Miner', 1);
