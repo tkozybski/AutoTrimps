@@ -67,7 +67,7 @@ function breedingPS() {
     var breeding = new DecimalBreed(trimps.owned).minus(trimps.employed);
 
     //Gets the modifier, then: 1.1x format -> 0.1 format -> 1.0 x breeding
-    return potencyMod().minus(1).mult(10).mul(breeding);
+    return potencyMod().minus(1).mul(10).mul(breeding);
 }
 
 function breedTotalTime() {
