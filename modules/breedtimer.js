@@ -58,7 +58,7 @@ function potencyMod() {
     if (game.jobs.Geneticist.owned > 0)
         potencyMod = potencyMod.mul(Math.pow(.98, game.jobs.Geneticist.owned));
 
-    return potencyMod;
+    return potencyMod.div(10).add(1);
 }
 
 function breedingPS() {
@@ -93,8 +93,7 @@ function breedTimeRemaining() {
 function ATGA2() {
 	if (game.jobs.Geneticist.locked == false && getPageSetting('ATGA2') == true && getPageSetting('ATGA2timer') > 0 && game.global.challengeActive != "Trapper"){
 		//Init
-		var trimps = game.resources.trimps;
-		var potencyMod = potencyMod();
+        var potencyMod = potencyMod();
         var timeRemaining = breedTimeRemaining();
 		var totalTime = breedTotalTime();
 
