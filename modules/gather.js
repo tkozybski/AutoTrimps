@@ -40,6 +40,7 @@ function manualLabor2() {
 	var trapsReady = game.buildings.Trap.owned >= minTraps + trapsBufferSize;
 	var fullOfTraps = game.buildings.Trap.owned >= maxTraps;
 	var maxTrapsReady = game.buildings.Trap.owned >= maxTraps + trapsBufferSize;
+	if (lowOnTraps) trapBuffering = true;
 	if (trapsReady) trapBuffering = false;
 	if (maxTrapsReady) maxTrapBuffering = false;
 
