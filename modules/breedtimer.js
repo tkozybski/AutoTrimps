@@ -73,7 +73,6 @@ function breedingPS() {
 function breedTotalTime() {
     //Init
     var trimps = game.resources.trimps;
-    var potencyMod = breedingPS();
     var trimpsMax = trimps.realMax();
     var maxBreedable = new DecimalBreed(trimpsMax).minus(trimps.employed);
     var breeding = maxBreedable.minus(trimps.getCurrentSend());
