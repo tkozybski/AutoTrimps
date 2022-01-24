@@ -583,7 +583,7 @@ function autoMap() {
                 }
 
                 //Trimple of Doom (Treasure, Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Meditate" || challenge == "Trapper");
+                challengeRequireMap = !runningC2 && (challenge == "Meditate" || challenge == "Trapper" || game.portal.Relentlessness.locked);
                 var treasure = game.mapUnlocks.AncientTreasure.canRunOnce && Math.abs(getPageSetting('TrimpleZ')) >= 33;
                 if (theMap.name == 'Trimple Of Doom' && (challengeRequireMap || treasure || shouldSpeedRun(game.achievements.doomTimed))) {
                     if (game.global.world < Math.abs(getPageSetting('TrimpleZ')) || getMapRatio(theMap) > 1) continue;
