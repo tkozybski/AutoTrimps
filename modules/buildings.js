@@ -240,8 +240,7 @@ function buyBuildings() {
         }
 	
 	    //Buy Gym
-        if (!needGymystic && !skipGym) safeBuyBuilding('Gym');
-       	needGymystic = false;
+        if (!needGymystic() && !skipGym) safeBuyBuilding('Gym');
     }
     
     //Tributes:

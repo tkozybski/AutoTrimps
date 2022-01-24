@@ -114,6 +114,10 @@ function firstGiga(forced) {
     return true;
 }
 
+function needGymystic() {
+    return game.upgrades['Gymystic'].allowed - game.upgrades['Gymystic'].done > 0;
+}
+
 function buyUpgrades() {
     //For every upgrade available...
     for (var upgrade in upgradeList) {

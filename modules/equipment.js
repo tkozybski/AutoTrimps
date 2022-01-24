@@ -183,9 +183,7 @@ function evaluateEquipmentEfficiency(equipName) {
     if (gameResource.level < 2 && getPageSetting('always2') == true) {
         Factor = 999 - gameResource.prestige;
     }
-    if (equipName == 'Shield' && gameResource.blockNow &&
-        game.upgrades['Gymystic'].allowed - game.upgrades['Gymystic'].done > 0) {
-        needGymystic = true;
+    if (equipName == 'Shield' && gameResource.blockNow && needGymystic()) {
         Factor = 0;
         Wall = true;
         StatusBorder = 'orange';
@@ -347,7 +345,7 @@ function autoLevelEquipment() {
                 $equipUpgrade.style.color = evaluation.StatusBorder;
             if (evaluation.StatusBorder == 'yellow' && $equipUpgrade)
                 $equipUpgrade.style.color = 'white';
-            if (equipName == 'Gym' && needGymystic) {
+            if (equipName == 'Gym' && needGymystic()) {
                 $equipName.style.color = 'white';
                 $equipName.style.border = '1px solid white';
                 if ($equipUpgrade) {
@@ -392,7 +390,7 @@ function autoLevelEquipment() {
         if (eqName !== '') {
             var $eqName = document.getElementById(eqName);
             var DaThing = equipmentList[eqName];
-            if (eqName == 'Gym' && needGymystic) {
+            if (eqName == 'Gym' && needGymystic()) {
                 $eqName.style.color = 'white';
                 $eqName.style.border = '1px solid white';
                 continue;
