@@ -61,7 +61,7 @@ function manualLabor2() {
 	//Relevant means we gain at least 10% more trimps per sec while trapping (which basically stops trapping during later zones)
 	//And there is enough breed time remaining to open an entire trap (prevents wasting time and traps during early zones)
 	var trappingIsRelevant = trapperTrapUntilFull || breedingPS().div(10).lt(calcTPS() * (game.portal.Bait.level + 1));
-	var trapWontBeWasted = breedTimeRemaining().gte(1 / calcTPS()) || breedTimeRemaining().lte(DecimalBreed(0.1));
+	var trapWontBeWasted = breedTimeRemaining().gte(1 / calcTPS()) || game.global.playerGathering == "trimps" && breedTimeRemaining().lte(DecimalBreed(0.1));
 
 	//Highest Priority Food/Wood for traps (Early Game, when trapping is mandatory)
 	if (game.global.world <= 3 && game.global.totalHeliumEarned <= 500000) {
