@@ -185,7 +185,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
+function calcHealthRatio(stance, fullGeneticist, type, targetZone, mapDifficulty = 1) {
     //Pre Init
     if (!type) type = preVoidCheck ? "void" : "world";
     if (!targetZone) targetZone = game.global.world;
@@ -197,6 +197,9 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone) {
     //Our Health and Block
     var health = calcOurHealth(stance, fullGeneticist) / formationMod;
     var block = calcOurBlock(stance) / formationMod;
+
+    //Calc for maps
+    if (type == "map") return health / Math.max(mapDifficulty * calcEnemyAttack("map", targetZone) - block, 0);
 
     //Lead farms one zone ahead
     if (game.global.challengeActive == "Lead" && type == "world" && game.global.world%2 == 1) targetZone++;
