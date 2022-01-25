@@ -19,8 +19,6 @@ MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above 
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.scryerHDMult = 4; //This is a divisor to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON (Domination ignores this)
 MODULES.maps.scryerHitsMult = 8; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON (Domination ignores this)
-MODULES.maps.voidHDMult = 1; //This is a multiplier to your "mapCutOff and farming H:D", and only works at your void map zones
-MODULES.maps.voidHitsMult = 2; //This is a multiplier to your "numHitsSurvived", and only works at your void map zones
 MODULES.maps.spireHD = 4; //4 is actually 1 hit in D stance
 MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.magmaHitsSurvived = 2; //Your geneticists are frequently lagging 1-2 zones behind when speeding through magma, which is why this is important
@@ -175,7 +173,7 @@ function getMapHealthCutOff(pure) {
     //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
     if (preVoidCheck) {
         if (getPageSetting("scryvoidmaps")) cut *= MODULES.maps.scryerHitsMult;
-        return cut * MODULES.maps.voidHitsMult;
+        return cut * getPageSetting('VoidHitsMult');
     }
 
     //Scryer Multiplier (only if scrying on corrupted)
@@ -218,7 +216,7 @@ function getMapCutOff(pure) {
     if (wind && !c2 && autoStance && windMin && windCut) cut = getPageSetting("windcutoffmap");
 
     //Void and Scry cut off
-    if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
+    if (preVoidCheck) return cut * getPageSetting('VoidHDMult');
     if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / MODULES.maps.scryerHDMult;
 
     return cut;
@@ -232,7 +230,7 @@ function getFarmCutOff() {
     if (game.global.spireActive) return MODULES.maps.spireHD;
 
     //Void and Scry
-    if (preVoidCheck) return cut * MODULES.maps.voidHDMult;
+    if (preVoidCheck) return cut * getPageSetting('VoidHDMult');
     if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / MODULES.maps.scryerHDMult;
 
     return cut;
