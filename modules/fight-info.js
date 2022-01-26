@@ -88,7 +88,9 @@
 
 		//Glyph Icon
 		var icon = (customIcon) ? customIcon : pallet.icon
-		if (overrideSpecial || cell.special.length == 0) $cell.innerHTML = "<span class="+icon+"></span>";
+		var replaceable = ["fruit", "Metal", "gems", "freeMetals", "groundLumber", "Map"]
+		if (cell.special.length == 0 || overrideSpecial && replaceable.includes(cell.special))
+			$cell.innerHTML = "<span class="+icon+"></span>";
 	}
 
 	function Update() {
@@ -124,7 +126,7 @@
 			//Exotic cell
 			else if (cell.name.toLowerCase() in M["fightinfo"].exotics) {
 				var icon = M.fightinfo.allExoticIcons ? M.fightinfo.exotics[cell.name.toLowerCase()].icon : undefined;
-				updateCell($cell, cell, M.fightinfo.imp.exotic, icon);
+				updateCell($cell, cell, M.fightinfo.imp.exotic, icon, true);
 			}
 
 			//Powerful Imp
