@@ -45,15 +45,16 @@ function manualLabor2() {
 	if (maxTrapsReady) maxTrapBuffering = false;
 
 	// Init - Science
+	var firstFightOK = game.global.world > 1 || game.global.lastClearedCell >= 0;
 	var researchAvailable = document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden';
 	var scienceAvailable = document.getElementById('science').style.visibility != 'hidden';
 	var needBattle = !game.upgrades.Battle.done && game.resources.science.owned < 10;
 	var needScience = game.resources.science.owned < scienceNeeded;
-	var needScientists = game.global.challengeActive != 'Scientist' && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && scienceAvailable;
+	var needScientists = firstFightOK && game.global.challengeActive != 'Scientist' && !game.upgrades.Scientists.done && game.resources.science.owned < 100 && scienceAvailable;
 
 
 	//Init - Others
-	var needMiner = game.global.challengeActive != "Metal" && !game.upgrades.Miners.done;
+	var needMiner = firstFightOK && game.global.challengeActive != "Metal" && !game.upgrades.Miners.done;
 	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 
