@@ -88,7 +88,7 @@
 
 		//Glyph Icon
 		var icon = (customIcon) ? customIcon : pallet.icon
-		var replaceable = ["fruit", "Metal", "gems", "freeMetals", "groundLumber", "Map"]
+		var replaceable = ["fruit", "Metal", "gems", "freeMetals", "groundLumber", "Map", "Any"]
 		if (cell.special.length == 0 || overrideSpecial && replaceable.includes(cell.special))
 			$cell.innerHTML = "<span class="+icon+"></span>";
 	}
