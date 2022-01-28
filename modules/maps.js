@@ -237,9 +237,13 @@ function getFarmCutOff() {
 }
 
 function getMapRatio(map, customLevel, customDiff) {
-    var mapDmg = calcHDRatio((customLevel ? customLevel : map.level), "map") / getMapCutOff(true);
-    var mapHp = getMapHealthCutOff(true) / calcHealthRatio(false, true, "map", (customLevel ? customLevel : map.level));
-    return (customDiff ? customDiff : map.difficulty) * Math.max(mapDmg, mapHp);
+    //Init
+    var level = customLevel ? customLevel : map.level;
+    var diff = customDiff ? customDiff : map.difficulty;
+
+    var mapDmg = (calcHDRatio(level, "map") / diff) / getMapCutOff(true);
+    var mapHp = getMapHealthCutOff(true) / calcHealthRatio(false, true, "map", level, diff);
+    return Math.max(mapDmg, mapHp);
 }
 
 function autoMap() {
