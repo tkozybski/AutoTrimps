@@ -207,7 +207,7 @@ function buyBuildings() {
         if (getPageSetting('DynamicGyms')) {
             //Enemy stats
             var block = calcOurBlock() / (game.global.brokenPlanet ? 2 : 1);
-            var pierce = getPierceAmt() * (game.global.formation == 3 ? 2 : 1);
+            var pierce = game.global.brokenPlanet ? (getPierceAmt() * (game.global.formation == 3 ? 2 : 1)) : 0;
 	        var nextGym = game.upgrades.Gymystic.modifier + Math.max(0, game.upgrades.Gymystic.done-1)/100;
             var currentEnemyDamageOK = block > nextGym * calcSpecificEnemyAttack();
             var zoneEnemyDamageOK = block > calcEnemyAttack() * (1 - pierce);

@@ -241,6 +241,7 @@ function getMapRatio(map, customLevel, customDiff) {
     var level = customLevel ? customLevel : map.level;
     var diff = customDiff ? customDiff : map.difficulty;
 
+    //Calc
     var mapDmg = (calcHDRatio(level, "map") / diff) / getMapCutOff(true);
     var mapHp = getMapHealthCutOff(true) / calcHealthRatio(false, true, "map", level, diff);
     return Math.max(mapDmg, mapHp);
