@@ -738,11 +738,11 @@ function autoMap() {
                     selectedMap = "create";
             } else if (siphonMap != -1) {
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
-                if (game.global.world >= 59 && MODULES.maps.forceModifier && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
+                if (game.global.highestLevelCleared >= 59 && MODULES.maps.forceModifier && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
             }
             else if (altSiphMap != -1) {
                 selectedMap = "create";
-                tryBetterMod = game.global.world >= 59 && MODULES.maps.forceModifier;
+                tryBetterMod = game.global.highestLevelCleared >= 59 && MODULES.maps.forceModifier;
             }
             else
                 selectedMap = "create";
@@ -757,7 +757,6 @@ function autoMap() {
         var doDefaultMapBonus = game.global.mapBonus < getPageSetting('MaxMapBonuslimit') - 1;
         if (selectedMap == game.global.currentMapId && !getCurrentMapObject().noRecycle && (doDefaultMapBonus || vanillaMapatZone || doMaxMapBonus || shouldFarm || needPrestige || shouldDoSpireMaps || mapExiting)) {
             //Start with Repeat on
-            console.log("debug0");
             if (!game.global.repeatMap) {
                 repeatClicked();
             }
