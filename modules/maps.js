@@ -307,7 +307,7 @@ function autoMap() {
     //Regular Run Voids
     if (game.global.challengeActive != "Daily") {
         //What cell to run Voids at
-        voidCell = ((getPageSetting('voidscell') > 0) ? getPageSetting('voidscell') : 70);
+        voidCell = ((getPageSetting('voidscell') > 0) ? getPageSetting('voidscell') : 90);
 
         //What Zone Range to run Voids at
         poisonOK = !getPageSetting('runnewvoidspoison') || getEmpowerment() == 'Poison';
@@ -318,7 +318,7 @@ function autoMap() {
     //Daily Voids
     else {
         //What cell to run Daily Voids at
-        voidCell = ((getPageSetting('dvoidscell') > 0) ? getPageSetting('dvoidscell') : 70);
+        voidCell = ((getPageSetting('dvoidscell') > 0) ? getPageSetting('dvoidscell') : 90);
 
         //What Zone Range to run Voids at
         poisonOK = !getPageSetting('drunnewvoidspoison') || getEmpowerment() == 'Poison';
@@ -833,7 +833,7 @@ function autoMap() {
                 (
                     (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1) ||
                     ((game.global.challengeActive == 'Lead' && !challSQ) && game.global.lastClearedCell > 93) ||
-                    ((doVoids || preVoidCheck) && game.global.lastClearedCell > 70)
+                    ((doVoids || preVoidCheck) && game.global.lastClearedCell > voidCell - 10)
                 )
             ) {
                 if (scryerStuck) {

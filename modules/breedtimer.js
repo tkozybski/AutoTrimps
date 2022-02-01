@@ -92,7 +92,6 @@ function breedTimeRemaining() {
 function ATGA2() {
 	if (game.jobs.Geneticist.locked == false && getPageSetting('ATGA2') == true && getPageSetting('ATGA2timer') > 0 && game.global.challengeActive != "Trapper"){
 		//Init
-        var potencyMod = potencyMod();
         var timeRemaining = breedTimeRemaining();
 		var totalTime = breedTotalTime();
 
@@ -149,7 +148,7 @@ function ATGA2() {
 					}
 				}
 			}
-			else if (compareTime.add(thresh.mul(-1)).cmp(target) > 0  || (potencyMod.cmp(1) == 0)){
+			else if (compareTime.add(thresh.mul(-1)).cmp(target) > 0  || (potencyMod().cmp(1) == 0)){
 				if (!genDif.isFinite()) genDif = new Decimal(-1);
 				if (genDif.cmp(0) < 0 && game.options.menu.gaFire.enabled != 2){
 					if (genDif.cmp(-10) < 0) genDif = new Decimal(-10);
