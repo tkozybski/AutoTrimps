@@ -372,7 +372,12 @@ function calcOurDmg(minMaxAvg = "avg", specificStance, realDamage, ignoreMapBonu
     //Challenges
     if (game.global.challengeActive == "Life") number *= game.challenges.Life.getHealthMult();
     if (game.global.challengeActive == "Lead" && (game.global.world % 2) == 1) number *= 1.5;
-    if (game.challenges.Electricity.stacks > 0) number *= 1 - (game.challenges.Electricity.stacks * 0.1);
+    if (game.challenges.Electricity.stacks > 0) {
+        var stacks = game.challenges.Electricity.stacks;
+        if (!realDamage && minMaxAvg.toLowerCase() == "min") stacks = 0;
+        if (!realDamage && minMaxAvg.toLowerCase() == "avg") stacks /= 2;
+        number *= 1 - (stacks * 0.1);
+    }
 
     //Decay
     if (game.global.challengeActive == "Decay") {

@@ -586,7 +586,7 @@ function autoMap() {
                 challengeRequireMap = !runningC2 && (challenge == "Meditate" || challenge == "Trapper" || game.portal.Relentlessness.locked);
                 var treasure = game.mapUnlocks.AncientTreasure.canRunOnce && Math.abs(getPageSetting('TrimpleZ')) >= 33;
                 if (theMap.name == 'Trimple Of Doom' && (challengeRequireMap || treasure || shouldSpeedRun(game.achievements.doomTimed))) {
-                    if (game.global.world < Math.abs(getPageSetting('TrimpleZ')) || getMapRatio(theMap) > 1) continue;
+                    if (!challengeRequireMap && game.global.world < Math.abs(getPageSetting('TrimpleZ')) || getMapRatio(theMap) > 1) continue;
                     if (treasure < 0) setPageSetting('TrimpleZ', 0);
                     selectedMap = theMap.id;
                     break;

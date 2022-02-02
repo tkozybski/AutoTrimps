@@ -363,7 +363,7 @@ function autoLevelEquipment() {
                 //Delay Weapon Prestiges on Mirrored Dailies
                 BuyWeaponUpgrades &= mirroredDailyOk;
 
-                //Only delay Armor Prestiges if not lacking health or not lacking damage to advance
+                //Delays Armor Prestiges if lacking damage to advance, but not health. Never delays shield prestiges tho.
                 BuyArmorUpgrades &= DelayArmorWhenNeeded || !enoughHealth || enoughDamage || equipmentList[equipName].Resource == "wood";
 
                 //Buy Prestiges
