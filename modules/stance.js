@@ -2,9 +2,9 @@ var baseMinDamage = 0;
 var baseMaxDamage = 0;
 
 function calcBaseDamageInX() {
-    baseMinDamage = calcOurDmg("min", "X", true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
-    baseMaxDamage = calcOurDmg("max", "X", true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
-    baseDamage = calcOurDmg("avg", "X", true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1);
+    baseMinDamage = calcOurDmg("min", "X", true, game.global.mapsActive) * (game.global.titimpLeft > 0 ? 2 : 1);
+    baseMaxDamage = calcOurDmg("max", "X", true, game.global.mapsActive) * (game.global.titimpLeft > 0 ? 2 : 1);
+    baseDamage = calcOurDmg("avg", "X", true, game.global.mapsActive) * (game.global.titimpLeft > 0 ? 2 : 1);
     baseHealth = calcOurHealth(false, false, true);
     baseBlock  = calcOurBlock(false, true);
 }
@@ -107,8 +107,8 @@ function oneShotPower(specificStance, offset = 0, maxOrMin) {
 function challengeDamage(maxHealth, minDamage, maxDamage, missingHealth, block, pierce, critPower = 2) {
     //Pre-Init
     if (!maxHealth) maxHealth = calcOurHealth(true, false, true);
-    if (!minDamage) minDamage = calcOurDmg("min", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1) + addPoison(true);
-    if (!maxDamage) maxDamage = calcOurDmg("max", false, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1) + addPoison(true);
+    if (!minDamage) minDamage = calcOurDmg("min", false, true, game.global.mapsActive) * (game.global.titimpLeft > 0 ? 2 : 1) + addPoison(true);
+    if (!maxDamage) maxDamage = calcOurDmg("max", false, true, game.global.mapsActive) * (game.global.titimpLeft > 0 ? 2 : 1) + addPoison(true);
     if (!missingHealth) missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     if (!pierce) pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (!block) block = calcOurBlock(true, true);
@@ -166,7 +166,7 @@ function directDamage(block, pierce, currentHealth, minDamage, critPower = 2) {
     if (!block) block = calcOurBlock(true, true);
     if (!pierce) pierce = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (!currentHealth) currentHealth = calcOurHealth(true, false, true) - (game.global.soldierHealthMax - game.global.soldierHealth);
-    if (!minDamage) minDamage = calcOurDmg("min", true, true, game.global.mapsActive) * (game.global.titimpLeft ? 2 : 1) + addPoison(true);
+    if (!minDamage) minDamage = calcOurDmg("min", true, true, game.global.mapsActive) * (game.global.titimpLeft > 0 ? 2 : 1) + addPoison(true);
     
     //Enemy
     var enemy = getCurrentEnemy();

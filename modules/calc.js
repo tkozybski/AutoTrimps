@@ -11,8 +11,8 @@ function debugCalc() {
     var name = getCurrentEnemy() ? getCurrentEnemy().name : "Chimp";
 
     //Init
-    var displayedMin = calcOurDmg("min", false, true, type != "world", "never") * (game.global.titimpLeft ? 2 : 1);
-    var displayedMax = calcOurDmg("max", false, true, type != "world", "never") * (game.global.titimpLeft ? 2 : 1);
+    var displayedMin = calcOurDmg("min", false, true, type != "world", "never") * (game.global.titimpLeft > 0 ? 2 : 1);
+    var displayedMax = calcOurDmg("max", false, true, type != "world", "never") * (game.global.titimpLeft > 0 ? 2 : 1);
 
     //Trimp Stats
     debug("Our Stats");
