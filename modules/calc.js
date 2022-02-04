@@ -162,7 +162,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     if (fullGeneticist && geneticist.owned > 0) health *= Math.pow(1.01, geneticist.owned - game.global.lastLowGen);
 
     //Challenges
-    if (game.global.challengeActive == "Life") health *= game.challenges.Life.getHealthMult();
+    if (game.global.challengeActive == "Life" && !realHealth) health *= game.challenges.Life.getHealthMult();
     else if (game.global.challengeActive == "Balance" && !realHealth) health *= game.challenges.Balance.getHealthMult();
     else if (typeof game.global.dailyChallenge.pressure !== 'undefined' && !realHealth)
         health *= dailyModifiers.pressure.getMult(game.global.dailyChallenge.pressure.strength, game.global.dailyChallenge.pressure.stacks);
