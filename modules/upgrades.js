@@ -1,16 +1,10 @@
 //Helium
 var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedlumber', 'Speedfarming', 'Speedscience', 'Speedexplorer', 'Megaminer', 'Megalumber', 'Megafarming', 'Megascience', 'Efficiency', 'TrainTacular', 'Trainers', 'Explorers', 'Blockmaster', 'Battle', 'Bloodlust', 'Bounty', 'Egg', 'Anger', 'Formations', 'Dominance', 'Barrier', 'UberHut', 'UberHouse', 'UberMansion', 'UberHotel', 'UberResort', 'Trapstorm', 'Gigastation', 'Shieldblock', 'Potency', 'Magmamancers'];
 
-//Psycho Ray - Auto Giga Base and Delta
+//Psycho Ray
 MODULES["upgrades"] = {};
-MODULES["upgrades"].autoGigas = true;
-MODULES["upgrades"].customTargetZone = undefined;
-MODULES["upgrades"].customMetalRatio = 0.1;
-
-//1 = post-magma, 5 - quick run, around 10 = regular run, 20 = pushy, 50 = really, really pushing, 100 = ...you know you're using Auto Trimps, right?
 MODULES["upgrades"].targetFuelZone = true;
-MODULES["upgrades"].customSlowDownFactor = 1;
-MODULES["upgrades"].delayFirstGiga = MODULES["upgrades"].customSlowDownFactor > 20;
+MODULES["upgrades"].customMetalRatio = 0.1; //Change the Custom Delta factor instead
 
 function gigaTargetZone() {
     //Init
@@ -89,8 +83,8 @@ function autoGiga(targetZone, metalRatio = 0.5, slowDown = 10, customBase) {
 }
 
 function firstGiga(forced) {
-    //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C)* Lacking Health or Damage & D)* Has run at least 1 map or if forced to
-    var s = !MODULES["upgrades"].delayFirstGiga;
+    //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C)* Lacking Health or Damage & D)* Has run at least 1 map stack or if forced to
+    var s = !(getPageSetting('CustomDeltaFactor') > 20);
     var a = game.buildings.Warpstation.owned >= 2;
     var b = !canAffordCoordinationTrimps() || game.global.world >= 230 && !canAffordTwoLevel(game.upgrades.Coordination);
     var c = s || !enoughHealth || !enoughDamage;
@@ -99,9 +93,9 @@ function firstGiga(forced) {
     
     //Define Base and Delta for this run
     var base = game.buildings.Warpstation.owned;
-    var deltaZ = (MODULES["upgrades"].customTargetZone     >= 60) ? MODULES["upgrades"].customTargetZone     : undefined;
-    var deltaM = (MODULES["upgrades"].customMetalRatio     >   0) ? MODULES["upgrades"].customMetalRatio     : undefined;
-    var deltaS = (MODULES["upgrades"].customSlowDownFactor >   1) ? MODULES["upgrades"].customSlowDownFactor : undefined;
+    var deltaZ = (getPageSetting('CustomTargetZone')  >=  60) ? getPageSetting('CustomTargetZone')  : undefined;
+    var deltaM = (MODULES["upgrades"].customMetalRatio       >    0) ? MODULES["upgrades"].customMetalRatio      : undefined;
+    var deltaS = (getPageSetting('CustomDeltaFactor') >=   1) ? getPageSetting('CustomDeltaFactor') : undefined;
     var delta = autoGiga(deltaZ, deltaM, deltaS);
     
     //Save settings
@@ -146,7 +140,7 @@ function buyUpgrades() {
         
         //Gigastations
         if (upgrade == 'Gigastation' && !fuckbuildinggiga) {
-            if (MODULES.upgrades.autoGigas && game.upgrades.Gigastation.done == 0 && !firstGiga()) continue;
+            if (getPageSetting("AutoGigas") && game.upgrades.Gigastation.done == 0 && !firstGiga()) continue;
             else if (game.buildings.Warpstation.owned < (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation'))) continue;
         }
           
