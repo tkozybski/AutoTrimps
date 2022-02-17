@@ -70,7 +70,7 @@ function manualLabor2() {
 		if (!trapsReady && game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)) {
 			//Gather food or wood
 			if (game.resources.food.owned < 10) { setGather('food'); return; }
-			else if (game.triggers.wood.done && game.resources.wood.owned < 10) { setGather('wood'); return; }
+			if (game.triggers.wood.done && game.resources.wood.owned < 10) { setGather('wood'); return; }
 		}
 	}
 

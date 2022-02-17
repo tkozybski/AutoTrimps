@@ -759,6 +759,7 @@ function calcSpecificEnemyAttack(critPower=2, customBlock, customHealth) {
         attack *= badGuyCritMult(enemy, critPower, customBlock, customHealth);
 
     //Challenges - considers the actual scenario for this enemy
+    if (game.global.challengeActive == "Nom" && typeof enemy.nomStacks !== 'undefined') attack *= Math.pow(1.25, enemy.nomStacks)
     if (game.global.challengeActive == "Lead") attack *= 1 + (0.04 * game.challenges.Lead.stacks);
 
     //Magneto Shriek
