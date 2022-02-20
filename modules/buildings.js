@@ -81,7 +81,7 @@ function buyFoodEfficientHousing() {
 
     //Checks for Limits
     if (!ignoresLimit) {
-        unlockedHousing.filter(b => {
+        unlockedHousing = unlockedHousing.filter(b => {
             //Filter out buildings that are past the limits
             if (game.buildings[b].owned < getPageSetting('Max' + b) || getPageSetting('Max' + b) < 1)
                 return true;
