@@ -4,7 +4,6 @@ MODULES["buildings"].storageLowlvlCutoff1 = 0.7;
 MODULES["buildings"].storageLowlvlCutoff2 = 0.5;
 
 //Helium
-
 var housingList = ['Hut', 'House', 'Mansion', 'Hotel', 'Resort', 'Gateway', 'Collector', 'Warpstation'];
 
 function safeBuyBuilding(building) {
@@ -129,36 +128,36 @@ function buyGemEfficientHousing() {
     var keysSorted = Object.keys(obj).sort(function (a, b) {
             return obj[a] - obj[b];
         });
-    bestBuilding = null;
+    var bestGemBuilding = null;
     for (var best in keysSorted) {
         var max = getPageSetting('Max' + keysSorted[best]);
         if (max === false) max = -1;
         if (game.buildings[keysSorted[best]].owned < max || max == -1 || (getPageSetting('GemEfficiencyIgnoresMax') && keysSorted[best] != "Gateway")) {
-            bestBuilding = keysSorted[best];
-            document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
+            bestGemBuilding = keysSorted[best];
+            document.getElementById(bestGemBuilding).style.border = "1px solid #00CC00";
 
             //Gateway Wall
-            if (bestBuilding == "Gateway" && getPageSetting('GatewayWall') > 1) {
+            if (bestGemBuilding == "Gateway" && getPageSetting('GatewayWall') > 1) {
                 if (getBuildingItemPrice(game.buildings.Gateway, "fragments", false, 1) > (game.resources.fragments.owned / getPageSetting('GatewayWall'))) {
-                    document.getElementById(bestBuilding).style.border = "1px solid orange";
-                    bestBuilding = null;
+                    document.getElementById(bestGemBuilding).style.border = "1px solid orange";
+                    bestGemBuilding = null;
                     continue;
                 }
             }
 
             var skipWarp = false;
-            if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
+            if (getPageSetting('WarpstationCap') && bestGemBuilding == "Warpstation") {
                 var firstGigaOK = MODULES["upgrades"].autoGigas == false || game.upgrades.Gigastation.done > 0;
                 var gigaCapped = game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation'))
                 if (firstGigaOK && gigaCapped) skipWarp = true;
             }
             var warpwallpct = getPageSetting('WarpstationWall3');
-            if (warpwallpct > 1 && bestBuilding == "Warpstation") {
+            if (warpwallpct > 1 && bestGemBuilding == "Warpstation") {
                 if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.metal.owned / warpwallpct))
                     skipWarp = true;
             }
             if (skipWarp)
-                bestBuilding = null;
+                bestGemBuilding = null;
             var getcoord = getPageSetting('WarpstationCoordBuy');
             if (getcoord && skipWarp) {
                 var toTip = game.buildings.Warpstation;
@@ -173,20 +172,20 @@ function buyGemEfficientHousing() {
                         if (game.portal.Carpentry.level && toTip.increase.what == "trimps.max") increase *= Math.pow(1.1, game.portal.Carpentry.level);
                         if (game.portal.Carpentry_II.level && toTip.increase.what == "trimps.max") increase *= (1 + (game.portal.Carpentry_II.modifier * game.portal.Carpentry_II.level));
                         if (amtToGo < increase * howMany)
-                            bestBuilding = "Warpstation";
+                            bestGemBuilding = "Warpstation";
                     }
                 }
             }
             break;
         }
     }
-    if (bestBuilding) {
-        safeBuyBuilding(bestBuilding);
+    if (bestGemBuilding) {
+        bestBuilding = bestGemBuilding
+        safeBuyBuilding(bestGemBuilding);
     }
 }
 
 function buyBuildings() {
-    //TODO TEST //if ((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist")) return;
     var customVars = MODULES["buildings"];
     var oldBuy = preBuy2();
     var hidebuild = (getPageSetting('BuyBuildingsNew')===0 && getPageSetting('hidebuildings')==true);
