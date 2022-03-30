@@ -19,8 +19,6 @@ MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above 
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.scryerHDMult = 4; //This is a divisor to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON (Domination ignores this)
 MODULES.maps.scryerHitsMult = 8; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON (Domination ignores this)
-MODULES.maps.spireHD = 4; //4 is actually 1 hit in D stance
-MODULES.maps.spireHitsSurvived = 0.25; //1 is actually 8 hits+ using Heap. Set to something low to save nurseries past magma
 MODULES.maps.magmaHitsSurvived = 2; //Your geneticists are frequently lagging 1-2 zones behind when speeding through magma, which is why this is important
 
 var enoughDamage = true;
@@ -165,7 +163,7 @@ function getMapHealthCutOff(pure) {
     if (pure) return cut;
 
     //Spire
-    if (game.global.spireActive) return MODULES.maps.spireHitsSurvived;
+    if (game.global.spireActive) return getPageSetting('SpireHitsSurvived');
 
     //Magma
     if (mutations.Magma.active()) cut *= MODULES.maps.magmaHitsSurvived;
@@ -193,7 +191,7 @@ function getMapCutOff(pure) {
     if (pure) return cut;
 
     //Spire
-    if (game.global.spireActive) return MODULES.maps.spireHD;
+    if (game.global.spireActive) return getPageSetting('SpireHD');
 
     //Mapology
     if (getPageSetting("mapc2hd") > 0 && mapology) cut = getPageSetting("mapc2hd");
@@ -227,7 +225,7 @@ function getFarmCutOff() {
     var cut = getPageSetting("DisableFarm");
 
     //Spire
-    if (game.global.spireActive) return MODULES.maps.spireHD;
+    if (game.global.spireActive) return getPageSetting('SpireHD');
 
     //Void and Scry
     if (preVoidCheck) return cut * getPageSetting('VoidHDMult');
