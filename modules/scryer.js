@@ -1,9 +1,6 @@
 var wantToScry = false;
 var transitionRequired = false;
 
-//Psycho
-var maxZoneCorruptedOnly = true; //Instead of not using scry after reaching the max zone, it'll just disable scry on corrupted
-
 function scryingCorruption() {
     var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && (game.global.world < getPageSetting('ScryerMaxZone') || getPageSetting('ScryerMaxZone') < 1);
     var scryCorrupt = scryZone && getPageSetting('ScryerSkipCorrupteds2') != 0;
@@ -57,8 +54,8 @@ function useScryerStance() {
     var isCorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).mutation == "Corruption";
     var nextIsCorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).mutation == "Corruption";
     var scryNext = !nextIsCorrupt && (transitionRequired || oneShotPower(undefined, 0, true));
-    var skipOnMaxZone = SC || maxZoneCorruptedOnly && game.global.world >= getPageSetting('ScryerMaxZone');
-    if (USS && !MA && SC && skipOnMaxZone && isCorrupt) {
+    var skipOnMaxZone = getPageSetting('onlyminmaxworld') == 2 && getPageSetting('ScryerSkipCorrupteds2') != 1 && game.global.world >= getPageSetting('ScryerMaxZone');
+    if (USS && !MA && (SC || skipOnMaxZone) && isCorrupt) {
         transitionRequired = scryNext;
         never_scry |= !scryNext;
     }
@@ -134,7 +131,7 @@ function useScryerStance() {
     var valid_min = game.global.world >= min_zone && game.global.world > 60;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
     
-    if (USS && valid_min && valid_max && !(MA && getPageSetting('onlyminmaxworld') == true) && readyToSwitch()) {
+    if (USS && valid_min && valid_max && (!MA || getPageSetting('onlyminmaxworld') == 0) && readyToSwitch()) {
         //Smooth transition to S before killing the target
         if (transitionRequired) {
             for (var cp=2; cp >= -2; cp--) {
