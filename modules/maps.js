@@ -13,11 +13,15 @@ MODULES.maps.SpireFarm199Maps = true;
 MODULES.maps.shouldFarmCell = 80;
 MODULES.maps.SkipNumUnboughtPrestiges = 2;
 MODULES.maps.UnearnedPrestigesRequired = 2;
+MODULES.maps.advSpecialMapMod_numZones = 3;
 
 //Psycho
 MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.magmaHitsSurvived = 2; //Your geneticists are frequently lagging 1-2 zones behind when speeding through magma, which is why this is important
+
+// Dev debug
+MODULES.maps.devDebug = false;
 
 var enoughDamage = true;
 var enoughHealth = true;
@@ -31,7 +35,6 @@ var scryerStuck = false;
 var shouldDoMaps = false;
 var shouldFarm = false;
 var shouldFarmDamage = false;
-var mapTimeEstimate = 0;
 var lastMapWeWereIn = null;
 var preSpireFarming = false;
 var spireMapBonusFarming = false;
@@ -39,7 +42,96 @@ var spireTime = 0;
 var doMaxMapBonus = false;
 var vanillaMapatZone = false;
 var fragmentsNeeded = 0;
-var additionalCritMulti = 2 < getPlayerCritChance() ? 25 : 5;
+
+// mods are from best to worst
+const farmingMapMods = ["lmc", "hc", "smc", "lc", "fa"];
+const prestigeMapMods = ["p", "fa"];
+
+const uniqueMaps = {
+    'The Block': {
+        zone: 11,
+        challenges: ["Scientist", "Trimp"],
+        speedrun: 'blockTimed'
+    },
+    'The Wall': {
+        zone: 15,
+        challenges: [],
+        speedrun: 'wallTimed'
+    },
+    'Dimension of Anger': {
+        zone: 20,
+        challenges: ["Discipline", "Metal", "Size", "Frugal", "Coordinate"],
+        speedrun: 'angerTimed'
+    },
+    'Trimple Of Doom': {
+        zone: 33,
+        challenges: ["Meditate", "Anger"],
+        speedrun: 'doomTimed'
+    },
+    'The Prison': {
+        zone: 80,
+        challenges: ["Electricity", "Mapocalypse"],
+        speedrun: 'prisonTimed'
+    },
+    'Imploding Star': {
+        zone: 170,
+        challenges: ["Devastation"],
+        speedrun: 'starTimed'
+    },
+    'Bionic Wonderland': {
+        zone: 125,
+        challenges: ["Crushed"],
+        speedrun: 'bionicTimed'
+    }
+};
+
+function shouldRunUniqueMap(map) {
+    const challenge = game.global.challengeActive;
+    const isC2 = game.global.runningChallengeSquared;
+
+    const mapData = uniqueMaps[map.name];
+    if (mapData === undefined || game.global.world < mapData.zone || getMapRatio(map) > 1) {
+        return false;
+    }
+    if (!isC2 && mapData.challenges.includes(challenge)) {
+        return true;
+    }
+    if (mapData.speedrun && shouldSpeedRun(game.achievements[mapData.speedrun])) {
+        return true;
+    }
+
+    if (map.name === 'The Block') {
+        // we need Shieldblock
+        if (!game.upgrades.Shieldblock.allowed && getPageSetting('BuyShieldblock')) {
+            return true;
+        }
+    } else if (map.name === 'The Wall') {
+        // we need Bounty
+        if (!game.upgrades.Bounty.allowed && !game.talents.bounty.purchased) {
+            return true;
+        }
+    } else if (map.name === 'Dimension of Anger') {
+        // unlock the portal
+        if (!game.talents.portal.purchased && document.getElementById("portalBtn").style.display === "none") {
+            return true;
+        }
+    } else if (map.name === 'Trimple Of Doom') {
+        if (game.portal.Relentlessness.locked) {
+            // unlock the Relentlessness perk
+            return true;
+        }
+        // maybe get the treasure
+        const trimpleZ = Math.abs(getPageSetting('TrimpleZ'));
+        if (trimpleZ >= 33 && game.global.world >= trimpleZ && game.mapUnlocks.AncientTreasure.canRunOnce) {
+           if (getPageSetting('TrimpleZ') < 0) {
+                setPageSetting('TrimpleZ', 0);
+            }
+           return true;
+        }
+    }
+
+    return false;
+}
 
 function updateAutoMapsStatus(get) {
     var status;
@@ -102,57 +194,179 @@ function updateAutoMapsStatus(get) {
     }
 }
 
-MODULES["maps"].advSpecialMapMod_numZones = 3;
-var advExtraMapLevels = 0;
-function testMapSpecialModController(noLog) {
-    var success = true;
-    var a = [];
-    if (Object.keys(mapSpecialModifierConfig).forEach(function(o) {
-        var p = mapSpecialModifierConfig[o];
-        game.global.highestLevelCleared + 1 >= p.unlocksAt && a.push(p.abv.toLowerCase());
-    }), !(1 > a.length)) {
-        var c = document.getElementById("advSpecialSelect");
-        if (c) {
-            if (game.global.highestLevelCleared >= 59) {
-                //Select Map Modifier
-                if (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || (preVoidCheck && !enoughDamage)) {
-                    c.value = a.includes("lmc") ? "lmc" : a.includes("hc") ? "hc" : a.includes("smc") ? "smc" : "lc";
-                } else if (needPrestige && enoughDamage && a.includes("p")) {
-                    c.value = "p";
-                } else c.value = "fa";
+function configureMapSliders(customVars, minLevel) {
+    document.getElementById("mapLevelInput").value = minLevel;
 
-                //Check if we can afford it
-                for (var d = updateMapCost(!0), e = game.resources.fragments.owned, f = 100 * (d / e); 0 < c.selectedIndex && d > e;) {
-                    c.selectedIndex -= 1;
-                    "0" != c.value && !noLog && console.log("Could not afford " + mapSpecialModifierConfig[c.value].name);
-                    fragmentsNeeded = Math.max(fragmentsNeeded, d);
-                    success = false;
-                }
+    let decrement, tier;
+    if (game.global.world >= customVars.MapTierZone[0]) {
+        tier = customVars.MapTier0Sliders;
+        decrement = [];
+    } else if (game.global.world >= customVars.MapTierZone[1]) {
+        tier = customVars.MapTier1Sliders;
+        decrement = ['loot'];
+    } else if (game.global.world >= customVars.MapTierZone[2]) {
+        tier = customVars.MapTier2Sliders;
+        decrement = ['loot'];
+    } else {
+        tier = customVars.MapTier3Sliders;
+        decrement = ['diff', 'loot'];
+    }
 
-                var d = updateMapCost(!0), e = game.resources.fragments.owned;
-                "0" != c.value && !noLog && debug("Set the map special modifier to: " + mapSpecialModifierConfig[c.value].name + ". Cost: " + (100 * (d / e)).toFixed(2) + "% of your fragments.");
-            }
+    sizeAdvMapsRange.value = tier[0];
+    adjustMap('size', tier[0]);
+    difficultyAdvMapsRange.value = tier[1];
+    adjustMap('difficulty', tier[1]);
+    lootAdvMapsRange.value = tier[2];
+    adjustMap('loot', tier[2]);
+    if (shouldFarm || game.global.challengeActive === 'Metal') {
+        biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";
+    } else {
+        biomeAdvMapsSelect.value = autoTrimpSettings.mapselection.selected === "Gardens" ? (game.global.decayDone ? "Plentiful" : "Random") : autoTrimpSettings.mapselection.selected;
+    }
+    updateMapCost();
+    if (updateMapCost(true) > game.resources.fragments.owned) {
+        if (needPrestige && !enoughDamage) decrement.push('diff');
+        if (shouldFarm) decrement.push('size');
+    }
 
-            //Check what Modifiers should be available to us
-            var g = getSpecialModifierSetting(),
-                h = 109 <= game.global.highestLevelCleared,
-                i = checkPerfectChecked(),
-                j = document.getElementById("advPerfectCheckbox"),
-                k = getPageSetting("AdvMapSpecialModifier") ? getExtraMapLevels() : 0,
-                l = 209 <= game.global.highestLevelCleared;
+    while (decrement.indexOf('loot') > -1 && lootAdvMapsRange.value > 0 && !canAffordSelectedMap()) {
+        lootAdvMapsRange.value -= 1;
+    }
+    while (decrement.indexOf('diff') > -1 && difficultyAdvMapsRange.value > 0 && !canAffordSelectedMap()) {
+        difficultyAdvMapsRange.value -= 1;
+    }
+    while (decrement.indexOf('size') > -1 && sizeAdvMapsRange.value > 0 && !canAffordSelectedMap()) {
+        sizeAdvMapsRange.value -= 1;
+    }
 
-            //Extra Map levels
-            if (l) {
-                var m = document.getElementById("advExtraMapLevelselect");
-                if (!m) return success;
-                var n = document.getElementById("mapLevelInput").value;
-                for (m.selectedIndex = n == game.global.world ? MODULES.maps.advSpecialMapMod_numZones : 0; 0 < m.selectedIndex && updateMapCost(!0) > game.resources.fragments.owned;)
-                    m.selectedIndex -= 1;
-            }
+    while (lootAdvMapsRange.value > 0 && !canAffordSelectedMap()) {
+        lootAdvMapsRange.value -= 1;
+    }
+    while (difficultyAdvMapsRange.value > 0 && !canAffordSelectedMap()) {
+        difficultyAdvMapsRange.value -= 1;
+    }
+    while (sizeAdvMapsRange.value > 0 && !canAffordSelectedMap()) {
+        sizeAdvMapsRange.value -= 1;
+    }
+    return canAffordSelectedMap();
+}
+
+function maybeSetBestMapMod(modPool) {
+    // chooses the best map mod from the pool that we have unlocked, and sets crafting selector to its value
+    // if we can't afford the resulting map, resets the selector to "no bonus"
+    const modSelector = document.getElementById("advSpecialSelect");
+    if (!modSelector) {
+        // cannot choose mods for some reason
+        return {mod: undefined, cost: 0};
+    }
+    const targetMod = (modPool.length ? modPool[0] : undefined);
+    if (!targetMod) {
+        // no relevant mods unlocked
+        return {mod: undefined, cost: 0};
+    }
+    // Check if we can afford the chosen mod
+    modSelector.value = targetMod;
+    const mapCost = updateMapCost(true);
+    if (mapCost > game.resources.fragments.owned) {
+        // can't afford it - reset the selector to "no bonus"
+        modSelector.value = '0';
+    }
+    return {mod: targetMod, cost: mapCost};
+}
+
+function setAffordableMapMod(modPool) {
+    // tries to set every unlocked mod from the pool until it hits the first one we can afford
+    const modSelector = document.getElementById("advSpecialSelect");
+    if (!modSelector) {
+        // cannot choose mods for some reason
+        return {mod: undefined, cost: 0};
+    }
+    let bestModCost, bestMod;
+    for (const modName of modPool) {
+        modSelector.value = modName;
+        const mapCost = updateMapCost(true);
+        if (bestMod === undefined) {
+            bestMod = modName;
+            bestModCost = mapCost;
+        }
+        if (mapCost <= game.resources.fragments.owned) {
+            // found an affordable mod
+            break;
         }
     }
 
-    return success;
+    if (updateMapCost(true) > game.resources.fragments.owned) {
+        // can't afford any mod - reset the selector to "no bonus"
+        modSelector.value = '0';
+    }
+
+    return {mod: bestMod, cost: bestModCost};
+}
+
+
+function setAffordableMapLevel(maxLevel) {
+    const extraLevelsSelector = document.getElementById('advExtraLevelSelect');
+    if (!extraLevelsSelector) {
+        // cannot increase levels for some reason
+        return getExtraMapLevels();
+    }
+    const z = game.global.world;
+    const baseMapLevel = Math.min(z, maxLevel);
+
+    // first max out the base map level
+    let mapCost = 0;
+    const $mapLevelInput = document.getElementById("mapLevelInput");
+    while (parseInt($mapLevelInput.value) < baseMapLevel) {
+        mapCost = updateMapCost(true);
+        if (mapCost <= game.resources.fragments.owned) {
+            $mapLevelInput.value++
+        } else {
+            break;
+        }
+    }
+    // if we can't afford current level, decrement it to the previous (affordable) value
+    mapCost = updateMapCost(true);
+    if (mapCost > game.resources.fragments.owned && parseInt($mapLevelInput.value) > 6) {
+        $mapLevelInput.value--;
+    }
+    if (parseInt($mapLevelInput.value) < baseMapLevel) {
+        // didn't even get to the base level, so no point in trying extra levels
+        return mapCost;
+    }
+
+    // try to get extra map levels
+    while ((z + getExtraMapLevels()) < maxLevel && getExtraMapLevels() < 10) {
+        mapCost = updateMapCost(true);
+        if (mapCost <= game.resources.fragments.owned) {
+            extraLevelsSelector.value++;
+        } else {
+            break;
+        }
+    }
+    mapCost = updateMapCost(true);
+    // if we can't afford current level, decrement it to the previous (affordable) value
+    while (getExtraMapLevels() > 0 && mapCost > game.resources.fragments.owned) {
+        extraLevelsSelector.value--;
+    }
+    return mapCost;
+}
+
+function getSelectedMapMod() {
+    const selector = document.getElementById("advSpecialSelect");
+    if (selector && selector.value !== '0') {
+        return selector.value;
+    }
+}
+
+function getSelectedMapLevel() {
+    const selector = document.getElementById("mapLevelInput");
+    if (selector) {
+        return parseInt(selector.value) + getExtraMapLevels();
+    }
+}
+
+function canAffordSelectedMap() {
+    return updateMapCost(true) <= game.resources.fragments.owned;
 }
 
 function getMapHealthCutOff(pure) {
@@ -243,6 +457,36 @@ function getMapRatio(map, customLevel, customDiff) {
     return Math.max(mapDmg, mapHp);
 }
 
+function getMapScore(map, modPool, prioritizeMods) {
+    // this function is used when comparing crafted maps - the greater result means a better map
+    if (!map) {
+        return [-1, -1];
+    }
+    // mod pools are ordered from best to worst, so we invert the index to get the score
+    const modScore = (modPool.length - (modPool.includes(map.bonus) ? modPool.indexOf(map.bonus) : 999));
+    if (prioritizeMods) {
+        return [modScore, map.level]
+    } else {
+        return [map.level, modScore];
+    }
+}
+
+function selectBetterCraftedMap(map1, map2, modPool, minLevel, maxLevel, prioritizeMods) {
+    // disqualify some maps right away
+    const maps = [map1, map2].filter(m => (m && m.level >= minLevel && m.level <= maxLevel));
+    if (!maps) {
+        return undefined;
+    } else if (maps.length === 1) {
+        return maps[0];
+    }
+    // select a new map if it's strictly better
+    if (getMapScore(map2, modPool, prioritizeMods) > getMapScore(map1, modPool, prioritizeMods)) {
+        return map2;
+    } else {
+        return map1;
+    }
+}
+
 function autoMap() {
     //Failsafes
     if (!game.global.mapsUnlocked || calcOurDmg() <= 0) {
@@ -278,7 +522,10 @@ function autoMap() {
     var customVars = MODULES["maps"];
     var prestige = autoTrimpSettings.Prestige.selected;
     var challSQ = game.global.runningChallengeSquared;
-    var extraMapLevels = 0;
+    const debugCtx = {
+        id: generateUID(),
+        module: "maps"
+    }
 
     //Reset to defaults
     if (prestige != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
@@ -351,6 +598,7 @@ function autoMap() {
     }
 
     //Prestige
+    const extraMapLevels = getExtraMapLevels();
     if ((getPageSetting('ForcePresZ') >= 0) && ((game.global.world + extraMapLevels) >= getPageSetting('ForcePresZ'))) {
         const prestigeList = ['Supershield', 'Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest', 'Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Bestplate', 'GambesOP'];
         needPrestige = prestigeList.some(prestige => game.mapUnlocks[prestige].last <= (game.global.world + extraMapLevels) - 5);
@@ -386,7 +634,7 @@ function autoMap() {
     }
 
     //H:D Calc
-    var ourBaseDamage = calcOurDmg("avg", "X");
+    let ourBaseDamage = calcOurDmg("avg", "X");
 
     //Shield Calc
     highDamageShield();
@@ -401,8 +649,8 @@ function autoMap() {
     updateAutoMapsStatus();
 
     //Farming
-    var selectedMap = "world";
-    var shouldFarmLowerZone = false;
+    let selectedMap = "world";
+    let shouldFarmLowerZone = false;
 
     //Farm Flags
     shouldFarm = false;
@@ -422,7 +670,7 @@ function autoMap() {
     if (ourBaseDamage > 0) {
         shouldDoMaps = (!enoughDamage || shouldFarm || scryerStuck);
     }
-    var shouldDoHealthMaps = false;
+    let shouldDoHealthMaps = false;
     if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') && !shouldFarm)
         shouldDoMaps = false;
     else if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') && shouldFarm)
@@ -431,7 +679,7 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoHealthMaps = true;
     }
-    var restartVoidMap = false;
+    let restartVoidMap = false;
     if (game.global.challengeActive == 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
         if (game.global.gridArray[99].nomStacks > customVars.NomFarmStacksCutoff[0]) {
             if (game.global.mapBonus != getPageSetting('MaxMapBonuslimit'))
@@ -460,7 +708,7 @@ function autoMap() {
     }
 
     //Spire
-    var shouldDoSpireMaps = false;
+    let shouldDoSpireMaps = false;
     preSpireFarming = (isActiveSpireAT() || disActiveSpireAT()) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
     spireMapBonusFarming = getPageSetting('MaxStacksForSpire') && (isActiveSpireAT() || disActiveSpireAT()) && game.global.mapBonus < 10;
     if (preSpireFarming || spireMapBonusFarming) {
@@ -468,153 +716,117 @@ function autoMap() {
         shouldDoSpireMaps = true;
     }
 
-    //Map Bonus
-    var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
+    // Map Bonus
+    const maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < getPageSetting("MaxMapBonuslimit") && game.global.world >= maxMapBonusZ);
     if (doMaxMapBonus) shouldDoMaps = true;
 
-    //Calculates Siphonology and Extra Map Levels
-    var minLvl = game.global.world - (shouldFarmLowerZone ?  11 : game.portal.Siphonology.level)
-    var maxLvl = game.global.world - (game.talents.mapLoot.purchased ?  1 : 0);
-    var siphLvl = Math.max(minLvl, 6);
+    const farming = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || (preVoidCheck && !enoughDamage));
+    const needMetal = (!enoughHealth || !enoughDamage) && !needPrestige;
 
-    //If enabled, then
+    const hze = getHighestLevelCleared();
+    const modsUnlocked = hze >= 59;
+    const haveMapReducer = game.talents.mapLoot.purchased;
+
+    let modPool = ['fa'];  // cheap fallback
+    let minMapLvl = game.global.world - game.portal.Siphonology.level;
+    let baseMapLvl = game.global.world - (haveMapReducer ?  1 : 0); // includes Map Reducer mastery;
+    if (needPrestige) {
+        modPool = prestigeMapMods;
+        minMapLvl = game.global.world;
+        baseMapLvl = game.global.world;
+    } else if (farming || needMetal) {
+        modPool = farmingMapMods;
+        if (farming) {
+            minMapLvl = game.global.world - (shouldFarmLowerZone ? 11 : game.portal.Siphonology.level);
+        }
+    }
+    modPool = modPool.filter(m => mapSpecialModifierConfig[m].unlocksAt <= hze); // discard still locked mods
+
+    // Calculate Siphonology and Extra Map Levels
+    let optimalMapLvl = Math.max(minMapLvl, 6);
     if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone) {
-        //For each Map Level we can go below our current zone...
-        for (siphLvl; siphLvl < maxLvl; siphLvl++) {
-            //Calc our Damage on this map
-            var ratio = calcHDRatio(siphLvl, "map");
+        // For each Map Level we can go below our current zone...
+        for (optimalMapLvl; optimalMapLvl < baseMapLvl; optimalMapLvl++) {
+            // Calc our Damage on this map
+            let ratio = calcHDRatio(optimalMapLvl, "map");
             if (game.unlocks.imps.Titimp) ratio /= 2;
 
-            //Farms on Scryer if available, or Dominance, or just X
-            if (game.global.world >= 60 && getHighestLevelCleared() >= 180) ratio *= 2;
+            // Farm on Scryer if available, or Dominance, or just X
+            if (game.global.world >= 60 && hze >= 180) ratio *= 2;
             else if (game.upgrades.Dominance.done) ratio /= 4;
 
-            //Stop increasing map level once we get to the right ratio. We use 1.2 here because created maps are usually shorter and easier
+            // Stop increasing map level once we get to the right ratio
             if (game.global.world <= 40 && ratio > 1.5) break;
             if (ratio > 1.2) break;
         }
 
-        //Keep increasing map level while we can overkill in that map
-        if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 209 && siphLvl == maxLvl) {
-            while (oneShotZone("S", "map", siphLvl+1) == maxOneShotPower()) siphLvl++;
-            if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
+        // Keep increasing map level while we can overkill in that map
+        if (MODULES.maps.shouldFarmHigherZone && hze >= 209 && optimalMapLvl === baseMapLvl) {
+            while (oneShotZone("S", "map", optimalMapLvl+1) === maxOneShotPower()) {
+                optimalMapLvl++;
+            }
+        }
+        // if we have map reducer, and chose to farm at the current level, we can lower zone by 1 for faster farming
+        if (haveMapReducer && (optimalMapLvl === game.global.world)) {
+            optimalMapLvl--;
         }
     }
+    if ((farming || needPrestige) && game.global.challengeActive !== "Coordinate" && !mutations.Magma.active()) {
+        // Prefer "Oneshot level" + 1, except on magma or in Coordinated challenge
+        optimalMapLvl++;
+    }
+    if (needPrestige) {
+        // we need at least world level to get prestiges
+        optimalMapLvl = Math.max(optimalMapLvl, game.global.world);
+    }
 
-    //Farms on "Oneshoot level" + 1, except on magma
-    var extraConditions = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming);
-    if (extraConditions && game.global.challengeActive != "Coordinate" && !mutations.Magma.active() && siphLvl < maxLvl) siphLvl++;
-
-    //Register the level of every regular map we have
-    var obj = {};
-    var siphonMap = -1, altSiphLevel = -1, altSiphMap = -1;
-    var tryBetterMod = false, gotBetterMod = false;
-    for (var index=0; index < game.global.mapsOwnedArray.length; index++) {
-        if (!game.global.mapsOwnedArray[index].noRecycle) {
-            var mapAux = game.global.mapsOwnedArray[index];
-            obj[index] = mapAux.level;
-            if (mapAux.level == siphLvl) siphonMap = index;
-
-            //Also grabs the highest level within our range that has a modifier on it
-            if (mapAux.level >= Math.max(Math.min(siphLvl-2, maxLvl), minLvl, altSiphLevel) && mapAux.level <= siphLvl+1) {
-                if (!mapAux.hasOwnProperty("bonus") || mapAux.bonus == "p") continue;
-                altSiphLevel = mapAux.level;
-                altSiphMap = index;
+    let optimalMap = null;
+    let alternativeMap = null;
+    let highestMap = null;
+    let lowestMap = null;
+    for (const map of game.global.mapsOwnedArray) {
+        if (!map.noRecycle) {
+            if (!optimalMap) {
+                if (map.level === optimalMapLvl && map.bonus === modPool[0]) {
+                    // the best map we can possibly run, no need to craft anything else
+                    optimalMap = selectBetterCraftedMap(optimalMap, map, modPool, minMapLvl, optimalMapLvl, needMetal);
+                } else {
+                    alternativeMap = selectBetterCraftedMap(alternativeMap, map, modPool, minMapLvl, optimalMapLvl + 1, needMetal);
+                }
+            }
+            if (!highestMap || map.level > highestMap.level) {
+                highestMap = map;
+            }
+            if (!lowestMap || map.level < lowestMap.level) {
+                lowestMap = map;
             }
         }
     }
-
-    //Put those levels in ascending order
-    var keysSorted = Object.keys(obj).sort(function(a, b) {
-        return obj[b] - obj[a];
-    });
-
-    //Register the highest and lowest level maps
-    var highestMap;
-    var lowestMap;
-    if (keysSorted[0]) {
-        highestMap = keysSorted[0];
-        lowestMap = keysSorted[keysSorted.length - 1];
-    } else
+    if (game.global.mapsOwnedArray.length <= 0) {
         selectedMap = "create";
+    }
 
     //Uniques
-    var runUniques = (getPageSetting('AutoMaps') == 1);
+    var runUniques = (getPageSetting('AutoMaps') === 1);
     if (runUniques) {
         //Init
-        var runningC2 = game.global.runningChallengeSquared;
-        var challengeRequireMap, challenge = game.global.challengeActive;
         var bionicMaxLevel = 0;
         var bionicPool = [];
 
         //For each owned map..
-        for (var map in game.global.mapsOwnedArray) {
-            var theMap = game.global.mapsOwnedArray[map];
-
+        for (const map of game.global.mapsOwnedArray) {
             //Check if it's unique
-            if (theMap.noRecycle) {
-                //The Block (Shieldblock, Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Scientist" || challenge == "Trimp");
-                var getShieldblock = !game.upgrades.Shieldblock.allowed && getPageSetting('BuyShieldblock');
-                if (theMap.name == 'The Block' &&  (challengeRequireMap || getShieldblock || shouldSpeedRun(game.achievements.blockTimed))) {
-                    if (game.global.world < 11 || getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
+            if (map.noRecycle) {
+                if (shouldRunUniqueMap(map)) {
+                    selectedMap = map.id;
                     break;
                 }
 
-                //The Wall (Bounty or Speed Achievement)
-                if (theMap.name == 'The Wall' && (game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased || shouldSpeedRun(game.achievements.wallTimed))) {
-                    if (game.global.world < 15 || getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
-                    break;
-                }
-
-                //Dimension of Anger (Portal, Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Discipline" || challenge == "Metal" || challenge == "Size" || challenge == "Frugal" || challenge == "Coordinate");
-                var needToPortal = !game.talents.portal.purchased && document.getElementById("portalBtn").style.display == "none";
-                if (theMap.name == 'Dimension of Anger' && (challengeRequireMap || needToPortal || shouldSpeedRun(game.achievements.angerTimed))) {
-                    if (game.global.world < 20 || getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
-                    break;
-                }
-
-                //Trimple of Doom (Treasure, Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Meditate" || challenge == "Trapper" || game.portal.Relentlessness.locked);
-                var treasure = game.mapUnlocks.AncientTreasure.canRunOnce && Math.abs(getPageSetting('TrimpleZ')) >= 33;
-                if (theMap.name == 'Trimple Of Doom' && (challengeRequireMap || treasure || shouldSpeedRun(game.achievements.doomTimed))) {
-                    if (!challengeRequireMap && game.global.world < Math.abs(getPageSetting('TrimpleZ')) || getMapRatio(theMap) > 1) continue;
-                    if (treasure < 0) setPageSetting('TrimpleZ', 0);
-                    selectedMap = theMap.id;
-                    break;
-                }
-
-                //The Prison (Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Electricity" || challenge == "Mapocalypse");
-                if (theMap.name == 'The Prison' && (challengeRequireMap || shouldSpeedRun(game.achievements.prisonTimed))) {
-                    if (game.global.world < 80 || getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
-                    break;
-                }
-
-                //Imploding Star (Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Devastation");
-                if (theMap.name == 'Imploding Star' && (challengeRequireMap || shouldSpeedRun(game.achievements.starTimed))) {
-                    if (game.global.world < 170 || getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
-                    break;
-                }
-
-                //Bionic Wonderland (Challenges or Speed Achievement)
-                challengeRequireMap = !runningC2 && (challenge == "Crushed");
-                if (theMap.name == 'Bionic Wonderland' && (challengeRequireMap || shouldSpeedRun(game.achievements.bionicTimed))) {
-                    if (game.global.world < 125 || getMapRatio(theMap) > 1) continue;
-                    selectedMap = theMap.id;
-                }
-
-                //Bionic Wonderland I+ (Unlocks)
-                if (theMap.location == "Bionic")
+                // Bionic Wonderland I+ (Unlocks)
+                if (map.location === "Bionic") {
                     bionicPool.push(theMap);
+                }
             }
         }
 
@@ -624,7 +836,7 @@ function autoMap() {
         var tryBionicSniper = !game.achievements.oneOffs.finished[42] && (110 + 15*bionicMaxLevel) >= game.global.world + 45;
         if (bionicPool.length > 0 && (bionicMaxLevel > game.global.roboTrimpLevel || tryBionicSniper)) {
             var bionicLevel = Math.min(bionicPool.length, bionicMaxLevel);
-            if (bionicLevel > 0) selectedMap = bionicPool[bionicLevel-1].id;
+            if (bionicLevel > 0 && bionicPool[bionicLevel-1]) selectedMap = bionicPool[bionicLevel-1].id;
             //debug("Selected Bionic Level " + bionicLevel + " resulting in map id " + selectedMap);
         }
     }
@@ -715,34 +927,31 @@ function autoMap() {
         shouldDoMaps = false;
     }
 
-    //Automaps
+    // Automaps
     if (shouldDoMaps || doVoids || needPrestige) {
-        if (selectedMap == "world") {
+        if (selectedMap === "world") {
             if (preSpireFarming) {
-                var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["maps"].SpireFarm199Maps) ? game.global.world - 1 : game.global.world;
-                selectedMap = "create";
-                for (i = 0; i < keysSorted.length; i++) {
-                    if (game.global.mapsOwnedArray[keysSorted[i]].level >= spiremaplvl &&
-                        game.global.mapsOwnedArray[keysSorted[i]].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain')) {
-                        selectedMap = game.global.mapsOwnedArray[keysSorted[i]].id;
-                        break;
+                const spiremaplvl = (game.talents.mapLoot.purchased && MODULES["maps"].SpireFarm199Maps) ? game.global.world - 1 : game.global.world;
+                let spireMap = null;
+                for (const map of game.global.mapsOwnedArray) {
+                    if (!map.noRecycle) {
+                        if (map.level >= spiremaplvl) {
+                            spireMap = selectBetterCraftedMap(spireMap, map, modPool, minMapLvl, optimalMapLvl);
+                        }
                     }
                 }
+                selectedMap = (spireMap? spireMap.id : "create");
             } else if (needPrestige) {
-                if ((game.global.world + extraMapLevels) <= game.global.mapsOwnedArray[highestMap].level)
-                    selectedMap = game.global.mapsOwnedArray[highestMap].id;
-                else
+                if (highestMap && (game.global.world + extraMapLevels) <= highestMap.level) {
+                    selectedMap = highestMap.id;
+                } else {
                     selectedMap = "create";
-            } else if (siphonMap != -1) {
-                selectedMap = game.global.mapsOwnedArray[siphonMap].id;
-                if (game.global.highestLevelCleared >= 59 && MODULES.maps.forceModifier && !game.global.mapsOwnedArray[siphonMap].hasOwnProperty("bonus")) tryBetterMod = true;
-            }
-            else if (altSiphMap != -1) {
+                }
+            } else if (optimalMap) {
+                selectedMap = optimalMap.id;
+            } else {
                 selectedMap = "create";
-                tryBetterMod = game.global.highestLevelCleared >= 59 && MODULES.maps.forceModifier;
             }
-            else
-                selectedMap = "create";
         }
     }
     if ((game.global.challengeActive == 'Lead' && !challSQ) && !doVoids && (game.global.world % 2 == 0 || game.global.lastClearedCell < customVars.shouldFarmCell)) {
@@ -750,6 +959,8 @@ function autoMap() {
             mapsClicked();
         return;
     }
+
+    const tryCrafting = selectedMap === "create";
     if (!game.global.preMapsActive && game.global.mapsActive) {
         var doDefaultMapBonus = game.global.mapBonus < getPageSetting('MaxMapBonuslimit') - 1;
         if (selectedMap == game.global.currentMapId && !getCurrentMapObject().noRecycle && (doDefaultMapBonus || vanillaMapatZone || doMaxMapBonus || shouldFarm || needPrestige || shouldDoSpireMaps || mapExiting)) {
@@ -767,52 +978,42 @@ function autoMap() {
 
             //End Prestige
             if (!shouldDoMaps && endPrestige && (game.global.world + extraMapLevels) <= lastPrestige + (getScientistLevel() >= 4 && lastPrestige%10 < 6 ? 14 : 9)) {
-                console.log("debug1");
                 repeatClicked();
             }
 
             //Health Farming
             if (shouldDoHealthMaps && game.global.mapBonus >= getPageSetting('MaxMapBonushealth') - 1) {
-                console.log("debug2");
                 repeatClicked();
-                shouldDoHealthMaps = false;
             }
 
             //Damage Farming
             if (doMaxMapBonus && game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') - 1) {
-                console.log("debug3");
                 repeatClicked();
                 doMaxMapBonus = false;
             }
 
             //Want to recreate the map
-            if (tryBetterMod && game.resources.fragments.owned >= fragmentsNeeded) {
-                console.log("debug4");
+            if (tryCrafting && game.resources.fragments.owned >= fragmentsNeeded) {
                 repeatClicked();
             }
 
             //Want to exit the current map to pRaid
             if (mapExiting) {
-                console.log("debug5");
                 repeatClicked();
             }
         } else {
-            console.log("debugx");
             //Start with Repeat Off
             if (game.global.repeatMap) {
-                console.log("debugx1");
                 repeatClicked();
             }
 
             //Turn if back on if it want to recreate a map, but doesn't have the fragments to do it
-            if (tryBetterMod && game.resources.fragments.owned < fragmentsNeeded) {
-                console.log("debugx2");
+            if (tryCrafting && game.resources.fragments.owned < fragmentsNeeded) {
                 repeatClicked();
             }
 
             //Force Abandon to restart void maps
             if (restartVoidMap) {
-                console.log("debugx3");
                 mapsClicked(true);
             }
         }
@@ -839,164 +1040,166 @@ function autoMap() {
                 mapsClicked();
             }
         }
-    }
-    else if (game.global.preMapsActive) {
-        if (selectedMap == "world") {
+    } else if (game.global.preMapsActive) {
+        devDebug(debugCtx, "Siphonology and selected maps", {
+            minMapLvl: minMapLvl,
+            baseMapLvl: baseMapLvl,
+            optimalMapLvl: optimalMapLvl,
+            optimalMap: debugPrettifyMap(optimalMap),
+            alternativeMap: debugPrettifyMap(alternativeMap),
+            highestMap: debugPrettifyMap(highestMap),
+            lowestMap: debugPrettifyMap(lowestMap),
+            selectedMap: selectedMap,
+            tryCrafting: tryCrafting,
+            needMetal: needMetal,
+            needPrestige: needPrestige,
+            fragmentsNeeded: prettify(fragmentsNeeded)
+        }, '=', true);
+
+        if (selectedMap === "world") {
             mapsClicked();
-        }
-        else if (selectedMap == "create" || tryBetterMod) {
-            var $mapLevelInput = document.getElementById("mapLevelInput");
-            $mapLevelInput.value = (needPrestige || siphLvl > game.global.world) ? game.global.world : siphLvl;
-            if (preSpireFarming && MODULES["maps"].SpireFarm199Maps)
-                $mapLevelInput.value = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
-            var decrement;
-            var tier;
-            if (game.global.world >= customVars.MapTierZone[0]) {
-                tier = customVars.MapTier0Sliders;
-                decrement = [];
-            }
-            else if (game.global.world >= customVars.MapTierZone[1]) {
-                tier = customVars.MapTier1Sliders;
-                decrement = ['loot'];
-            }
-            else if (game.global.world >= customVars.MapTierZone[2]) {
-                tier = customVars.MapTier2Sliders;
-                decrement = ['loot'];
-            }
-            else {
-                tier = customVars.MapTier3Sliders;
-                decrement = ['diff', 'loot'];
-            }
-
-            sizeAdvMapsRange.value = tier[0];
-            adjustMap('size', tier[0]);
-            difficultyAdvMapsRange.value = tier[1];
-            adjustMap('difficulty', tier[1]);
-            lootAdvMapsRange.value = tier[2];
-            adjustMap('loot', tier[2]);
-            biomeAdvMapsSelect.value = autoTrimpSettings.mapselection.selected == "Gardens" ? (game.global.decayDone ? "Plentiful" : "Random") : autoTrimpSettings.mapselection.selected;
-            updateMapCost();
-            if (shouldFarm || game.global.challengeActive == 'Metal') {
-                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";
-                updateMapCost();
-            }
-            if (updateMapCost(true) > game.resources.fragments.owned) {
-                if (needPrestige && !enoughDamage) decrement.push('diff');
-                if (shouldFarm) decrement.push('size');
-            }
-            while (decrement.indexOf('loot') > -1 && lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                lootAdvMapsRange.value -= 1;
-            }
-            while (decrement.indexOf('diff') > -1 && difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                difficultyAdvMapsRange.value -= 1;
-            }
-            while (decrement.indexOf('size') > -1 && sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                sizeAdvMapsRange.value -= 1;
-            }
-            while (lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                lootAdvMapsRange.value -= 1;
-            }
-            while (difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                difficultyAdvMapsRange.value -= 1;
-            }
-            while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                sizeAdvMapsRange.value -= 1;
-            }
-            if (getPageSetting('AdvMapSpecialModifier')) {
-                if (siphLvl > maxLvl) {
-                    //TODO -- Buggy when we don't have fragments to create any map with modifiers
-                    //Finds the highest map level we can buy modifiers for, plus one
-                    while (game.global.world + getExtraMapLevels() <= siphLvl && getExtraMapLevels() < 10 && testMapSpecialModController(true))
-                        document.getElementById('advExtraLevelSelect').value++;
-
-                    //Since we can't create a map for zone X + 1, target zone X
-                    if (getExtraMapLevels() > 0 && (getExtraMapLevels() < 10 || !testMapSpecialModController(true)))
-                        document.getElementById('advExtraLevelSelect').value--;
-
-                    //(Map Loot) Reduces our map zone to world - 1 if we can't create a map for world + 1
-                    if (game.talents.mapLoot.purchased && getExtraMapLevels() == 0) $mapLevelInput.value--;
-
-                    //Update our control flags
-                    extraMapLevels = getExtraMapLevels();
-                    gotBetterMod = (parseInt($mapLevelInput.value) + getExtraMapLevels() > altSiphLevel) && testMapSpecialModController(true);
-                }
-                else gotBetterMod = testMapSpecialModController(tryBetterMod);
-            }
-            var mapLvlPicked = parseInt($mapLevelInput.value) + (getPageSetting('AdvMapSpecialModifier') ? getExtraMapLevels() : 0);
-
-            //Sorry for the mess, this whole thing needs a rework
-            if (tryBetterMod) {
-                if (gotBetterMod && game.resources.fragments.owned >= updateMapCost(true)) {
-                    fragmentsNeeded = 0;
-                    if (siphonMap != -1) {
-                        debug("Recreating map level #" + mapLvlPicked + " to include a modifier", "maps", '*happy2');
-                        recycleMap(siphonMap);
-                    }
-                }
-                else if (altSiphMap != -1) {
-                    selectedMap = game.global.mapsOwnedArray[altSiphMap].id;
-                    selectMap(selectedMap);
-                    var mapObject = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
-                    var lvlText = " Level: " + mapObject.level;
-                    runMap();
-                    if (lastMapWeWereIn != getCurrentMapObject()) debug("Running alternative map " + selectedMap + lvlText + " Name: " + mapObject.name, "maps", 'th-large');
-                    lastMapWeWereIn = getCurrentMapObject();
-                    return;
-                }
-                else if (siphonMap != -1) {
-                    selectMap(selectedMap);
-                    var themapobj = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
-                    var levelText = " Level: " + themapobj.level;
-                    var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
-                    runMap();
-                    debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
-                    lastMapWeWereIn = getCurrentMapObject();
-                    return;
-                }
-            }
-
-            //Can't create a map better than what we already have
-            if (highestMap && mapLvlPicked <= game.global.mapsOwnedArray[highestMap].level) {
-                selectMap(game.global.mapsOwnedArray[highestMap].id);
-                runMap();
-                lastMapWeWereIn = getCurrentMapObject();
-                return;
-            }
-
-            //No fragments to create a map
-            if (updateMapCost(true) > game.resources.fragments.owned) {
-                selectMap(game.global.mapsOwnedArray[highestMap].id);
-                debug("Can't afford the map we designed, #" + mapLvlPicked, "maps", '*crying2');
-                debug("...selected our highest map instead # " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, "maps", '*happy2');
-                runMap();
-                lastMapWeWereIn = getCurrentMapObject();
+        } else if (!tryCrafting) {
+            let mapType;
+            if (optimalMap && selectedMap === optimalMap.id) {
+                mapType = 'optimal';
+            } else if (alternativeMap && selectedMap === alternativeMap.id) {
+                mapType = 'alternative';
             } else {
-                var result = buyMap();
-                debug("Buying a Map, level: #" + mapLvlPicked + " for " + prettify(updateMapCost(true)) + " fragments", "maps", 'th-large');
-                if (result == -2) {
-                    debug("Too many maps, recycling now: ", "maps", 'th-large');
-                    recycleBelow(true);
-                    debug("Retrying, Buying a Map, level: #" + mapLvlPicked, "maps", 'th-large');
-                    result = buyMap();
-                    if (result == -2) {
-                        recycleMap(lowestMap);
-                        result = buyMap();
-                        if (result == -2)
-                            debug("AutoMaps unable to recycle to buy map!");
-                        else
-                            debug("Retrying map buy after recycling lowest level map");
-                    }
-                }
+                mapType = 'selected';
             }
-        } else {
             selectMap(selectedMap);
-            var themapobj = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
-            var levelText = " Level: " + themapobj.level;
-            var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
             runMap();
-            debug("Running selected " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
+            const map = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
+            debug(`Running ${mapType} map ${prettifyMap(map)}`, "maps", 'th-large');
             lastMapWeWereIn = getCurrentMapObject();
             fragmentsNeeded = 0;
+        } else {
+            const prevFragmentsNeeded = fragmentsNeeded;
+            const currentMap = (optimalMap || alternativeMap);
+            const mapType = (optimalMap ? 'optimal' : 'alternative');
+            let shouldBuyMap, bestMod, highestMapCost;
+            devDebug(debugCtx, 'Trying to design a map', {
+                modsUnlocked: modsUnlocked, AdvMapSpecialModifier: getPageSetting('AdvMapSpecialModifier'),
+                currentMap: debugPrettifyMap(currentMap),
+            }, '=', true);
+            if (!configureMapSliders(customVars, minMapLvl)) {
+                // Can't afford a map even with the worst slider values
+                shouldBuyMap = false;
+            } else {
+                if (modsUnlocked && getPageSetting('AdvMapSpecialModifier')) {
+                    if (!currentMap) {
+                        // we don't have a suitable map, so get any decent map to run
+                        if (needMetal) {
+                            // prioritize caches for farming
+                            bestMod = setAffordableMapMod(farmingMapMods);
+                            fragmentsNeeded = setAffordableMapLevel(optimalMapLvl);
+                        } else {
+                            // otherwise, prioritize levels
+                            setAffordableMapLevel(optimalMapLvl);
+                            bestMod = setAffordableMapMod(modPool);
+                            fragmentsNeeded = bestMod.cost;
+                        }
+                        shouldBuyMap = canAffordSelectedMap();
+                    } else if (needMetal) {
+                        // for farming, a map bonus (LMC/HC/etc) is better than extra levels
+                        bestMod = maybeSetBestMapMod(farmingMapMods);
+                        const selectedMod = getSelectedMapMod();
+                        if (selectedMod) {
+                            // we got the best unlocked mod, now we can try to increase map levels
+                            highestMapCost = setAffordableMapLevel(optimalMapLvl);
+                            if (highestMapCost > game.resources.fragments.owned) {
+                                // we still can handle more levels, but can't afford it.
+                                // remember the cost to re-craft later
+                                fragmentsNeeded = highestMapCost;
+                            }
+                        } else {
+                            // couldn't get the best mod, so no point in increasing levels
+                            fragmentsNeeded = bestMod.cost;
+                        }
+                        const totalMapLevel = getSelectedMapLevel();
+                        const gotBetterLevel = totalMapLevel > currentMap.level;
+                        let gotBetterBonus = modPool.includes(selectedMod) && !modPool.includes(currentMap.bonus);
+                        if (!gotBetterBonus && currentMap.level === optimalMapLvl) {
+                            // if we can't get better level, bonus improvement is fine
+                            gotBetterBonus = modPool.indexOf(selectedMod) < modPool.indexOf(currentMap.bonus);
+                        }
+                        devDebug(debugCtx, 'Designed a map', {
+                            gotBetterBonus: gotBetterBonus, gotBetterLevel: gotBetterLevel,
+                            selectedMapMod: selectedMod, selectedMapLevel: totalMapLevel,
+                            bestModName: bestMod.mod, bestModCost: bestMod.cost
+                        }, '=', true);
+                        shouldBuyMap = canAffordSelectedMap() && (gotBetterBonus || gotBetterLevel);
+                    } else {
+                        // if not farming, we're getting prestige or map stacks. in this case prioritize levels over random mods
+                        setAffordableMapLevel(optimalMapLvl);
+                        bestMod = setAffordableMapMod(modPool);
+                        fragmentsNeeded = bestMod.cost;
+                        const gotBetterLevel = getSelectedMapLevel() > currentMap.level;
+                        shouldBuyMap = canAffordSelectedMap() && gotBetterLevel;
+                    }
+                } else {
+                    const gotBetterLevel = getSelectedMapLevel() > currentMap.level;
+                    shouldBuyMap = canAffordSelectedMap() && gotBetterLevel;
+                }
+            }
+
+            const selectedMod = getSelectedMapMod();
+            const extraMapLevels = getExtraMapLevels();
+            const totalMapLevel = getSelectedMapLevel();
+            const mapCost = updateMapCost(true);
+
+            if (fragmentsNeeded && prevFragmentsNeeded !== fragmentsNeeded && fragmentsNeeded > game.resources.fragments.owned) {
+                const wanted = [(bestMod ? bestMod.mod : undefined),
+                    (totalMapLevel < optimalMapLvl ? `+${optimalMapLvl-totalMapLevel}lvl` : undefined)].filter(m => m).join(', ');
+                debug(`Will recheck map upgrades when we have ${prettify(fragmentsNeeded)} fragments (want: ${wanted})`, "maps", 'th-large');
+            }
+
+            if (shouldBuyMap) {
+                const modMsgs = [];
+                if (selectedMod) {
+                    modMsgs.push(mapSpecialModifierConfig[selectedMod].name);
+                }
+                if (extraMapLevels) {
+                    modMsgs.push(`z+${extraMapLevels}`);
+                }
+                const ratio = (100 * (mapCost / game.resources.fragments.owned)).toFixed(2);
+                const bonusMsg = (modMsgs.length > 0 ? `${modMsgs.join(', ')}` : 'no bonus');
+                debug(`Buying a map: Level ${totalMapLevel} (${bonusMsg}). Cost: ${ratio}% of your fragments (${prettify(mapCost)})`, "maps", 'th-large');
+
+                var result = buyMap();
+                if (result === -2) {
+                    debug("Too many maps, recycling all lower-level maps", "maps", 'th-large');
+                    recycleBelow(true);
+                    result = buyMap();
+                    if (result === -2) {
+                        if (lowestMap) {
+                            debug("Still too many maps, recycling map of the lowest level");
+                            recycleMap(lowestMap.id);
+                            result = buyMap();
+                            if (result !== -2) {
+                                return;
+                            }
+                        }
+                    } else {
+                        return;
+                    }
+                    debug("Failed to buy a map");
+                }
+            } else if (currentMap) {
+                selectMap(currentMap.id);
+                runMap();
+                if (lastMapWeWereIn !== getCurrentMapObject()) {
+                    debug(`Running ${mapType} map: ${prettifyMap(currentMap)}`, "maps", 'th-large');
+                    lastMapWeWereIn = getCurrentMapObject();
+                }
+            } else {
+                // No fragments to create a decent map
+                selectMap(highestMap.id);
+                debug(`Can't afford the map we designed, Level ${totalMapLevel}`, "maps", '*crying2');
+                debug(`...selected our highest map instead: ${prettifyMap(highestMap)}`, "maps", '*happy2');
+                runMap();
+                lastMapWeWereIn = getCurrentMapObject();
+            }
         }
     }
 }
@@ -1155,7 +1358,6 @@ function RautoMap() {
     if ((game.options.menu.repeatUntil.enabled == 1 || game.options.menu.repeatUntil.enabled == 2 || game.options.menu.repeatUntil.enabled == 3) && !game.global.mapsActive && !game.global.preMapsActive) toggleSetting('repeatUntil');
     if (game.options.menu.exitTo.enabled != 0) toggleSetting('exitTo');
     if (game.options.menu.repeatVoids.enabled != 0) toggleSetting('repeatVoids');
-    var extraMapLevels = 0;
     var hitsSurvived = 10;
     if (getPageSetting("Rhitssurvived") > 0) hitsSurvived = getPageSetting("Rhitssurvived");
 
