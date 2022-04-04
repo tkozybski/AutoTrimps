@@ -154,7 +154,7 @@
 			//Cell Titles
 			$cell.title = cell.name;
 			if (cell.corrupted && cell.corrupted.startsWith("corrupt"))
-				$cell.title += mutationEffects[cell.corrupted].title;
+				$cell.title += "-" + mutationEffects[cell.corrupted].title;
 		}
 	}
 
