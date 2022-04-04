@@ -79,9 +79,6 @@
 	}
 
 	function updateCell($cell, cell, pallet, customIcon, overrideSpecial) {
-		//Cell Title
-		$cell.title = cell.name;
-
 		//Cell Color
 		if (M.fightinfo.changeCellColor) $cell.style.color = pallet.color;
 		$cell.style.textShadow = pallet.shadow;
@@ -153,6 +150,11 @@
 			else if (cell.name.toLowerCase().indexOf('ice') > -1) {
 				updateCell($cell, cell, M.fightinfo.imp.ice);
 			}
+
+			//Cell Titles
+			$cell.title = cell.name;
+			if (cell.corrupted && cell.corrupted.startsWith("corrupt"))
+				$cell.title += mutationEffects[cell.corrupted].title;
 		}
 	}
 
