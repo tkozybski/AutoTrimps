@@ -2,10 +2,11 @@ var wantToScry = false;
 var transitionRequired = false;
 
 function scryingCorruption() {
-    var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && (game.global.world < getPageSetting('ScryerMaxZone') || getPageSetting('ScryerMaxZone') < 1);
-    var scryCorrupt = scryZone && getPageSetting('ScryerSkipCorrupteds2') != 0;
+    var maxZoneOK = game.global.world < getPageSetting('ScryerMaxZone') || getPageSetting('ScryerMaxZone') < 1 || getPageSetting('onlyminmaxworld') >= 3;
+    var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && maxZoneOK;
+    var scryCorrupt = scryZone && getPageSetting('ScryerSkipCorrupteds2') != 0 || getPageSetting('ScryerSkipCorrupteds2') == 1;
     var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
-    if (scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true) return true;
+    return scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true;
 }
 
 function readyToSwitch(stance = "S") {

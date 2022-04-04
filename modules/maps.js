@@ -17,8 +17,6 @@ MODULES.maps.UnearnedPrestigesRequired = 2;
 //Psycho
 MODULES.maps.shouldFarmHigherZone = true; //Allows farming on a map level above your current zone if you can overkill in it
 MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
-MODULES.maps.scryerHDMult = 4; //This is a divisor to your "mapCutOff" and "farming H:D", and only works if Scry on Corrupted is ON (Domination ignores this)
-MODULES.maps.scryerHitsMult = 8; //This is a multiplier to your "numHitsSurvived", and only works if Scry on Corrupted is ON (Domination ignores this)
 MODULES.maps.magmaHitsSurvived = 2; //Your geneticists are frequently lagging 1-2 zones behind when speeding through magma, which is why this is important
 
 var enoughDamage = true;
@@ -170,12 +168,12 @@ function getMapHealthCutOff(pure) {
 
     //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
     if (preVoidCheck) {
-        if (getPageSetting("scryvoidmaps")) cut *= MODULES.maps.scryerHitsMult;
+        if (getPageSetting("scryvoidmaps")) cut *= getPageSetting('ScryerHitsMult');
         return cut * getPageSetting('VoidHitsMult');
     }
 
     //Scryer Multiplier (only if scrying on corrupted)
-    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut * MODULES.maps.scryerHitsMult;
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut * getPageSetting('ScryerHitsMult');
 
     return cut;
 }
@@ -215,7 +213,7 @@ function getMapCutOff(pure) {
 
     //Void and Scry cut off
     if (preVoidCheck) return cut * getPageSetting('VoidHDMult');
-    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / MODULES.maps.scryerHDMult;
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / getPageSetting('ScryerHDMult');
 
     return cut;
 }
@@ -229,7 +227,7 @@ function getFarmCutOff() {
 
     //Void and Scry
     if (preVoidCheck) return cut * getPageSetting('VoidHDMult');
-    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / MODULES.maps.scryerHDMult;
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / getPageSetting('ScryerHDMult');
 
     return cut;
 }

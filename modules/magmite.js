@@ -180,7 +180,7 @@ function autoGenerator() {
     }
 
     //Scry starts alongside fueling. DieZ is updated if <= minZone
-    if (getPageSetting('ScyerMinAtFuel') && game.global.highestLevelCleared >= 240) {
+    if (getPageSetting('ScryerMinAtFuel') && game.global.highestLevelCleared >= 240) {
         var fuelZone = getPageSetting("fuellater");
         setPageSetting("ScryerMinZone", Math.max(fuelZone, getPageSetting("ScryerMinZone")));
         setPageSetting("ScryerDieZ", Math.max(fuelZone, getPageSetting("ScryerMinZone"), getPageSetting("ScryerDieZ")));
