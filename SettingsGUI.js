@@ -804,7 +804,7 @@ function initializeAllSettings() {
     createSetting('screwessence', 'Remaining Essence Only', 'Why scry when theres no essence? Turns off scrying when the remaining enemies with essence drops to 0. ', 'boolean', false, null, 'Scryer');
     createSetting('ScryerMinAtFuel', 'Scryer Min Zone At Fuel', 'If enabled and your HZE is at least z240, AT will adjust the <b>Scryer Min Zone</b> setting to your <b>Fuel Start Zone</b>.<br>Requires <b>Auto Generator</b> to be enabled.', 'boolean', true, null, 'Scryer');
     createSetting('ScryerHDMult', 'Scryer H:D Mult', "This is a <b>divider</b> to your <b>mapCutOff</b> and <b>farming H:D</b>, and only works if when scrying on Corrupted (Domination ignores this). Values below 1 will make AT require <b>more</b> damage when scrying versus corrupted cells, which is usually NOT what you want, because AT already accounts for Corrupted Strength. <br>Something around 4 seems to work well.", 'value', '4', null, 'Scryer');
-    createSetting('ScryerHitsMult', 'Scryer Hits Mult', "This is a multiplier to your <b>numHitsSurvived</b>, and only works when scrying on Corrupted (Domination ignores this). Values below 1 will make AT require <b>less</b> health, but unless pushing, you want it to be higher to compensate for Corrupted Sharpness. <br>Something around 8 seems to be fine.", 'value', '8', null, 'Scyer');
+    createSetting('ScryerHitsMult', 'Scryer Hits Mult', "This is a multiplier to your <b>numHitsSurvived</b>, and only works when scrying on Corrupted (Domination ignores this). Values below 1 will make AT require <b>less</b> health, but unless pushing, you want it to be higher to compensate for Corrupted Sharpness. <br>Something around 8 seems to be fine.", 'value', '8', null, 'Scryer');
 
 
     //Magma
