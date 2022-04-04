@@ -1,12 +1,6 @@
 MODULES["magmite"] = {};
 MODULES["magmite"].algorithm = 2;
 
-//Psycho
-MODULES["magmite"].autoFuelZone = true;
-MODULES["magmite"].zonesBeforeMaxSupply = 5; // Start fueling this many zones before your Max Supply Zone
-MODULES["magmite"].zonesToFuel = 20; //Fuel for this number of zones
-MODULES["magmite"].minAtFuel = game.global.highestLevelCleared >= 240; //Starts Scrying once AT starts fueling
-
 var priceIncreases = {
     Efficiency: 8,
     Capacity: 32,
@@ -180,13 +174,13 @@ function autoGenerator() {
     var afterFuelState = getPageSetting("defaultgen");
 
     //Auto Fuel Zone
-    if (MODULES.magmite.autoFuelZone) {
-        setPageSetting("fuellater", Math.max(230, 230 + 2 * game.generatorUpgrades.Supply.upgrades - MODULES.magmite.zonesBeforeMaxSupply));
-        setPageSetting("fuelend", getPageSetting("fuellater") + MODULES.magmite.zonesToFuel);
+    if (getPageSetting('AutoFuelZone')) {
+        setPageSetting("fuellater", Math.max(230, 230 + 2 * game.generatorUpgrades.Supply.upgrades - getPageSetting('ZonesBeforeSupply')));
+        setPageSetting("fuelend", getPageSetting("fuellater") + getPageSetting('TotalZonesToFuel'));
     }
 
     //Scry starts alongside fueling. DieZ is updated if <= minZone
-    if (MODULES.magmite.minAtFuel) {
+    if (getPageSetting('ScyerMinAtFuel') && game.global.highestLevelCleared >= 240) {
         var fuelZone = getPageSetting("fuellater");
         setPageSetting("ScryerMinZone", Math.max(fuelZone, getPageSetting("ScryerMinZone")));
         setPageSetting("ScryerDieZ", Math.max(fuelZone, getPageSetting("ScryerMinZone"), getPageSetting("ScryerDieZ")));

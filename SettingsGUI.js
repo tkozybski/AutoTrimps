@@ -611,7 +611,7 @@ function initializeAllSettings() {
     createSetting('spireshitbuy', 'Buy Gear in Spire', 'Will buy Weapons and Armor in Spire regardless of your H:D ratio. Respects your max gear level and ignore spires setting. ', 'boolean', false, null, 'Spire');
     createSetting('SkipSpires', 'Skip Spires', 'Will disregard your H:D ratio after Farm Before Spire is done (if set). Useful to die in spires if farming takes too long. <br><b>NOTE: Obsolete. Prefer to use Exit Cell instead.</b>', 'boolean', false, null, 'Spire');
     createSetting('SpireHD', 'Spire H:D Mult', "This value will replace your <b>mapCutOff</b> and <b>farming H:D</b> settings, but it only works at active Spires. Keep in mind that 4 actually 1 hit in D stance. <br>Try to find a value that will minimize farming, while still ensuring you won't run out of lives before hitting your target row.", 'value', '4', null, 'Spire');
-    createSetting('SpireHitsSurvived', 'Spire Hits Mult', "This value will replace your <b>numHitsSurvived</b> setting, but it only works at active Spires. Keep in mind that 0.25 actually means you survive 1 hit in H stance. <br>Try to find a value that will minimize farming, while still ensuring you won't run out of lives before hitting your target row.", 'value', '5', null, 'Spire');
+    createSetting('SpireHitsSurvived', 'Spire Hits Mult', "This value will replace your <b>numHitsSurvived</b> setting, but it only works at active Spires. Keep in mind that 0.25 actually means you survive 1 hit in H stance. <br>Try to find a value that will minimize farming, while still ensuring you won't run out of lives before hitting your target row.", 'value', '20', null, 'Spire');
 
 
     //Raiding
@@ -802,17 +802,21 @@ function initializeAllSettings() {
     createSetting('ScryUseinIce', 'Scry in Ice', 'Decides what you do in Ice. <br><b>-1</b> = Maybe <br><b>0</b> = Never <br><b>Above 0</b> = Max Zone you want it scrying', 'value', -1, null, 'Scryer');
     createSetting('ScryerDieZ', 'Die To Use S', '<b>-1 to disable.</b><br>Turning this on will switch you back to S even when doing so would kill you. Happens in scenarios where you used Skip Corrupteds that took you into regular Autostance X/H stance, killed the corrupted and reached a non-corrupted enemy that you wish to use S on, but you havent bred yet and you are too low on health to just switch back to S. So you\'d rather die, wait to breed, then use S for the full non-corrupted enemy, to maximize DE. NOTE: Use at your own risk.<br>Use this input to set the minimum zone that scryer activates in (You can use decimal values to specify what cell this setting starts from)', 'value', 230.60, null, 'Scryer');
     createSetting('screwessence', 'Remaining Essence Only', 'Why scry when theres no essence? Turns off scrying when the remaining enemies with essence drops to 0. ', 'boolean', false, null, 'Scryer');
+    createSetting('ScyerMinAtFuel', 'Scryer Min Zone At Fuel', 'If enabled and your HZE is at least z240, AT will adjust the <b>Scryer Min Zone</b> setting to your <b>Fuel Start Zone</b>.<br>Requires <b>Auto Generator</b> to be enabled.', 'boolean', true, null, 'Scryer');
 
 
     //Magma
 
     createSetting('UseAutoGen', 'Auto Generator', 'Turn this on to use these settings. ', 'boolean', false, null, 'Magma');
+    createSetting('AutoFuelZone', 'Auto Fuel Zone', 'If enabled, AT will automatically adjust your <b>Start Fuel Z</b> setting to X zones before your max supply zone, and your <b>End Fuel Z</b> to Y zones after that.', 'boolean', false, null, 'Magma');
     createSetting('beforegen', ['Gain Mi', 'Gain Fuel', 'Hybrid'], '<b>MODE BEFORE FUELING: </b>Which mode to use before fueling. This is the mode which the generator will use if you fuel after z230. ', 'multitoggle', 1, null, 'Magma');
     createSetting('fuellater', 'Start Fuel Z', 'Start fueling at this zone instead of 230. I would suggest you have a value lower than your max, for obvious reasons. Recommend starting at a value close-ish to your max supply. Use 230 to use your <b>BEFORE FUEL</b> setting. ', 'value', -1, null, 'Magma');
     createSetting('fuelend', 'End Fuel Z', 'End fueling at this zone. After this zone is reached, will follow your preference. -1 to fuel infinitely. ', 'value', -1, null, 'Magma');
     createSetting('defaultgen', ['Gain Mi', 'Gain Fuel', 'Hybrid'], '<b>MODE AFTER FUELING: </b>Which mode to use after fueling. ', 'multitoggle', 1, null, 'Magma');
     createSetting('AutoGenDC', ['Daily: Normal', 'Daily: Fuel', 'Daily: Hybrid'], '<b>Normal:</b> Uses the AutoGen settings. <br><b>Fuel:</b> Fuels the entire Daily. <br><b>Hybrid:</b> Uses Hybrid for the entire Daily. ', 'multitoggle', 1, null, 'Magma');
     createSetting('AutoGenC2', ['C2: Normal', 'C2: Fuel', 'C2: Hybrid'], '<b>Normal:</b> Uses the AutoGen settings. <br><b>Fuel:</b> Fuels the entire C2. <br><b>Hybrid:</b> Uses Hybrid for the entire C2. ', 'multitoggle', 1, null, 'Magma');
+    createSetting('ZonesBeforeSupply', 'Zones Before Max Supply', 'How many zones before your max supply zone to start fueling at.<br>Use with AutoGen and Auto Fuel Zone.', 'value', -1, null, 'Magma');
+    createSetting('TotalZonesToFuel', 'Total Zones to Fuel', 'How many zones to fuel for, starting at your max supply zone, minus your <b>Zones Before Max Supply</b> setting.<br>Use with AutoGen and Auto Fuel Zone.', 'value', -1, null, 'Magma');
 
     //Spend Mi
     document.getElementById('AutoGenC2').parentNode.insertAdjacentHTML('afterend', '<br>');
@@ -1866,6 +1870,7 @@ function updateCustomButtons() {
     !radonon ? turnOn("ScryUseinIce"): turnOff("ScryUseinIce");
     !radonon ? turnOn("ScryerDieZ"): turnOff("ScryerDieZ");
     !radonon ? turnOn("screwessence"): turnOff("screwessence");
+    !radonon ? turnOn("ScyerMinAtFuel"): turnOff("ScyerMinAtFuel");
 
 
     //Magma
@@ -1878,6 +1883,8 @@ function updateCustomButtons() {
     !radonon ? turnOn("AutoGenC2"): turnOff("AutoGenC2");
     !radonon ? turnOn("spendmagmite"): turnOff("spendmagmite");
     !radonon ? turnOn("ratiospend"): turnOff("ratiospend");
+    !radonon ? turnOn("AutoFuelZone"): turnOff("AutoFuelZone");
+
     var ratiospend = getPageSetting('ratiospend');
     (!radonon && !ratiospend) ? turnOn("SupplyWall"): turnOff("SupplyWall");
     (!radonon && !ratiospend) ? turnOn("spendmagmitesetting"): turnOff("spendmagmitesetting");
@@ -1886,6 +1893,10 @@ function updateCustomButtons() {
     (!radonon && ratiospend) ? turnOn("capratio"): turnOff("capratio");
     (!radonon && ratiospend) ? turnOn("supratio"): turnOff("supratio");
     (!radonon && ratiospend) ? turnOn("ocratio"): turnOff("ocratio");
+
+    //Auto Fuel Zone Config
+    (!radonon && getPageSetting('AutoFuelZone')) ? turnOn('ZonesBeforeSupply') : turnOff('ZonesBeforeSupply');
+    (!radonon && getPageSetting('AutoFuelZone')) ? turnOn('TotalZonesToFuel') : turnOff('TotalZonesToFuel');
     
 
     //Golden
