@@ -6,7 +6,8 @@ function scryingCorruption() {
     var scryZone = game.global.world >= getPageSetting('ScryerMinZone') && maxZoneOK;
     var scryCorrupt = scryZone && getPageSetting('ScryerSkipCorrupteds2') != 0 || getPageSetting('ScryerSkipCorrupteds2') == 1;
     var essenceLeft = getPageSetting('screwessence') == false || countRemainingEssenceDrops() >= 1;
-    return scryCorrupt && essenceLeft && getPageSetting('UseScryerStance') == true;
+    var die = getPageSetting('ScryerDieZ') != -1 && game.global.world >= getPageSetting('ScryerDieZ')
+    return (die || scryCorrupt) && essenceLeft && getPageSetting('UseScryerStance') == true;
 }
 
 function readyToSwitch(stance = "S") {

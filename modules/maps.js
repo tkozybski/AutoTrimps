@@ -213,7 +213,7 @@ function getMapCutOff(pure) {
 
     //Void and Scry cut off
     if (preVoidCheck) return cut * getPageSetting('VoidHDMult');
-    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / getPageSetting('ScryerHDMult');
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / getPageSetting('ScryerHDDiv');
 
     return cut;
 }
@@ -227,7 +227,7 @@ function getFarmCutOff() {
 
     //Void and Scry
     if (preVoidCheck) return cut * getPageSetting('VoidHDMult');
-    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / getPageSetting('ScryerHDMult');
+    if (scryingCorruption() && game.global.challengeActive != "Domination") return cut / getPageSetting('ScryerHDDiv');
 
     return cut;
 }
