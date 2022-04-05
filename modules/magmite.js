@@ -202,13 +202,23 @@ function autoGenerator() {
     }
 
     //Before Fuel
-    if (getPageSetting("fuellater") < 0 || game.global.world < getPageSetting("fuellater"))
+    if (getPageSetting("fuellater") < 0 || game.global.world < getPageSetting("fuellater")) {
+        //Pseudo-Hybrid
+        if (beforeFuelState == 2 && !game.permanentGeneratorUpgrades.Hybridization.owned) {
+            if (game.global.world == 230 && game.global.lastClearedCell < 14) beforeFuelState = 1;
+            if (game.global.magmaFuel == getGeneratorFuelCap(false, true)) beforeFuelState = 0;
+        }
         changeGeneratorState(beforeFuelState);
+    }
 
     //Fuel
     else if (getPageSetting("fuelend") < 0 || game.global.world < getPageSetting("fuelend"))
         changeGeneratorState(1);
 
     //After Fuel
-    else changeGeneratorState(afterFuelState);
+    else {
+        //Pseudo-Hybrid
+        if (afterFuelState == 2 && !game.permanentGeneratorUpgrades.Hybridization.owned) afterFuelState = 0;
+        changeGeneratorState(afterFuelState);
+    }
 }
