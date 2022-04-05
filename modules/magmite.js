@@ -205,6 +205,7 @@ function autoGenerator() {
     if (getPageSetting("fuellater") < 0 || game.global.world < getPageSetting("fuellater")) {
         //Pseudo-Hybrid
         if (beforeFuelState == 2 && !game.permanentGeneratorUpgrades.Hybridization.owned) {
+            beforeFuelState = game.global.generatorMode;
             if (game.global.world == 230 && game.global.lastClearedCell < 14) beforeFuelState = 1;
             if (game.global.magmaFuel == getGeneratorFuelCap(false, true)) beforeFuelState = 0;
         }
