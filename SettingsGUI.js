@@ -809,7 +809,7 @@ function initializeAllSettings() {
 
     //Magma
     createSetting('UseAutoGen', 'Auto Generator', 'Turn this on to use these settings. ', 'boolean', false, null, 'Magma');
-    createSetting('AutoFuelZone', 'Auto Fuel Zone', 'If enabled, AT will automatically adjust your <b>Start Fuel Z</b> setting to <b>Zones Before Max Supply</b> zones before your max supply zone, and your <b>End Fuel Z</b> to <b>Total Fuel Zones</b> zones after that.', 'boolean', false, null, 'Magma');
+    createSetting('AutoFuelZone', 'Auto Fuel Zone', 'If enabled, AT will automatically adjust your <b>Start Fuel Z</b> setting to <b>Zones Before Max Supply</b> zones before your max supply zone, and your <b>End Fuel Z</b> to <b>Total Fuel Zones</b> zones after that.<br>However, if you do not have Overclocker yet, it will simply use Hybrid mode instead.', 'boolean', false, null, 'Magma');
     createSetting('beforegen', ['Gain Mi', 'Gain Fuel', 'Hybrid'], '<b>MODE BEFORE FUELING: </b>Which mode to use before fueling. This is the mode which the generator will use if you fuel after z230.<br>If you choose Hybrid before buying the upgrade, it will fuel until you are full tank, then get Mi until it reaches the fuel zone.', 'multitoggle', 1, null, 'Magma');
     createSetting('fuellater', 'Start Fuel Z', 'Start fueling at this zone instead of 230. I would suggest you have a value lower than your max, for obvious reasons. Recommend starting at a value close-ish to your max supply. Use 230 to use your <b>BEFORE FUEL</b> setting. ', 'value', -1, null, 'Magma');
     createSetting('fuelend', 'End Fuel Z', 'End fueling at this zone. After this zone is reached, will follow your preference. -1 to fuel infinitely. ', 'value', -1, null, 'Magma');

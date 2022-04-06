@@ -169,14 +169,21 @@ function autoMagmiteSpender() {
 }
 
 function autoGenerator() {
-    //Init
-    var beforeFuelState = getPageSetting("beforegen");
-    var afterFuelState = getPageSetting("defaultgen");
-
     //Auto Fuel Zone
     if (getPageSetting('AutoFuelZone')) {
-        setPageSetting("fuellater", Math.max(230, 230 + 2 * game.generatorUpgrades.Supply.upgrades - getPageSetting('ZonesBeforeSupply')));
-        setPageSetting("fuelend", getPageSetting("fuellater") + getPageSetting('TotalZonesToFuel'));
+        //With Overclock - Auto Fuel Zone
+        if (game.generatorUpgrades.Overclocker.upgrades > 0) {
+            setPageSetting("fuellater", Math.max(230, 230 + 2 * game.generatorUpgrades.Supply.upgrades - getPageSetting('ZonesBeforeSupply')));
+            setPageSetting("fuelend", getPageSetting("fuellater") + getPageSetting('TotalZonesToFuel'));
+        }
+
+        //Without Overclock - Hybrid or Pseudo-Hybrid
+        else {
+            setPageSetting("fuellater", Math.max(230));
+            setPageSetting("fuelend", 230);
+            setPageSetting("beforegen", 2);
+            setPageSetting("defaultgen", 2);
+        }
     }
 
     //Scry starts alongside fueling. DieZ is updated if <= minZone
@@ -188,6 +195,10 @@ function autoGenerator() {
 
     //Dimensional Generator locked
     if (game.global.world < 230) return;
+
+    //Saves the user configuration
+    var beforeFuelState = getPageSetting("beforegen");
+    var afterFuelState = getPageSetting("defaultgen");
 
     //Daily
     if (game.global.challengeActive == "Daily" && getPageSetting("AutoGenDC") != 0) {
@@ -203,8 +214,8 @@ function autoGenerator() {
 
     //Before Fuel
     if (getPageSetting("fuellater") < 0 || game.global.world < getPageSetting("fuellater")) {
-        //Pseudo-Hybrid
-        if (beforeFuelState == 2 && !game.permanentGeneratorUpgrades.Hybridization.owned) {
+        //Pseudo-Hybrid. It fuels until full, then goes into Mi mode
+        if (getPageSetting("beforegen") == 2 && !game.permanentGeneratorUpgrades.Hybridization.owned) {
             beforeFuelState = game.global.generatorMode;
             if (game.global.world == 230 && game.global.lastClearedCell < 14) beforeFuelState = 1;
             if (game.global.magmaFuel == getGeneratorFuelCap(false, true)) beforeFuelState = 0;
@@ -218,8 +229,8 @@ function autoGenerator() {
 
     //After Fuel
     else {
-        //Pseudo-Hybrid
-        if (afterFuelState == 2 && !game.permanentGeneratorUpgrades.Hybridization.owned) afterFuelState = 0;
+        //Pseudo-Hybrid. It simply end the run in Mi mode
+        if (getPageSetting("defaultgen") == 2 && !game.permanentGeneratorUpgrades.Hybridization.owned) afterFuelState = 0;
         changeGeneratorState(afterFuelState);
     }
 }
