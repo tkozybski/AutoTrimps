@@ -509,7 +509,7 @@ function autoMap() {
     var obj = {};
     var siphonMap = -1, altSiphLevel = -1, altSiphMap = -1;
     var tryBetterMod = false, gotBetterMod = false;
-    for (var index=0; i < game.global.mapsOwnedArray.length; index++) {
+    for (var index=0; index < game.global.mapsOwnedArray.length; index++) {
         if (!game.global.mapsOwnedArray[index].noRecycle) {
             var mapAux = game.global.mapsOwnedArray[index];
             obj[index] = mapAux.level;
