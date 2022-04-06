@@ -496,7 +496,7 @@ function autoMap() {
 
         //Keep increasing map level while we can overkill in that map
         if (MODULES.maps.shouldFarmHigherZone && shouldFarmLowerZone && game.global.highestLevelCleared >= 209 && siphLvl == maxLvl) {
-            for (siphLvl; oneShotZone("S", "map", siphLvl+1) == maxOneShotPower(); siphLvl++);
+            while (oneShotZone("S", "map", siphLvl+1) == maxOneShotPower()) siphLvl++;
             if (game.talents.mapLoot.purchased && siphLvl == maxLvl+1) siphLvl--;
         }
     }
@@ -509,14 +509,14 @@ function autoMap() {
     var obj = {};
     var siphonMap = -1, altSiphLevel = -1, altSiphMap = -1;
     var tryBetterMod = false, gotBetterMod = false;
-    for (var index in game.global.mapsOwnedArray) {
+    for (var index=0; i < game.global.mapsOwnedArray.length; index++) {
         if (!game.global.mapsOwnedArray[index].noRecycle) {
             var mapAux = game.global.mapsOwnedArray[index];
             obj[index] = mapAux.level;
             if (mapAux.level == siphLvl) siphonMap = index;
 
             //Also grabs the highest level within our range that has a modifier on it
-            if (mapAux.level >= Math.max(Math.min(siphLvl-2, maxLvl), minLvl, altSiphLevel+1) && mapAux.level <= siphLvl+1) {
+            if (mapAux.level >= Math.max(Math.min(siphLvl-2, maxLvl), minLvl, altSiphLevel) && mapAux.level <= siphLvl+1) {
                 if (!mapAux.hasOwnProperty("bonus") || mapAux.bonus == "p") continue;
                 altSiphLevel = mapAux.level;
                 altSiphMap = index;
@@ -916,7 +916,7 @@ function autoMap() {
 
                     //Update our control flags
                     extraMapLevels = getExtraMapLevels();
-                    gotBetterMod = parseInt($mapLevelInput.value) + getExtraMapLevels() > altSiphLevel && testMapSpecialModController(true);
+                    gotBetterMod = (parseInt($mapLevelInput.value) + getExtraMapLevels() > altSiphLevel) && testMapSpecialModController(true);
                 }
                 else gotBetterMod = testMapSpecialModController(tryBetterMod);
             }
