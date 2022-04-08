@@ -955,6 +955,14 @@ function autoMap() {
                 }
             }
 
+            //Can't create a map better than what we already have
+            if (highestMap && mapLvlPicked <= game.global.mapsOwnedArray[highestMap].level) {
+                selectMap(game.global.mapsOwnedArray[highestMap].id);
+                runMap();
+                lastMapWeWereIn = getCurrentMapObject();
+                return;
+            }
+
             //No fragments to create a map
             if (updateMapCost(true) > game.resources.fragments.owned) {
                 selectMap(game.global.mapsOwnedArray[highestMap].id);
@@ -963,9 +971,6 @@ function autoMap() {
                 runMap();
                 lastMapWeWereIn = getCurrentMapObject();
             } else {
-                //TODO Temporary fix
-                if (!gotBetterMod && mapLvlPicked <= game.global.mapsOwnedArray[highestMap].level) return;
-
                 var result = buyMap();
                 debug("Buying a Map, level: #" + mapLvlPicked + " for " + prettify(updateMapCost(true)) + " fragments", "maps", 'th-large');
                 if (result == -2) {
