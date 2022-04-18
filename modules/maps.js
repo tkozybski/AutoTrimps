@@ -961,6 +961,9 @@ function autoMap() {
                 runMap();
                 lastMapWeWereIn = getCurrentMapObject();
             } else {
+                //TODO Temporary fix
+                if (!gotBetterMod && mapLvlPicked <= game.global.mapsOwnedArray[highestMap].level) return;
+
                 var result = buyMap();
                 debug("Buying a Map, level: #" + mapLvlPicked + " for " + prettify(updateMapCost(true)) + " fragments", "maps", 'th-large');
                 if (result == -2) {
