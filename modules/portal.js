@@ -559,7 +559,6 @@ function Rresetmapvars() {
  RneedToVoid = !1;
  RneedPrestige = !1;
  RskippedPrestige = !1;
- RscryerStuck = !1;
  RshouldDoMaps = !1;
  RmapTimeEstimate = 0;
  RlastMapWeWereIn = null;
