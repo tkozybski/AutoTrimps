@@ -77,7 +77,6 @@ const uniqueMaps = {
 };
 
 class MappingProfile {
-    priorities;
     mods = [];
     minLevel;
     baseLevel;
@@ -414,7 +413,7 @@ function shouldBuyNewMap(existingMap, optimalLevel) {
         return true;
     }
     // add map mod if we currently don't have one
-    return getSpecialModifierSetting() !== '0' && !existingMap.bonus;
+    return existingMap.bonus === undefined && getDesignedMapMod() !== undefined;
 }
 
 function setMapSlider(what, value) {
@@ -543,9 +542,9 @@ function designMap(ctx, currentMap, highestMap, profile) {
      */
     devDebug(ctx, 'Designing a map to fit the profile', {
         name: profile.name,
-        minLvl: profile.minLevel,
-        baseLvl: profile.baseLvl,
-        optimalLvl: profile.optimalLevel,
+        minLevel: profile.minLevel,
+        baseLevel: profile.baseLevel,
+        optimalLevel: profile.optimalLevel,
         biome: profile.preferredBiome,
         mods: `[${profile.mods}]`,
         required: `[${profile.required}]`,
@@ -571,7 +570,9 @@ function designMap(ctx, currentMap, highestMap, profile) {
         }
     }
     if (!canAffordSelectedMap()) {
-        fragmentsNeeded = updateMapCost(true);
+        devDebug(ctx, 'Cannot afford map',
+            {oldFragmentsNeeded: fragmentsNeeded, mapCost: updateMapCost(true)}, '=', true);
+        fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
         if (currentMap) {
             // continue running an existing acceptable map until we can afford an upgrade
             return false;
@@ -1364,8 +1365,8 @@ function autoMap() {
         const shouldBuyMap = designMap(debugCtx, currentMap, highestMap, mappingProfile);
         const designedLevel = getDesignedMapLevel();
         devDebug(debugCtx, 'Designed a map', {
-            designedMod: getDesignedMapMod(),
-            designedLevel: designedLevel,
+            mod: getDesignedMapMod(),
+            level: designedLevel,
             shouldBuyMap: shouldBuyMap
         }, '=', true);
 
