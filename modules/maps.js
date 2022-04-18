@@ -8,7 +8,6 @@ MODULES.maps.MapTier0Sliders = [9,9,9,"Mountain"];
 MODULES.maps.MapTier1Sliders = [9,9,9,"Depths"];
 MODULES.maps.MapTier2Sliders = [9,9,9,"Random"];
 MODULES.maps.MapTier3Sliders = [9,9,9,"Random"];
-MODULES.maps.preferGardens = !getPageSetting("PreferMetal");
 MODULES.maps.SpireFarm199Maps = true;
 MODULES.maps.shouldFarmCell = 80;
 MODULES.maps.SkipNumUnboughtPrestiges = 2;
@@ -181,13 +180,10 @@ class MappingProfile {
         const siphonology = game.portal.Siphonology.level;
         const extraMapLevelsAvailable = hze >= 209;
 
-        if (isFarming || game.global.challengeActive === 'Metal') {
-            this.preferredBiome = game.global.decayDone ? "Plentiful" : "Mountain";
+        if (game.global.decayDone) {
+            this.preferredBiome = "Plentiful";
         } else {
-            this.preferredBiome = getPageSetting('mapselection') || 'Random';
-            if (this.preferredBiome === "Gardens" && game.global.decayDone) {
-                this.preferredBiome = "Plentiful";
-            }
+            this.preferredBiome = 'Mountain';
         }
 
         this.baseLevel = z - (haveMapReducer ?  1 : 0);

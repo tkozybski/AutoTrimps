@@ -525,41 +525,36 @@ function initializeAllSettings() {
     createSetting('RequipfarmHD', 'AEF: H:D', 'What H:D to use for AEF target. ', 'value', '-1', null, 'Gear');
     createSetting('Requipfarmmult', 'AEF: Multiplier', 'Starting from the zone above AEF: Zone, this setting will multiply the H:D you have set in AEF: H:D. So if AEF: Zone was 100, AEF: H:D was 10, AEF: Multiplier was 1.2, at z101 your H:D target will be 12, then at z102 it will be 14.4 and so on. This way you can account for the zones getting stronger and you will not waste time farming for a really low H:D. ', 'value', '-1', null, 'Gear');
     createSetting('Requipfarmhits', 'AEF: Hits', 'How many hits do you want to kill an enemy in a AEF map. ', 'value', '-1', null, 'Gear');
-    
-	
+
 
     //Maps
 
     //Line 1
     createSetting('AutoMaps', ["Auto Maps Off", "Auto Maps On", "Auto Maps No Unique"], 'Automaps. The no unique setting will not run unique maps such as dimensions of anger. Recommended ON. Do not use MaZ, it will not work. ', 'multitoggle', 1, null, "Maps");
     createSetting('automapsportal', 'AM Portal', 'Makes sure Auto Maps is on after portalling. Turn this off to disable this and remember your choice. ', 'boolean', true, null, 'Maps');
-    createSetting('PreferMetal', 'Prefer Metal Maps', 'Always prefer metal maps, intended for manual use, such as pre-spire farming. Remember to turn it back off after you\'re done farming!', 'boolean', false, null, 'Maps');
-    createSetting('mapselection', 'Map Selection', 'Select which you prefer to use. Recommend Plentiful (Gardens) if you have unlocked it. ', 'dropdown', 'Mountain', ["Random", "Mountain", "Forest", "Sea", "Depths", "Gardens"], 'Maps');
+    createSetting('LowerFarmingZone', 'Lower Farming Zone', 'Lowers the zone used during Farming mode. Uses the dynamic siphonology code, to Find the minimum map level you can successfully one-shot, and uses this level for any maps done after the first 10 map stacks. The difference being it goes LOWER than what Siphonology gives you map-bonus for, but after 10 stacks you dont need bonus, you just want to do maps that you can one-shot. Goes as low as 10 below current zone if your damage is that bad, but this is extreme and indicates you should probably portal.', 'boolean', true, null, 'Maps');
+    createSetting('FarmWhenNomStacks7', 'Farm on >7 NOMstacks', 'Optional. If Improbability already has 5 NOMstacks, stack 30 Anticipation. If the Improbability has >7 NOMstacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On! (exits when we get under 10x). Farms if we hit 100 stacks in the world. If we ever hit (100) nomstacks in a map (likely a voidmap), farm, (exit the voidmap) and (prevent void from running, until situation is clear). Restarts any voidmaps if we hit 100 stacks. ', 'boolean', false, null, 'Maps');
+    createSetting('FarmOnLowHealth', 'Farm On Low Health', "If your trimps do not have enough health to pass the Num Hits Survived criteria, then it will activate farming mode, which means it will stay on maps after getting its map stacks. Recommended: Always on. Lower your Num Hits Survived if you needed.", 'boolean', true, null, 'Maps');
+    createSetting('TrimpleZ', 'Trimple Z', 'I don\'t really think doing this automatically is a good idea. You might want to farm for a bit before this, but I\'m not sure if it\'s meaningful at all to make a \'farm X minutes before trimple\' parameter to go along with it. Set it to the zone you want and it will run Trimple of Doom for Ancient Treasure AFTER farming and getting map stacks. If it is a negative number, this will be disabled after a successful run so you can set it differently next time.', 'valueNegative', 0, null, 'Maps');
     createSetting('MaxMapBonusAfterZone', 'Max MapBonus After', 'Always gets Max Map Bonus from this zone on. (inclusive and after).<br><b>NOTE:</b> Set -1 to disable entirely (default). Set 0 to use it always.<br><b>Advanced:</b>User can set a lower number than the default 10 maps with the AT hidden console command: MODULES[\\"maps\\"].maxMapBonusAfterZ = 9;', 'value', '-1', null, 'Maps');
+
+    //Line 2
     createSetting('MaxMapBonuslimit', 'Max MapBonus Limit', 'Limit the amount of Map Bonuses you get. Default is 10. ', 'value', '10', null, 'Maps');
     createSetting('MaxMapBonushealth', 'Max MapBonus Health', 'Limit the amount of map bonuses you get when AutoMaps requires more health. Default is 10. ', 'value', '10', null, 'Maps');
     createSetting('mapcuntoff', 'Map Cut Off', 'Decides when to get max map bonus. 4 is default. This means it will take 1 hit to kill an enemy if in D stance. ', 'value', '4', null, 'Maps');
-
-    //Line 2
     createSetting('DisableFarm', 'Farming H:D', 'If H:D goes above this value, it will farm for Damage & Health. The lower this setting, the more it will want to farm. Default is <b>16<b/>. <b>-1 to disable farming!</b>', 'value', -1, null, 'Maps');
-    createSetting('LowerFarmingZone', 'Lower Farming Zone', 'Lowers the zone used during Farming mode. Uses the dynamic siphonology code, to Find the minimum map level you can successfully one-shot, and uses this level for any maps done after the first 10 map stacks. The difference being it goes LOWER than what Siphonology gives you map-bonus for, but after 10 stacks you dont need bonus, you just want to do maps that you can one-shot. Goes as low as 10 below current zone if your damage is that bad, but this is extreme and indicates you should probably portal.', 'boolean', true, null, 'Maps');
-    createSetting('FarmWhenNomStacks7', 'Farm on >7 NOMstacks', 'Optional. If Improbability already has 5 NOMstacks, stack 30 Anticipation. If the Improbability has >7 NOMstacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On! (exits when we get under 10x). Farms if we hit 100 stacks in the world. If we ever hit (100) nomstacks in a map (likely a voidmap), farm, (exit the voidmap) and (prevent void from running, until situation is clear). Restarts any voidmaps if we hit 100 stacks. ', 'boolean', false, null, 'Maps');
+    createSetting('NumHitsSurvived', 'Num Hits Survived', 'One of the most important settings in this version of AT. It roughly translates to how many your trimps can take from a C99 Snimp, on average. Keep in mind that this number is further multiplied by other variables according to the situation, like VoidHitMult when preparing to go to a Void Map. The recommended values are 1.5~~3.0 for very early game, 5 with geneticists and 7.5 with 45 stacks, but the actual recommendation is to use a number that would give your trimps a good survivability without farming too much for it. Values close too close to 1 or below it are usually not recommended, since they will get you stuck.', 'value', '5', null, 'Maps');
     createSetting('VoidMaps', 'Void Maps', '<b>0 to disable</b> The zone at which you want all your void maps to be cleared inclusive of the zone you type. Runs them at Cell 90 by default, and starts farming 1 row below that. Use odd zones on Lead.<br>', 'value', '0', null, "Maps");
-    createSetting('voidscell', 'Voids Cell', "Run Voids at this Cell. <br>Keep in mind that AT will start farming for the VMs 10 cells below the cell it will actually do them. Set it to -1 to run your VMs at the default cell, which is 90.", 'value', '-1', null, 'Maps');
     createSetting('RunNewVoidsUntilNew', 'New Voids Mod', '<b>0 to disable. Positive numbers are added to your Void Map zone. -1 for no cap.</b> This allows you to run new Void Maps obtained after your Void Map zone by adding this number to your Void Map zone. <br> <b>Example</b> Void map zone=187 and This setting=10. New Voids run until 197).<br>This means that any new void maps gained until Z197. CAUTION: May severely slow you down by trying to do too-high level void maps. Default 0 (OFF).', 'value', '0', null, 'Maps');
-    createSetting('runnewvoidspoison', 'New Voids Poison', 'Only run new voids in poison zones.', 'boolean', false, null, 'Maps');
-    createSetting('onlystackedvoids', 'Stacked Voids Only', 'Only run stacked voids. ', 'boolean', false, null, 'Maps');
 
     //Line 3
-    createSetting('TrimpleZ', 'Trimple Z', 'I don\'t really think doing this automatically is a good idea. You might want to farm for a bit before this, but I\'m not sure if it\'s meaningful at all to make a \'farm X minutes before trimple\' parameter to go along with it. Set it to the zone you want and it will run Trimple of Doom for Ancient Treasure AFTER farming and getting map stacks. If it is a negative number, this will be disabled after a successful run so you can set it differently next time.', 'valueNegative', 0, null, 'Maps');
-    createSetting('scryvoidmaps', 'VM Scryer', 'Only use if you have Scryhard II, for er, obvious reasons. Works without the scryer options. ', 'boolean', false, null, 'Maps');
-    createSetting('buywepsvoid', 'VM Buy Weps', 'Buys gear in Void maps regardless of your H:D ratio. Useful if you want to overkill as much as possible. ', 'boolean', false, null, 'Maps');
-
-    //Line 4
-    createSetting('NumHitsSurvived', 'Num Hits Survived', 'One of the most important settings in this version of AT. It roughly translates to how many your trimps can take from a C99 Snimp, on average. Keep in mind that this number is further multiplied by other variables according to the situation, like VoidHitMult when preparing to go to a Void Map. The recommended values are 1.5~~3.0 for very early game, 5 with geneticists and 7.5 with 45 stacks, but the actual recommendation is to use a number that would give your trimps a good survivability without farming too much for it. Values close too close to 1 or below it are usually not recommended, since they will get you stuck.', 'value', '5', null, 'Maps');
-    createSetting('FarmOnLowHealth', 'Farm On Low Health', "If your trimps do not have enough health to pass the Num Hits Survived criteria, then it will activate farming mode, which means it will stay on maps after getting its map stacks. Recommended: Always on. Lower your Num Hits Survived if you needed.", 'boolean', true, null, 'Maps');
+    createSetting('voidscell', 'Voids Cell', "Run Voids at this Cell. <br>Keep in mind that AT will start farming for the VMs 10 cells below the cell it will actually do them. Set it to -1 to run your VMs at the default cell, which is 90.", 'value', '-1', null, 'Maps');
     createSetting('VoidHDMult', 'Void H:D Mult', "This is a multiplier to your <b>mapCutOff</b> and <b>farming H:D</b>, and only works at your void map zones. Values below 1 will make VMs require <b>more</b> damage. <br>Usually 1 is fine, but if you're doing VMs much later than you should, consider 2 or 4. Values below 1 may cause you to farm more than you should, because you'd be one-shooting everything anyway, unless you increased the original H:D config above 4.", 'value', '1', null, 'Maps');
     createSetting('VoidHitsMult', 'Void Hits Mult', "This is a multiplier to your <b>numHitsSurvived</b>, and only works at your void map zones. Values below 1 will make VMs require <b>less</b> health. <br>Since this is a multiplier, the correct value also depends on what you defined in Num Hits Survived. If one times the other is below 1, your trimps will be one shoot fairly often, so other than your very fist VMs ever, or when pushing to unlock something, this option should probably be higher than 1.", 'value', '2', null, 'Maps');
+    createSetting('runnewvoidspoison', 'New Voids Poison', 'Only run new voids in poison zones.', 'boolean', false, null, 'Maps');
+    createSetting('onlystackedvoids', 'Stacked Voids Only', 'Only run stacked voids. ', 'boolean', false, null, 'Maps');
+    createSetting('scryvoidmaps', 'VM Scryer', 'Only use if you have Scryhard II, for er, obvious reasons. Works without the scryer options. ', 'boolean', false, null, 'Maps');
+    createSetting('buywepsvoid', 'VM Buy Weps', 'Buys gear in Void maps regardless of your H:D ratio. Useful if you want to overkill as much as possible. ', 'boolean', false, null, 'Maps');
 
 
     //RMaps
@@ -1656,8 +1651,6 @@ function updateCustomButtons() {
     //Maps
     !radonon ? turnOn("AutoMaps"): turnOff("AutoMaps");
     !radonon ? turnOn("automapsportal"): turnOff("automapsportal");
-    !radonon ? turnOn("mapselection"): turnOff("mapselection");
-    !radonon ? turnOn("PreferMetal"): turnOff("PreferMetal");
     !radonon ? turnOn("MaxMapBonusAfterZone"): turnOff("MaxMapBonusAfterZone");
     !radonon ? turnOn("MaxMapBonuslimit"): turnOff("MaxMapBonuslimit");
     !radonon ? turnOn("MaxMapBonushealth"): turnOff("MaxMapBonushealth");
@@ -2018,7 +2011,6 @@ function updateCustomButtons() {
     document.getElementById('RadonHourChallenge').value = autoTrimpSettings.RadonHourChallenge.selected;
     document.getElementById('dHeliumHourChallenge').value = autoTrimpSettings.dHeliumHourChallenge.selected;
     document.getElementById('RdHeliumHourChallenge').value = autoTrimpSettings.RdHeliumHourChallenge.selected;
-    document.getElementById('mapselection').value = autoTrimpSettings.mapselection.selected;
     document.getElementById('Rmapselection').value = autoTrimpSettings.Rmapselection.selected;
     document.getElementById('Rtimemapselection').value = autoTrimpSettings.Rtimemapselection.selected;
     document.getElementById('Rtimespecialselection').value = autoTrimpSettings.Rtimespecialselection.selected;
@@ -2065,7 +2057,6 @@ function updateCustomButtons() {
     if (game.global.universe == 2 && getPageSetting('RDisableFarm') <= 0)
         RshouldFarm = false;
 
-    MODULES["maps"] && (MODULES["maps"].preferGardens = !getPageSetting('PreferMetal'));
     if (document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
         document.getElementById('Prestige').selectedIndex = 11;
         autoTrimpSettings.Prestige.selected = "Bestplate";
