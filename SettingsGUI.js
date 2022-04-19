@@ -281,6 +281,7 @@ function initializeAllSettings() {
     createSetting('avoidempower', 'Avoid Empower', 'Tries to avoid Empower stacks in Empower Dailies. No harm in this being on, so default is On. ', 'boolean', true, null, 'Daily');
     createSetting('darmormagic', ['Daily Armor Magic Off', 'DAM: Above 80%', 'DAM: H:D', 'DAM: Always'], 'Will buy Armor to try and prevent death on Bleed/Plague/Bogged Dailies under the 3 conditions. <br><b>Above 80%:</b> Will activate at and above 80% of your HZE. <br><b>H:D:</b> Will activate at and above the H:D you have defined in maps. <br><b>Always</b> Will activate always. <br>All options will activate at or <b>below 25% of your health.</b> ', 'multitoggle', 0, null, "Daily");
     createSetting('dscryvoidmaps', 'Daily VM Scryer', 'Only use in Dailies if you have Scryhard II, for er, obvious reasons. Works without the scryer options. ', 'boolean', false, null, 'Daily');
+    createSetting('dMaxMapBonushealth', 'Daily Max MapBonus Health', 'Limit the amount of map bonuses you get when AutoMaps requires more health during dailies. <br><br>This is a very important setting to be used with Advanced Nurseries after Magma. Basically, if you are running out of nurseries too soon, increase this value, otherwise lower it. <br><br>Default is 10.', 'value', '10', null, 'Daily');
 
     //Spire
     document.getElementById('dscryvoidmaps').parentNode.insertAdjacentHTML('afterend', '<br>');
@@ -540,7 +541,7 @@ function initializeAllSettings() {
 
     //Line 2
     createSetting('MaxMapBonuslimit', 'Max MapBonus Limit', 'Limit the amount of Map Bonuses you get. Default is 10. ', 'value', '10', null, 'Maps');
-    createSetting('MaxMapBonushealth', 'Max MapBonus Health', 'Limit the amount of map bonuses you get when AutoMaps requires more health. Default is 10. ', 'value', '10', null, 'Maps');
+    createSetting('MaxMapBonushealth', 'Max MapBonus Health', 'Limit the amount of map bonuses you get when AutoMaps requires more health. <br><br>This is a very important setting to be used with Advanced Nurseries after Magma. Basically, if you are running out of nurseries too soon, increase this value, otherwise lower it. <br><br>Default is 10.', 'value', '10', null, 'Maps');
     createSetting('mapcuntoff', 'Map Cut Off', 'Decides when to get max map bonus. 4 is default. This means it will take 1 hit to kill an enemy if in D stance. ', 'value', '4', null, 'Maps');
     createSetting('DisableFarm', 'Farming H:D', 'If H:D goes above this value, it will farm for Damage & Health. The lower this setting, the more it will want to farm. Default is <b>16<b/>. <b>-1 to disable farming!</b>', 'value', -1, null, 'Maps');
     createSetting('NumHitsSurvived', 'Num Hits Survived', 'One of the most important settings in this version of AT. It roughly translates to how many your trimps can take from a C99 Snimp, on average. Keep in mind that this number is further multiplied by other variables according to the situation, like VoidHitMult when preparing to go to a Void Map. The recommended values are 1.5~~3.0 for very early game, 5 with geneticists and 7.5 with 45 stacks, but the actual recommendation is to use a number that would give your trimps a good survivability without farming too much for it. Values close too close to 1 or below it are usually not recommended, since they will get you stuck.', 'value', '5', null, 'Maps');
@@ -694,8 +695,11 @@ function initializeAllSettings() {
     createSetting('chATGA2timer', 'ATGA: T: C: Hard', '<b>ATGA Timer: Hard C2s</b><br>ATGA will use this value in C2s that are considered Hard. Electricity, Nom, Toxicity. Overwrites Default, Before Z and After Z and C2 ATGA', 'value', '-1', null, 'ATGA');
 
 
-    
     //Challenges
+    createSetting('DecayStacksToPush', 'Decay: Stacks to Push', 'During Decay, AT will ignore maps and push to end the zone if we go above this amount of stacks.<br><br>Use -1 or 0 to disable.<br>Defaults to 300.', 'value', '300', null, 'Challenges');
+    createSetting('DecayStacksToAbandon', 'Decay: Stacks to Abandon', 'During Decay, AT will abandon the challenge if we go above this amount of stacks.<br><br>Use -1 or 0 to disable.<br>Defaults to 300.', 'value', '600', null, 'Challenges');
+
+    //RChallenges
 	//Quagmire - Black Bogs
     createSetting('Rblackbog', 'Black Bog', 'Enable Bog Running for Quagmire. ', 'boolean', false, null, 'Challenges');
     createSetting('Rblackbogzone', 'BB: Zone', 'What zones to run Black Bogs at. Can use 40,50,60. ', 'multiValue', [-1], null, 'Challenges');
@@ -748,7 +752,7 @@ function initializeAllSettings() {
     //Combat
 
     //Line 1
-    createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight', 'Vanilla'], '3-Way Button, Recommended. Will automatically handle fighting.<br>BAF = Old Algo (Fights if dead, new squad ready, new squad breed timer target exceeded, and if breeding takes under 0.5 seconds<br>BAF3 = Uses vanilla autofight and makes sure you fight on portal. <br> WARNING: If you autoportal with BetterAutoFight disabled, the game may sit there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle', 2, null, "Combat"); //TODO - Test default value
+    createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight', 'Vanilla'], '3-Way Button, Recommended. Will automatically handle fighting.<br>BAF = Old Algo (Fights if dead, new squad ready, new squad breed timer target exceeded, and if breeding takes under 0.5 seconds<br>BAF3 = Uses vanilla autofight and makes sure you fight on portal. <br> WARNING: If you autoportal with BetterAutoFight disabled, the game may sit there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle', 2, null, "Combat");
     createSetting('AutoStance', ['Auto Stance OFF', 'Auto Stance', 'D Stance', 'Windstacking'], '<b>Autostance:</b> Automatically swap stances to avoid death. <br><b>D Stance:</b> Keeps you in D stance regardless of Health. <br><b>Windstacking:</b> For use after nature (z230), and will keep you in D stance unless you are windstacking (Only useful if transfer is maxed out and wind empowerment is high). Manages your Heirloom swapping and stance to obtain wind stacks efficiently. You must set your High Dmg and Low Dmg Heirlooms, Windstack H:D or WSMAX H:D where relevant for this to work. ', 'multitoggle', 1, null, "Combat");
     createSetting('IgnoreCrits', ['Safety First', 'Ignore Void Strength', 'Ignore All Crits'], 'No longer switches to B against corrupted precision and/or void strength. <b>Basically we now treat \'crit things\' as regular in both autoStance and autoStance2</b>. In fact it no longer takes precision / strength into account and will manage like a normal enemy, thus retaining X / D depending on your needs. If you\'re certain your block is high enough regardless if you\'re fighting a crit guy in a crit daily, use this! Alternatively, manage the stances yourself.', 'multitoggle', 0, null, 'Combat');
     createSetting('PowerSaving', ['AutoAbandon', 'Don\'t Abandon', 'Only Rush Voids'], '<b>Autoabandon:</b> Considers abandoning trimps for void maps/prestiges.<br><b>Don\'t Abandon:</b> Will not abandon troops, but will still agressively autostance even if it will kill you (WILL NOT ABANDON TRIMPS TO DO VOIDS).<br><b>Only Rush Voids:</b> Considers abandoning trimps for void maps, but not prestiges, still autostances aggressively. <br>Made for Empower daily, and you might find this helpful if you\'re doing Workplace Safety feat. Then again with that I strongly recommend doing it fully manually. Anyway, don\'t blame me whatever happens.<br><b>Note:</b> AT will no longer be able to fix when your scryer gets stuck!', 'multitoggle', 0, null, 'Combat');
@@ -1402,9 +1406,6 @@ function updateCustomButtons() {
     if (document.getElementById("tabNature") != null) {
         document.getElementById("tabNature").style.display = radonon ? "none" : "";
     }
-    if (document.getElementById("tabChallenges") != null) {
-        document.getElementById("tabChallenges").style.display = !radonon ? "none" : "";
-    }
 
     
 
@@ -1459,6 +1460,7 @@ function updateCustomButtons() {
     !radonon ? turnOn("avoidempower"): turnOff("avoidempower");
     !radonon ? turnOn("dfightforever"): turnOff("dfightforever");
     !radonon ? turnOn("darmormagic"): turnOff("darmormagic");
+    !radonon ? turnOn("dMaxMapBonushealth"): turnOff("dMaxMapBonushealth");
 
     //DRaid
     !radonon ? turnOn("dPraidingzone") : turnOff("dPraidingzone");
@@ -1797,6 +1799,11 @@ function updateCustomButtons() {
     
     
 	//Challenges
+    //Decay
+    !radonon && game.global.challengeActive == "Decay" ? turnOn("DecayStacksToPush") : turnOff("DecayStacksToPush");
+    !radonon && game.global.challengeActive == "Decay" ? turnOn("DecayStacksToAbandon") : turnOff("DecayStacksToAbandon");
+
+    //RChallenges
 	//Quagmire - Black Bogs
 	radonon ? turnOn("Rblackbog"): turnOff("Rblackbog");
 	(radonon && getPageSetting('Rblackbog') == true) ? turnOn("Rblackbogzone"): turnOff("Rblackbogzone");

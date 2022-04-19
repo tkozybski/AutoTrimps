@@ -283,6 +283,38 @@ function doPortal(challenge) {
     lastHeliumZone = 0; zonePostpone = 0;
 }
 
+function decaySkipMaps() {
+    //Pre-Init
+    if (game.global.challengeActive !== "Decay") return false;
+
+    //Init
+    let stacks = game.challenges.Decay ? game.challenges.Decay.stacks : 0;
+    let stacksToPush = getPageSetting('DecayStacksToPush');
+
+    //Finishes the challenge if above max stacks
+    if (stacksToPush > 0 && stacks > stacksToPush) {
+        debug(`Finished Decay challenge because we had more than ${stacksToPush} stacks.`, "general", "oil");
+        return true;
+    }
+
+    return false;
+}
+
+function decayFinishChallenge() {
+    //Pre-Init
+    if (game.global.challengeActive !== "Decay") return;
+
+    //Init
+    let stacks = game.challenges.Decay ? game.challenges.Decay.stacks : 0;
+    let stacksToAbandon = getPageSetting('DecayStacksToAbandon');
+
+    //Finishes the challenge if above max stacks
+    if (stacksToAbandon > 0 && stacks > stacksToAbandon) {
+        abandonChallenge();
+        debug(`Finished Decay challenge because we had more than ${stacksToAbandon} stacks.`, "general", "oil");
+    }
+}
+
 function finishChallengeSquared(){var a=getPageSetting("FinishC2");game.global.world>=a&&(abandonChallenge(),debug("Finished challenge2 because we are on zone "+game.global.world,"other","oil"))}
 function findOutCurrentPortalLevel(){var a=-1,b=!1,d=getPageSetting("AutoPortal");switch(d){case"Off":break;case"Custom":"Daily"!=game.global.challengeActive&&(a=getPageSetting("CustomAutoPortal")+1),"Daily"==game.global.challengeActive&&(a=getPageSetting("Dailyportal")+1),b=!("Lead"!=getPageSetting("HeliumHourChallenge"));break;default:var e={Balance:41,Decay:56,Electricity:82,Crushed:126,Nom:146,Toxicity:166,Lead:181,Watch:181,Corrupted:191}[d];e&&(a=e);}return{level:a,lead:b}}
 

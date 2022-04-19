@@ -571,7 +571,7 @@ function designMap(ctx, currentMap, highestMap, profile) {
     }
     if (!canAffordSelectedMap()) {
         devDebug(ctx, 'Cannot afford map',
-            {oldFragmentsNeeded: fragmentsNeeded, mapCost: updateMapCost(true)}, '=', true);
+            {oldFragmentsNeeded: prettify(fragmentsNeeded), mapCost: prettify(updateMapCost(true))}, '=', true);
         fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
         if (currentMap) {
             // continue running an existing acceptable map until we can afford an upgrade
@@ -1057,6 +1057,9 @@ function autoMap() {
         if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit'))
             shouldDoMaps = false;
     }
+
+    //Decay challenge
+    if (decaySkipMaps()) shouldDoMaps = false;
 
     //Spire
     let shouldDoSpireMaps = false;
