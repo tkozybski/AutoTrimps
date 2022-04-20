@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         AutoTrimps-Dee
+// @name         AutoTrimps-Ray-Beta
 // @version      1.0.0.0
 // @namespace    https://livercat.github.io/AutoTrimps
 // @downloadURL  https://livercat.github.io/AutoTrimps/.user.js
@@ -15,9 +15,9 @@
 // ==/UserScript==
 
 var script = document.createElement('script');
-script.id = 'AutoTrimps-Dee';
+script.id = 'AutoTrimps-Ray-Beta';
 //This can be edited to point to your own Github Repository URL.
-script.src = 'https://github-cdn.vercel.app/livercat/AutoTrimps/beta/AutoTrimps2.js';
+script.src = 'https://github-cdn.vercel.app/Psycho-Ray/AutoTrimps/beta/AutoTrimps2.js';
 //script.setAttribute('crossorigin',"use-credentials");
 script.setAttribute('crossorigin',"anonymous");
 document.head.appendChild(script);
