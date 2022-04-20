@@ -607,12 +607,15 @@ function designMap(ctx, currentMap, highestMap, profile) {
                 // improve the next option
                 continue;
             }
-            fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
+            //TODO Temporary fix.
+            let tempFragmentsNeeded = updateMapCost(true);
             // gradually decrement slider until we can afford it
             while (!canAffordSelectedMap() && level > profile.minLevel) {
+                tempFragmentsNeeded = updateMapCost(true);
                 level -= 1;
                 setMapLevel(level);
             }
+            fragmentsNeeded = Math.max(fragmentsNeeded, tempFragmentsNeeded)
             break; // can't afford this option, no point checking further
         } else if (opt === MappingProfile.priorities.mod) {
             setAffordableMapMod(profile.mods);
@@ -1376,8 +1379,8 @@ function autoMap() {
 
         if (fragmentsNeeded
             && prevFragmentsNeeded !== fragmentsNeeded
-            && fragmentsNeeded > game.resources.fragments.owned) {
-                const wanted = [(modPool.length ? modPool[0] : undefined),
+            && fragmentsNeeded > game.resources.fragments.owned) { //TODO Temporary fix
+                const wanted = [(mappingProfile.mods.length ? mappingProfile.mods[0] : undefined),
                         (designedLevel < mappingProfile.optimalLevel ? `+${mappingProfile.optimalLevel-designedLevel}lvl` : undefined)].filter(m => m).join(', ');
                 debug(`Will recheck map upgrades when we have ${prettify(fragmentsNeeded)} fragments (want: ${wanted})`, "maps", 'th-large');
         }
