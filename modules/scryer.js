@@ -30,9 +30,13 @@ function readyToSwitch(stance = "S") {
 
 function useScryerStance() {
     var scry = 4;
+    var scryF = 'S';
+    var x = 0;
     
     if (game.global.uberNature == "Wind" && getEmpowerment() != "Wind") {
         scry = 5;
+        scryF = 'W';
+        x = 5;
     }
     
     var AutoStance = getPageSetting('AutoStance');
@@ -112,12 +116,12 @@ function useScryerStance() {
     //Overkill
     if (useOverkill && getCurrentEnemy()) {
         //Switches to S if it has enough damage to secure an overkill
-        var HS = oneShotPower("S");
+        var HS = oneShotPower(scryF);
         var HSD = oneShotPower("D", 0, true);
-        var HS_next = oneShotPower("S", 1);
+        var HS_next = oneShotPower(scryF, 1);
         var HSD_next = oneShotPower("D", 1, true);
         if (readyToSwitch() && HS > 0 && HS >= HSD && (HS > 1 || HS_next > 0 && HS_next >= HSD_next)) {
-            setFormation(4);
+            setFormation(scry);
             return;
         }
     }
@@ -140,9 +144,9 @@ function useScryerStance() {
         if (transitionRequired) {
             for (var cp=2; cp >= -2; cp--) {
                 if      (survive("D",  cp) && !oneShotPower("D", 0, true)) {setFormation( 2 ); return;}
-                else if (survive("XB", cp) && !oneShotPower("X", 0, true)) {setFormation("0"); return;}
+                else if (survive("XB", cp) && !oneShotPower("X", 0, true)) {setFormation( x ); return;}
                 else if (survive("B",  cp) && !oneShotPower("B", 0, true)) {setFormation( 3 ); return;}
-                else if (survive("X",  cp) && !oneShotPower("X", 0, true)) {setFormation("0"); return;}
+                else if (survive("X",  cp) && !oneShotPower("X", 0, true)) {setFormation( x ); return;}
                 else if (survive("H",  cp) && !oneShotPower("H", 0, true)) {setFormation( 1 ); return;}
             }
         }
