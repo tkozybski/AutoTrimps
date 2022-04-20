@@ -4,7 +4,7 @@ var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedl
 //Psycho Ray
 MODULES["upgrades"] = {};
 MODULES["upgrades"].targetFuelZone = true;
-MODULES["upgrades"].customMetalRatio = 0.1; //Change the Custom Delta factor instead
+MODULES["upgrades"].customMetalRatio = 0.5; //Change the Custom Delta factor instead
 
 function gigaTargetZone() {
     //Init
@@ -84,19 +84,20 @@ function autoGiga(targetZone, metalRatio = 0.5, slowDown = 10, customBase) {
 
 function firstGiga(forced) {
     //Build our first giga if: A) Has more than 2 Warps & B) Can't afford more Coords & C)* Lacking Health or Damage & D)* Has run at least 1 map stack or if forced to
-    var s = !(getPageSetting('CustomDeltaFactor') > 20);
-    var a = game.buildings.Warpstation.owned >= 2;
-    var b = !canAffordCoordinationTrimps() || game.global.world >= 230 && !canAffordTwoLevel(game.upgrades.Coordination);
-    var c = s || !enoughHealth || !enoughDamage;
-    var d = s || game.global.mapBonus >= 2 || game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || game.global.mapBonus >= getPageSetting('MaxMapBonushealth');
+    const maxHealthMaps = game.global.challengeActive === "Daily" ? getPageSetting('dMaxMapBonushealth') : getPageSetting('MaxMapBonushealth');
+    const s = !(getPageSetting('CustomDeltaFactor') > 20);
+    const a = game.buildings.Warpstation.owned >= 2;
+    const b = !canAffordCoordinationTrimps() || game.global.world >= 230 && !canAffordTwoLevel(game.upgrades.Coordination);
+    const c = s || !enoughHealth || !enoughDamage;
+    const d = s || game.global.mapBonus >= 2 || game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || game.global.mapBonus >= maxHealthMaps;
     if (!forced && !(a && b && c && d)) return false;
     
     //Define Base and Delta for this run
-    var base = game.buildings.Warpstation.owned;
-    var deltaZ = (getPageSetting('CustomTargetZone')  >=  60) ? getPageSetting('CustomTargetZone')  : undefined;
-    var deltaM = (MODULES["upgrades"].customMetalRatio       >    0) ? MODULES["upgrades"].customMetalRatio      : undefined;
-    var deltaS = (getPageSetting('CustomDeltaFactor') >=   1) ? getPageSetting('CustomDeltaFactor') : undefined;
-    var delta = autoGiga(deltaZ, deltaM, deltaS);
+    const base = game.buildings.Warpstation.owned;
+    const deltaZ = (getPageSetting('CustomTargetZone')  >=  60) ? getPageSetting('CustomTargetZone')  : undefined;
+    const deltaM = (MODULES["upgrades"].customMetalRatio       >    0) ? MODULES["upgrades"].customMetalRatio      : undefined;
+    const deltaS = (getPageSetting('CustomDeltaFactor') >=   1) ? getPageSetting('CustomDeltaFactor') : undefined;
+    const delta = autoGiga(deltaZ, deltaM, deltaS);
     
     //Save settings
     setPageSetting('FirstGigastation', base);

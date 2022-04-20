@@ -1009,9 +1009,10 @@ function autoMap() {
     shouldFarmDamage = calcHDRatio() >= getFarmCutOff() && !weaponCapped();
 
     //Only actually trigger farming after doing map bonuses
-    if (getPageSetting('DisableFarm') > 0 && (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || enoughDamage && game.global.mapBonus >= getPageSetting('MaxMapBonusHealth'))) {
+    const maxHealthMaps = game.global.challengeActive === "Daily" ? getPageSetting('dMaxMapBonushealth') : getPageSetting('MaxMapBonushealth');
+    if (getPageSetting('DisableFarm') > 0 && (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || enoughDamage && game.global.mapBonus >= maxHealthMaps)) {
         //Farm on Low Health
-        shouldFarm = shouldFarmDamage || (getPageSetting('FarmOnLowHealth') && !enoughHealth && game.global.mapBonus >= getPageSetting('MaxMapBonushealth'));
+        shouldFarm = shouldFarmDamage || (getPageSetting('FarmOnLowHealth') && !enoughHealth && game.global.mapBonus >= maxHealthMaps);
 
         //Toggle "Repeat Until"
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm) toggleSetting('repeatUntil');
@@ -1026,7 +1027,7 @@ function autoMap() {
         shouldDoMaps = false;
     else if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') && shouldFarm)
         shouldFarmLowerZone = getPageSetting('LowerFarmingZone');
-    else if (game.global.mapBonus < getPageSetting('MaxMapBonushealth') && !enoughHealth && !shouldDoMaps && !needPrestige) {
+    else if (game.global.mapBonus < maxHealthMaps && !enoughHealth && !shouldDoMaps && !needPrestige) {
         shouldDoMaps = true;
         shouldDoHealthMaps = true;
     }
@@ -1283,7 +1284,7 @@ function autoMap() {
             }
 
             //Health Farming
-            if (shouldDoHealthMaps && game.global.mapBonus >= getPageSetting('MaxMapBonushealth') - 1) {
+            if (shouldDoHealthMaps && game.global.mapBonus >= maxHealthMaps - 1) {
                 repeatClicked();
             }
 

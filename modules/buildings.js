@@ -61,14 +61,14 @@ function safeBuyBuilding(building) {
 function advancedNurseries() {
     //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C&D) Has max Map Stacks E) Has at least 1 Map Stack F) Not farming Spire or advN is off
     //Also, it requires less health during spire
-    var maxHealthMaps = game.global.challengeActive === "Daily" ? getPageSetting('dMaxMapBonushealth') : getPageSetting('MaxMapBonushealth');
-    var a = calcHealthRatio(false, true) < getMapHealthCutOff();
-    var b = calcHDRatio() < getFarmCutOff() || weaponCapped();
-    var c = game.global.mapBonus >= maxHealthMaps;
-    var d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getMapCutOff();
-    var e = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || maxHealthMaps == 0;
-    var f = !preSpireFarming || !getPageSetting('AdvancedNurseries');
-    var off = !getPageSetting('AdvancedNurseries') || game.stats.highestLevel.valueTotal() < 230;
+    const maxHealthMaps = game.global.challengeActive === "Daily" ? getPageSetting('dMaxMapBonushealth') : getPageSetting('MaxMapBonushealth');
+    const a = calcHealthRatio(false, true) < getMapHealthCutOff();
+    const b = calcHDRatio() < getFarmCutOff() || weaponCapped();
+    const c = game.global.mapBonus >= maxHealthMaps;
+    const d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getMapCutOff();
+    const e = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || maxHealthMaps == 0;
+    const f = !preSpireFarming || !getPageSetting('AdvancedNurseries');
+    const off = !getPageSetting('AdvancedNurseries') || game.stats.highestLevel.valueTotal() < 230;
     return off || (a && b && c && d && e && f);
 }
 

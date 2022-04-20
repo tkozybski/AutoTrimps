@@ -191,6 +191,7 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone, mapDifficulty
     if (!targetZone) targetZone = game.global.world;
 
     //Init
+    var expMult = 1;
     var voidDamage = 0;
     const formationMod = (game.upgrades.Dominance.done && !stance) ? 2 : 1;
 
@@ -204,13 +205,18 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone, mapDifficulty
     //Lead farms one zone ahead
     if (game.global.challengeActive == "Lead" && type == "world" && game.global.world%2 == 1) targetZone++;
 
+    //Explosive Daily
+    const dailyExplosive = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
+    if (dailyExplosive && health > block)
+        expMult = dailyModifiers.explosive.getMult(game.global.dailyChallenge.explosive.strength);
+
     //Enemy Damage
     var worldDamage = calcEnemyAttack("world", targetZone);
 
     //Enemy Damage on Void Maps
     if (type == "void") {
         //Void Damage may actually be lower than world damage, so it needs to be calculated here to be compared later
-        voidDamage = calcEnemyAttack("void", targetZone) - block;
+        voidDamage = expMult * calcEnemyAttack("void", targetZone) - block;
 
         //Void Power compensation
         if (!game.global.mapsActive || getCurrentMapObject().location != "Void") {
@@ -231,7 +237,7 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone, mapDifficulty
     if (game.talents.mapHealth.purchased && game.global.mapsActive && type != "map") health /= 2;
 
     //The Resulting Ratio
-    var finalDmg = Math.max(worldDamage - block, voidDamage, worldDamage * pierce, 0);
+    var finalDmg = Math.max(expMult * worldDamage - block, voidDamage, worldDamage * pierce, 0);
     return health / finalDmg;
 }
 
