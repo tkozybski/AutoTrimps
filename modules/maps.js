@@ -444,12 +444,20 @@ class MapCrafter {
                     continue;
                 }
                 // gradually decrement level until we can afford it
-                while (!this.canAfford() && level > this.profile.minLevel) {
-                    if (this.shouldBuyNewMap(currentMap)) {
+                while (level > this.profile.minLevel) {
+                    // Map Reducer: Skips z+0 maps
+                    const skipMapReducer = game.talents.mapLoot.purchased && level == this.profile.z;
+
+                    // Remembers how many frags the map will cost if we can't afford it
+                    if (!skipMapReducer && !this.canAfford() && this.shouldBuyNewMap(currentMap))
                         fragmentsNeeded = updateMapCost(true);
+
+                    // Reduces its level if we can't afford it
+                    if (!this.canAfford() || skipMapReducer) {
+                        level -= 1;
+                        this.setLevel(level);
                     }
-                    level -= 1;
-                    this.setLevel(level);
+                    else break;
                 }
                 break; // can't afford this option, no point checking further
             } else if (opt === MappingProfile.priorities.mod) {
