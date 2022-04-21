@@ -129,9 +129,10 @@ class MappingProfile {
                 this.priorities.mod,
                 this.priorities.biome,
                 this.priorities.size,
+                this.priorities.baseLevel,
                 this.priorities.loot,
-                this.priorities.diff,
                 this.priorities.optimalLevel,
+                this.priorities.diff,
             ],
             mods: ['cache', 'fa']
         },
@@ -158,9 +159,10 @@ class MappingProfile {
                 this.priorities.mod,
                 this.priorities.biome,
                 this.priorities.size,
+                this.priorities.baseLevel,
                 this.priorities.loot,
-                this.priorities.diff,
                 this.priorities.optimalLevel,
+                this.priorities.diff,
             ],
             mods: ["cache", "fa"]
         }
@@ -205,6 +207,9 @@ class MappingProfile {
         this.optimalLevel = Math.max(this.minLevel, 6);
         for (this.optimalLevel; this.optimalLevel < this.baseLevel; this.optimalLevel++) {
             let ratio = calcHDRatio(this.optimalLevel, "map");
+            if (game.unlocks.imps.Titimp) {
+                ratio /= 2;
+            }
             // Stance priority: Scryer > Dominance > X
             if (this.z >= 60 && this.hze >= 180) {
                 ratio *= 2;
@@ -253,13 +258,14 @@ class MappingProfile {
 
     getTargetLevel(priority) {
         if (priority === MappingProfile.priorities.minLevel) {
-            return this.minLevel
+            return this.minLevel;
         }
         if (priority === MappingProfile.priorities.baseLevel) {
-            return this.baseLevel
+            // base level is meaningless if it's higher than optimal, so let's limit it
+            return Math.min(this.baseLevel, this.optimalLevel);
         }
         if (priority === MappingProfile.priorities.optimalLevel) {
-            return this.optimalLevel
+            return this.optimalLevel;
         }
     }
 
@@ -395,8 +401,11 @@ class MapCrafter {
             }
         }
         if (!this.canAfford()) {
-            devDebug(ctx, 'Cannot afford required map options', {mapCost: prettify(updateMapCost(true))});
-            fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
+            if (this.shouldBuyNewMap(currentMap)) {
+                devDebug(ctx, 'Cannot afford required map options',
+                    {mapCost: prettify(updateMapCost(true))});
+                fragmentsNeeded = updateMapCost(true);
+            }
             if (currentMap) {
                 // continue running an existing acceptable map until we can afford an upgrade
                 return false;
@@ -408,6 +417,7 @@ class MapCrafter {
             }
         }
 
+        currentMap = (currentMap || highestMap);
         // now we can try to improve optional parameters
         for (const opt of this.profile.optional) {
             if (MapCrafter.#sliderOptions.includes(opt)) {
@@ -417,7 +427,9 @@ class MapCrafter {
                     // improve the next option
                     continue;
                 }
-                fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
+                if (this.shouldBuyNewMap(currentMap)) {
+                    fragmentsNeeded = updateMapCost(true);
+                }
                 // gradually decrement slider until we can afford it
                 while (!this.canAfford() && value > 0) {
                     value -= 1;
@@ -431,9 +443,11 @@ class MapCrafter {
                     // improve the next option
                     continue;
                 }
-                fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
                 // gradually decrement level until we can afford it
                 while (!this.canAfford() && level > this.profile.minLevel) {
+                    if (this.shouldBuyNewMap(currentMap)) {
+                        fragmentsNeeded = updateMapCost(true);
+                    }
                     level -= 1;
                     this.setLevel(level);
                 }
@@ -441,13 +455,17 @@ class MapCrafter {
             } else if (opt === MappingProfile.priorities.mod) {
                 this.setAffordableMod();
                 if (!this.canAfford()) {
-                    fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
+                    if (this.shouldBuyNewMap(currentMap)) {
+                        fragmentsNeeded = updateMapCost(true);
+                    }
                     break; // can't afford this option, no point checking further
                 }
             } else if (opt === MappingProfile.priorities.biome) {
                 this.setBiome(this.profile.preferredBiome);
                 if (!this.canAfford()) {
-                    fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
+                    if (this.shouldBuyNewMap(currentMap)) {
+                        fragmentsNeeded = updateMapCost(true);
+                    }
                     this.setBiome('Random');
                     break; // can't afford this option, no point checking further
                 }
@@ -730,7 +748,7 @@ function getMapCutOff(pure) {
     const nature = getEmpowerment();
 
     // Mapology
-    if (mapology && getPageSetting("mapc2hd")) {
+    if (mapology && getPageSetting("mapc2hd") > 0) {
         mapCutoff = getPageSetting("mapc2hd");
     }
 
