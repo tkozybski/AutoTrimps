@@ -102,7 +102,7 @@ class MappingProfile {
                 this.priorities.baseLevel,
                 this.priorities.loot,
                 this.priorities.optimalLevel,
-                this.priorities.diff
+                this.priorities.diff,
             ],
             mods: ["cache", "fa"],
         },
@@ -117,7 +117,6 @@ class MappingProfile {
                 this.priorities.diff,
                 this.priorities.biome,
                 this.priorities.loot,
-                this.priorities.optimalLevel
             ],
             mods: ['p', 'fa']
         },
@@ -132,7 +131,7 @@ class MappingProfile {
                 this.priorities.size,
                 this.priorities.loot,
                 this.priorities.diff,
-                this.priorities.optimalLevel
+                this.priorities.optimalLevel,
             ],
             mods: ['cache', 'fa']
         },
@@ -145,9 +144,8 @@ class MappingProfile {
                 this.priorities.mod,
                 this.priorities.size,
                 this.priorities.biome,
-                this.priorities.optimalLevel,
                 this.priorities.loot,
-                this.priorities.diff
+                this.priorities.diff,
             ],
             mods: ["fa"]
         },
@@ -161,7 +159,8 @@ class MappingProfile {
                 this.priorities.biome,
                 this.priorities.size,
                 this.priorities.loot,
-                this.priorities.diff
+                this.priorities.diff,
+                this.priorities.optimalLevel,
             ],
             mods: ["cache", "fa"]
         }
@@ -378,7 +377,6 @@ class MapCrafter {
         devDebug(ctx, 'Designing a map to fit the profile', this.profile.getDevDebugArgs());
 
         // reset all map params to the lowest (cheapest) setting
-        fragmentsNeeded = 0;
         resetAdvMaps(true);
         this.setLevel(this.profile.minLevel);
 
@@ -397,7 +395,7 @@ class MapCrafter {
             }
         }
         if (!this.canAfford()) {
-            devDebug(ctx, 'Cannot afford map', {oldFragmentsNeeded: fragmentsNeeded, mapCost: updateMapCost(true)});
+            devDebug(ctx, 'Cannot afford required map options', {mapCost: prettify(updateMapCost(true))});
             fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
             if (currentMap) {
                 // continue running an existing acceptable map until we can afford an upgrade
@@ -406,7 +404,7 @@ class MapCrafter {
                 // we need to craft any affordable map to run
                 this.setAffordableLevel(this.profile.minLevel, this.profile.optimalLevel);
                 this.setAffordableMod();
-                return this.canAfford() && shouldBuyNewMap(highestMap, this.profile.optimalLevel);
+                return this.canAfford() && this.shouldBuyNewMap(highestMap);
             }
         }
 
@@ -419,7 +417,7 @@ class MapCrafter {
                     // improve the next option
                     continue;
                 }
-                fragmentsNeeded = updateMapCost(true);
+                fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
                 // gradually decrement slider until we can afford it
                 while (!this.canAfford() && value > 0) {
                     value -= 1;
@@ -433,7 +431,7 @@ class MapCrafter {
                     // improve the next option
                     continue;
                 }
-                fragmentsNeeded = updateMapCost(true);
+                fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
                 // gradually decrement level until we can afford it
                 while (!this.canAfford() && level > this.profile.minLevel) {
                     level -= 1;
@@ -443,13 +441,13 @@ class MapCrafter {
             } else if (opt === MappingProfile.priorities.mod) {
                 this.setAffordableMod();
                 if (!this.canAfford()) {
-                    fragmentsNeeded = updateMapCost(true);
+                    fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
                     break; // can't afford this option, no point checking further
                 }
             } else if (opt === MappingProfile.priorities.biome) {
                 this.setBiome(this.profile.preferredBiome);
                 if (!this.canAfford()) {
-                    fragmentsNeeded = updateMapCost(true);
+                    fragmentsNeeded = Math.max(fragmentsNeeded, updateMapCost(true));
                     this.setBiome('Random');
                     break; // can't afford this option, no point checking further
                 }
@@ -458,7 +456,7 @@ class MapCrafter {
             }
         }
 
-        return this.canAfford() && shouldBuyNewMap(currentMap, this.profile.optimalLevel);
+        return this.canAfford() && this.shouldBuyNewMap(currentMap);
     }
 
     purchase(mapToRecycle) {
@@ -509,6 +507,19 @@ class MapCrafter {
 
     getTotalLevel() {
         return this.getBaseLevel() + this.getExtraLevel();
+    }
+
+    shouldBuyNewMap(existingMap) {
+        if (!existingMap) {
+            // any map is better than no map
+            return true;
+        }
+        if (isCloserTo(this.getTotalLevel(), existingMap.level, this.profile.optimalLevel)) {
+            // increase map level
+            return true;
+        }
+        // add map mod if we currently don't have one
+        return existingMap.bonus === undefined && this.getMod() !== undefined;
     }
 
     getDevDebugArgs() {
@@ -647,18 +658,6 @@ function updateAutoMapsStatus(get) {
     }
 }
 
-function shouldBuyNewMap(existingMap, optimalLevel) {
-    if (!existingMap) {
-        // any map is better than no map
-        return true;
-    }
-    if (isCloserTo(getDesignedMapLevel(), existingMap.level, optimalLevel)) {
-        // increase map level
-        return true;
-    }
-    // add map mod if we currently don't have one
-    return existingMap.bonus === undefined && getDesignedMapMod() !== undefined;
-}
 
 function getMapAdjective(mapId, optimalMap, alternativeMap) {
     if (optimalMap && mapId === optimalMap.id) {
@@ -1324,6 +1323,7 @@ function autoMap() {
         if (advancing) {
             // exit to world
             mapsClicked();
+            fragmentsNeeded = 0;
             return updateAutoMapsStatus();
         }
         if (!tryCrafting) {
@@ -1343,12 +1343,15 @@ function autoMap() {
             && prevFragmentsNeeded !== fragmentsNeeded
             && fragmentsNeeded > game.resources.fragments.owned) {
                 const totalLevel = mapCrafter.getTotalLevel();
-                const mod = mapCrafter.getMod();
+                const mod = currentMap ? currentMap.bonus : mapCrafter.getMod();
+                const currentLevel = currentMap ? Math.max(currentMap.level, totalLevel) : totalLevel;
                 const wanted = [
                     (mappingProfile.mods.length && mappingProfile.mods[0] !== mod ? mappingProfile.mods[0] : undefined),
-                    (totalLevel < mappingProfile.optimalLevel ? `+${mappingProfile.optimalLevel - totalLevel}lvl` : undefined)];
-                debug(`Will recheck map upgrades when we have ${prettify(fragmentsNeeded)} fragments (want: ${wanted.filter(m => m).join(', ')})`,
+                    (currentLevel < mappingProfile.optimalLevel ? `+${mappingProfile.optimalLevel - currentLevel}lvl` : undefined)].filter(m => m).join(', ');
+                if (wanted) {
+                    debug(`Will recheck map upgrades when we have ${prettify(fragmentsNeeded)} fragments (want: ${wanted})`,
                     "maps", 'th-large');
+                }
         }
 
         if (shouldBuyMap) {
