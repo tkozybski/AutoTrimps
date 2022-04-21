@@ -148,7 +148,7 @@ function generateUID() {
     return firstPart + secondPart;
 }
 
-function devDebug(ctx, description, args, separator='=', singleLine=false) {
+function devDebug(ctx, description, args, separator='=', singleLine=true) {
     // ctx: {
     //     id: null,     // if present, will be included before description, useful for grouping multiple log messages. use generateUID() to make it
     //     module: null, // if present, will be included before description, and it will be checked for the variable "devDebug" to enable logging
