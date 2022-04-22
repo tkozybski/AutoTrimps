@@ -379,12 +379,19 @@ class MapCrafter {
         return updateMapCost(true) <= game.resources.fragments.owned;
     }
 
+    maybeUpdateFragmentsNeeded(currentMap) {
+        if (this.isAnUpgradeOver(currentMap)) {
+            fragmentsNeeded = updateMapCost(true);
+        }
+    }
+
     designNewMap(ctx, currentMap, highestMap) {
         devDebug(ctx, 'Designing a map to fit the profile', this.profile.getDevDebugArgs());
 
         // reset all map params to the lowest (cheapest) setting
         resetAdvMaps(true);
         this.setLevel(this.profile.minLevel);
+        fragmentsNeeded = 0;
 
         // first set all required properties of the map
         for (const req of this.profile.required) {
@@ -400,89 +407,69 @@ class MapCrafter {
                 devDebug(ctx, 'Unknown map requirement', {req: req});
             }
         }
-        if (!this.canAfford()) {
-            if (this.shouldBuyNewMap(currentMap)) {
-                devDebug(ctx, 'Cannot afford required map options',
-                    {mapCost: prettify(updateMapCost(true))});
-                fragmentsNeeded = updateMapCost(true);
-            }
+        if (!this.canAfford() && this.isAnUpgradeOver(currentMap)) {
+            // it's already an upgrade, we should save up for it
+            fragmentsNeeded = updateMapCost(true);
             if (currentMap) {
                 // continue running an existing acceptable map until we can afford an upgrade
                 return false;
             } else {
-                // we need to craft any affordable map to run
+                // craft any affordable map
+                resetAdvMaps(true);
                 this.setAffordableLevel(this.profile.minLevel, this.profile.optimalLevel);
                 this.setAffordableMod();
-                return this.canAfford() && this.shouldBuyNewMap(highestMap);
+                return this.canAfford() && this.isAnUpgradeOver(highestMap);
             }
         }
+        // otherwise, keep trying to improve the map until it's an upgrade
 
         currentMap = (currentMap || highestMap);
         // now we can try to improve optional parameters
+        // we also try to find the map cost of the next map upgrade, so we know how much to save up
         for (const opt of this.profile.optional) {
             if (MapCrafter.#sliderOptions.includes(opt)) {
                 let value = 9;
                 this.setSlider(opt, value);
-                if (this.canAfford()) {
-                    // improve the next option
+                if (this.canAfford() || !this.isAnUpgradeOver(currentMap)) {
                     continue;
                 }
-                if (this.shouldBuyNewMap(currentMap)) {
-                    fragmentsNeeded = updateMapCost(true);
-                }
                 // gradually decrement slider until we can afford it
+                this.maybeUpdateFragmentsNeeded(currentMap);
                 while (!this.canAfford() && value > 0) {
                     value -= 1;
                     this.setSlider(opt, value);
+                    this.maybeUpdateFragmentsNeeded(currentMap);
                 }
-                break; // can't afford this option, no point checking further
             } else if (MapCrafter.#levelOptions.includes(opt)) {
                 let level = this.profile.getTargetLevel(opt);
                 this.setLevel(level);
-                if (this.canAfford()) {
-                    // improve the next option
+                if (this.canAfford() || !this.isAnUpgradeOver(currentMap)) {
                     continue;
                 }
                 // gradually decrement level until we can afford it
-                while (level > this.profile.minLevel) {
-                    // Map Reducer: Skips z+0 maps
-                    const skipMapReducer = game.talents.mapLoot.purchased && level == this.profile.z;
-
-                    // Remembers how many frags the map will cost if we can't afford it
-                    if (!skipMapReducer && !this.canAfford() && this.shouldBuyNewMap(currentMap))
-                        fragmentsNeeded = updateMapCost(true);
-
-                    // Reduces its level if we can't afford it
-                    if (!this.canAfford() || skipMapReducer) {
-                        level -= 1;
-                        this.setLevel(level);
-                    }
-                    else break;
+                this.maybeUpdateFragmentsNeeded(currentMap);
+                while (!this.canAfford() && level > this.profile.minLevel) {
+                    level -= 1;
+                    this.setLevel(level);
+                    this.maybeUpdateFragmentsNeeded(currentMap);
                 }
-                break; // can't afford this option, no point checking further
             } else if (opt === MappingProfile.priorities.mod) {
                 this.setAffordableMod();
-                if (!this.canAfford()) {
-                    if (this.shouldBuyNewMap(currentMap)) {
-                        fragmentsNeeded = updateMapCost(true);
-                    }
-                    break; // can't afford this option, no point checking further
-                }
+                this.maybeUpdateFragmentsNeeded(currentMap);
             } else if (opt === MappingProfile.priorities.biome) {
                 this.setBiome(this.profile.preferredBiome);
-                if (!this.canAfford()) {
-                    if (this.shouldBuyNewMap(currentMap)) {
-                        fragmentsNeeded = updateMapCost(true);
-                    }
-                    this.setBiome('Random');
-                    break; // can't afford this option, no point checking further
+                if (this.canAfford() || !this.isAnUpgradeOver(currentMap)) {
+                    continue;
                 }
+                this.maybeUpdateFragmentsNeeded(currentMap);
+                this.setBiome('Random');
             } else {
                 devDebug(ctx, 'Unknown map option', {opt: opt});
             }
         }
 
-        return this.canAfford() && this.shouldBuyNewMap(currentMap);
+        this.maybeUpdateFragmentsNeeded(currentMap);
+        return this.canAfford() && this.isAnUpgradeOver(currentMap);
     }
 
     purchase(mapToRecycle) {
@@ -535,7 +522,7 @@ class MapCrafter {
         return this.getBaseLevel() + this.getExtraLevel();
     }
 
-    shouldBuyNewMap(existingMap) {
+    isAnUpgradeOver(existingMap) {
         if (!existingMap) {
             // any map is better than no map
             return true;
@@ -1149,7 +1136,7 @@ function autoMap() {
     let lowestMap = null;
     for (const map of game.global.mapsOwnedArray) {
         if (!map.noRecycle) {
-            if (map.level === mappingProfile.optimalLevel && map.bonus === mappingProfile.mods[0]) {
+            if (map.level === mappingProfile.optimalLevel && (mappingProfile.mods.length === 0 || map.bonus === mappingProfile.mods[0])) {
                 // the best map we can possibly run, no need to craft anything else
                 optimalMap = mappingProfile.selectBetterCraftedMap(optimalMap, map, needMetal);
             } else {
@@ -1428,23 +1415,26 @@ function autoMap() {
         const prevFragmentsNeeded = fragmentsNeeded;
         const mapCrafter = new MapCrafter(mappingProfile);
         const shouldBuyMap = mapCrafter.designNewMap(debugCtx, currentMap, highestMap, mappingProfile);
+        if (fragmentsNeeded && fragmentsNeeded <= game.resources.fragments.owned) {
+            fragmentsNeeded = 0; // if we can afford this map, we don't need to save up fragments
+        }
+
         const devDebugArgs = mapCrafter.getDevDebugArgs();
         devDebugArgs['shouldBuyMap'] = shouldBuyMap;
+        devDebugArgs['fragmentsNeeded'] = prettify(fragmentsNeeded);
         devDebug(debugCtx, 'Designed a map', devDebugArgs);
 
-        if (fragmentsNeeded
-            && prevFragmentsNeeded !== fragmentsNeeded
-            && fragmentsNeeded > game.resources.fragments.owned) {
-                const totalLevel = mapCrafter.getTotalLevel();
-                const mod = currentMap ? currentMap.bonus : mapCrafter.getMod();
-                const currentLevel = currentMap ? Math.max(currentMap.level, totalLevel) : totalLevel;
-                const wanted = [
-                    (mappingProfile.mods.length && mappingProfile.mods[0] !== mod ? mappingProfile.mods[0] : undefined),
-                    (currentLevel < mappingProfile.optimalLevel ? `+${mappingProfile.optimalLevel - currentLevel}lvl` : undefined)].filter(m => m).join(', ');
-                if (wanted) {
-                    debug(`Will recheck map upgrades when we have ${prettify(fragmentsNeeded)} fragments (want: ${wanted})`,
-                    "maps", 'th-large');
-                }
+        if (fragmentsNeeded && prevFragmentsNeeded !== fragmentsNeeded) {
+            const totalLevel = mapCrafter.getTotalLevel();
+            const mod = currentMap ? currentMap.bonus : mapCrafter.getMod();
+            const currentLevel = currentMap ? Math.max(currentMap.level, totalLevel) : totalLevel;
+            const wanted = [
+                (mappingProfile.mods.length && mappingProfile.mods[0] !== mod ? mappingProfile.mods[0] : undefined),
+                (currentLevel < mappingProfile.optimalLevel ? `+${mappingProfile.optimalLevel - currentLevel}lvl` : undefined)].filter(m => m).join(', ');
+            if (wanted) {
+                debug(`Will recheck map upgrades when we have ${prettify(fragmentsNeeded)} fragments (want: ${wanted})`,
+                "maps", 'th-large');
+            }
         }
 
         if (shouldBuyMap) {
