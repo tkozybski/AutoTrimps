@@ -1,63 +1,67 @@
 function automationMenuInit() {
-    var settingBtnSrch = document.getElementsByClassName("btn btn-default");
-    for (var i = 0; i < settingBtnSrch.length; i++) {
-        if (settingBtnSrch[i].getAttribute("onclick") === "toggleSettingsMenu()")
-            settingBtnSrch[i].setAttribute("onclick", "autoPlusSettingsMenu()");
+    const settingBtnSrch = document.getElementsByClassName("btn btn-default");
+    for (const btn of settingBtnSrch) {
+        if (btn.getAttribute("onclick") === "toggleSettingsMenu()") {
+            btn.setAttribute("onclick", "autoPlusSettingsMenu()");
+        }
     }
-    var newItem = document.createElement("TD");
-    newItem.appendChild(document.createTextNode("AutoTrimps"));
-    newItem.setAttribute("class", "btn btn-default");
-    newItem.setAttribute("onclick", "autoToggle()");
-    var settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
-    settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
+    const settingsButton = document.createElement("TD");
+    settingsButton.appendChild(document.createTextNode("AutoTrimps"));
+    settingsButton.setAttribute("class", "btn btn-default");
+    settingsButton.setAttribute("onclick", "autoToggle()");
+    const settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
+    settingbarRow.insertBefore(settingsButton, settingbarRow.childNodes[10]);
 
-    var newContainer = document.createElement("DIV");
-    newContainer.setAttribute("style", "margin-top: 0.2vw; display: block; font-size: 1.1vw; height: 1.5em; text-align: center; border-radius: 4px");
-    newContainer.setAttribute("id", "autoMapBtn");
-    newContainer.setAttribute("class", "noselect settingsBtn");
-    newContainer.setAttribute("onClick", "toggleAutoMaps()");
-    newContainer.setAttribute("onmouseover", 'tooltip(\"Toggle Automapping\", \"customText\", event, \"Toggle automapping on and off.\")');
-    newContainer.setAttribute("onmouseout", 'tooltip("hide")');
-    var abutton = document.createElement("SPAN");
-    abutton.appendChild(document.createTextNode("Auto Maps"));    
-    abutton.setAttribute("id", "autoMapLabel");
-    var fightButtonCol = document.getElementById("battleBtnsColumn");
-    newContainer.appendChild(abutton);
-    fightButtonCol.appendChild(newContainer);
+    const automapButton = document.createElement("DIV");
+    automapButton.setAttribute("style", "margin-top: 0.2vw; display: block; font-size: 1.1vw; height: 1.5em; text-align: center; border-radius: 4px");
+    automapButton.setAttribute("id", "autoMapBtn");
+    automapButton.setAttribute("class", "noselect settingsBtn");
+    automapButton.setAttribute("onClick", "toggleAutoMaps()");
+    automapButton.setAttribute("onmouseover", 'tooltip(\"Toggle Automapping\", \"customText\", event, \"Toggle automapping on and off.\")');
+    automapButton.setAttribute("onmouseout", 'tooltip("hide")');
+    const automapButtonLabel = document.createElement("SPAN");
+    automapButtonLabel.appendChild(document.createTextNode("Auto Maps"));
+    automapButtonLabel.setAttribute("id", "autoMapLabel");
+    automapButton.appendChild(automapButtonLabel);
+    const fightButtonCol = document.getElementById("battleBtnsColumn");
+    fightButtonCol.appendChild(automapButton);
 
-    newContainer = document.createElement("DIV");
-    newContainer.setAttribute("style", "display: block; font-size: 1.1vw; text-align: center; background-color: rgba(0,0,0,0.3);");
+    const automapStatus = document.createElement("DIV");
+    automapStatus.id = 'autoMapStatusTooltip';
+    automapStatus.setAttribute("style", "display: block; font-size: 1.1vw; text-align: center; background-color: rgba(0,0,0,0.3);");
     if (game.global.universe == 1) {
-        newContainer.setAttribute("onmouseover", 'tooltip(\"Health to Damage ratio\", \"customText\", event, \"This status box displays the current mode Automaps is in. The number usually shown here during Farming or Want more Damage modes is the \'HDratio\' meaning EnemyHealth to YourDamage Ratio (in X stance). Above 16 will trigger farming, above 4 will trigger going for Map bonus up to 10 stacks.<p><b>enoughHealth: </b>\" + enoughHealth + \"<br><b>enoughDamage: </b>\" + enoughDamage +\"<br><b>shouldFarm: </b>\" + shouldFarm +\"<br><b>H:D ratio = </b>\" + calcHDRatio() + \"<br><b>Health ratio = </b>\" + calcHealthRatio(false, true) + \"<br>\")');
+        automapStatus.setAttribute("onmouseover", 'tooltip(\"Automap status\", \"customText\", event, \"When Auto Maps are enabled, this box will display variables that control its current state and target.\")');
     }
     if (game.global.universe == 2) {
-        newContainer.setAttribute("onmouseover", 'tooltip(\"Health to Damage ratio\", \"customText\", event, \"This status box displays the current mode Automaps is in. The number usually shown here during Farming or Want more Damage modes is the \'HDratio\' meaning EnemyHealth to YourDamage Ratio (in X stance). Above 16 will trigger farming, above 4 will trigger going for Map bonus up to 10 stacks.<p><b>enoughHealth: </b>\" + RenoughHealth + \"<br><b>enoughDamage: </b>\" + RenoughDamage +\"<br><b>shouldFarm: </b>\" + RshouldFarm +\"<br><b>H:D ratio = </b>\" + RcalcHDratio() + \"<br>\")');
+        automapStatus.setAttribute("onmouseover", 'tooltip(\"Health to Damage ratio\", \"customText\", event, \"This status box displays the current mode Automaps is in. The number usually shown here during Farming or Want more Damage modes is the \'HDratio\' meaning EnemyHealth to YourDamage Ratio (in X stance). Above 16 will trigger farming, above 4 will trigger going for Map bonus up to 10 stacks.<p><b>enoughHealth: </b>\" + RenoughHealth + \"<br><b>enoughDamage: </b>\" + RenoughDamage +\"<br><b>shouldFarm: </b>\" + RshouldFarm +\"<br><b>H:D ratio = </b>\" + RcalcHDratio() + \"<br>\")');
     }
-    newContainer.setAttribute("onmouseout", 'tooltip("hide")');
-    abutton = document.createElement("SPAN");
-    abutton.id = 'autoMapStatus';
-    newContainer.appendChild(abutton);
-    fightButtonCol.appendChild(newContainer);
+    automapStatus.setAttribute("onmouseout", 'tooltip("hide")');
+    const automapStatusLabel = document.createElement("SPAN");
+    automapStatusLabel.id = 'autoMapStatus';
+    automapStatus.appendChild(automapStatusLabel);
+    fightButtonCol.appendChild(automapStatus);
 
-    newContainer = document.createElement("DIV");
-    newContainer.setAttribute("style", "display: block; font-size: 1vw; text-align: center; margin-top: 2px; background-color: rgba(0,0,0,0.3);");
-    if (game.global.universe == 1) 
-    newContainer.setAttribute("onmouseover", 'tooltip(\"Helium/Hr Info\", \"customText\", event, \"1st is Current He/hr % out of Lifetime He(not including current+unspent).<br> 0.5% is an ideal peak target. This can tell you when to portal... <br>2nd is Current run Total He earned / Lifetime He(not including current)<br>\" + getDailyHeHrStats())');
-    else if (game.global.universe == 2) 
-    newContainer.setAttribute("onmouseover", 'tooltip(\"Radon/Hr Info\", \"customText\", event, \"1st is Current Rn/hr % out of Lifetime Rn(not including current+unspent).<br> 0.5% is an ideal peak target. This can tell you when to portal... <br>2nd is Current run Total Rn earned / Lifetime Rn(not including current)<br>\" + getDailyRnHrStats())');
-    newContainer.setAttribute("onmouseout", 'tooltip("hide")');
-    abutton = document.createElement("SPAN");
-    abutton.id = 'hiderStatus';
-    newContainer.appendChild(abutton);
-    fightButtonCol.appendChild(newContainer);
+    const HeHrStatus = document.createElement("DIV");
+    HeHrStatus.id = 'statsTooltip';
+    HeHrStatus.setAttribute("style", "display: block; font-size: 1vw; text-align: center; margin-top: 2px; background-color: rgba(0,0,0,0.3);");
+    if (game.global.universe == 1) {
+        HeHrStatus.setAttribute("onmouseover", 'tooltip(\"Helium/Hr Info\", \"customText\", event, \"1st is Current He/hr % out of Lifetime He(not including current+unspent).<br> 0.5% is an ideal peak target. This can tell you when to portal... <br>2nd is Current run Total He earned / Lifetime He(not including current)<br>\" + getDailyHeHrStats())');
+    } else if (game.global.universe == 2) {
+        HeHrStatus.setAttribute("onmouseover", 'tooltip(\"Radon/Hr Info\", \"customText\", event, \"1st is Current Rn/hr % out of Lifetime Rn(not including current+unspent).<br> 0.5% is an ideal peak target. This can tell you when to portal... <br>2nd is Current run Total Rn earned / Lifetime Rn(not including current)<br>\" + getDailyRnHrStats())');
+    }
+    HeHrStatus.setAttribute("onmouseout", 'tooltip("hide")');
+    const HeHrStatusLabel = document.createElement("SPAN");
+    HeHrStatusLabel.id = 'hiderStatus';
+    HeHrStatus.appendChild(HeHrStatusLabel);
+    fightButtonCol.appendChild(HeHrStatus);
 
-    var $portalTimer = document.getElementById('portalTimer');
+    const $portalTimer = document.getElementById('portalTimer');
     $portalTimer.setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
     $portalTimer.setAttribute('style', 'cursor: default');
 
-    var btns = document.getElementsByClassName("fightBtn");
-    for (var x = 0; x < btns.length; x++) {
-        btns[x].style.padding = "0.01vw 0.01vw";
+    const btns = document.getElementsByClassName("fightBtn");
+    for (const btn of btns) {
+        btn.style.padding = "0.01vw 0.01vw";
     }
 }
 automationMenuInit();
