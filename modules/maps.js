@@ -80,11 +80,15 @@ class MappingProfile {
     name;
     z;
 
+    #bestCacheMod;
+
     static priorities = Object.freeze({
         size: 'size',
         loot: 'loot',
         diff: 'difficulty',
-        mod: 'mod',
+        cache: 'cache mod',
+        prestige: 'prestige mod',
+        fa: 'fast attacks mod',
         minLevel: 'minLevel',
         baseLevel: 'baseLevel',
         optimalLevel: 'optimalLevel',
@@ -92,9 +96,8 @@ class MappingProfile {
     });
     static #profiles = Object.freeze({
         farming: {
-            // * farming: {(FA [desperation?] > LMC > map size) > level > loot > extraLevel} > diff*
             required: [
-                this.priorities.mod
+                this.priorities.cache
             ],
             optional: [
                 this.priorities.biome,
@@ -107,13 +110,13 @@ class MappingProfile {
             mods: ["cache", "fa"],
         },
         prestige: {
-            // * prestige: (zoneLevel > FA) > map size > P) [not sure which] > diff* > loot > 10 extraLevels [JK, but who knows?]
             required: [
                 this.priorities.minLevel
             ],
             optional: [
-                this.priorities.mod,
+                this.priorities.fa,
                 this.priorities.size,
+                this.priorities.prestige,
                 this.priorities.diff,
                 this.priorities.biome,
                 this.priorities.loot,
@@ -121,14 +124,14 @@ class MappingProfile {
             mods: ['p', 'fa']
         },
         prestigeFarming: {
-            // * prestige, need metal: Same as farming, but with minLvl = Z?
             required: [
                 this.priorities.minLevel
             ],
             optional: [
-                this.priorities.mod,
+                this.priorities.fa,
                 this.priorities.biome,
                 this.priorities.size,
+                this.priorities.cache,
                 this.priorities.baseLevel,
                 this.priorities.loot,
                 this.priorities.optimalLevel,
@@ -137,12 +140,11 @@ class MappingProfile {
             mods: ['cache', 'fa']
         },
         mapStacks: {
-            // * getting map stacks, no metal: (siphLevel > FA > map size) > level > loot > diff*
             required: [
                 this.priorities.minLevel
             ],
             optional: [
-                this.priorities.mod,
+                this.priorities.fa,
                 this.priorities.size,
                 this.priorities.biome,
                 this.priorities.loot,
@@ -151,12 +153,11 @@ class MappingProfile {
             mods: ["fa"]
         },
         mapStacksFarming: {
-            // * stacks, need metal: this is literally farming, just with a higher minLvl and no extra lvls
             required: [
                 this.priorities.minLevel
             ],
             optional: [
-                this.priorities.mod,
+                this.priorities.cache,
                 this.priorities.biome,
                 this.priorities.size,
                 this.priorities.baseLevel,
@@ -172,18 +173,11 @@ class MappingProfile {
     constructor(isFarming, needMetal, needPrestige, shouldFarmLowerZone) {
         this.z = game.global.world;
         this.hze = getHighestLevelCleared();
+        this.haveMapReducer = game.talents.mapLoot.purchased;
 
-        const haveMapReducer = game.talents.mapLoot.purchased;
         const siphonology = game.portal.Siphonology.level;
-        const extraMapLevelsAvailable = this.hze >= 209;
 
-        if (game.global.decayDone) {
-            this.preferredBiome = "Plentiful";
-        } else {
-            this.preferredBiome = 'Mountain';
-        }
-
-        this.baseLevel = this.z - (haveMapReducer ?  1 : 0);
+        this.baseLevel = this.z - (this.haveMapReducer ?  1 : 0);
         if (needPrestige) {
             this.minLevel = this.z;
             if (needMetal) {
@@ -201,6 +195,16 @@ class MappingProfile {
             } else  {
                 this.name = 'mapStacks'; // this is a de-facto default mapping mode
             }
+        }
+
+        const profile = MappingProfile.#profiles[this.name];
+        this.required = profile.required;
+        this.optional = profile.optional;
+
+        if (game.global.decayDone) {
+            this.preferredBiome = "Plentiful";
+        } else {
+            this.preferredBiome = 'Mountain';
         }
 
         // Calculate Siphonology and Extra Map Levels
@@ -221,6 +225,7 @@ class MappingProfile {
             if (ratio > 1.2) break;
         }
         // Keep increasing map level while we can overkill
+        const extraMapLevelsAvailable = this.hze >= 209;
         if (extraMapLevelsAvailable && this.optimalLevel === this.baseLevel) {
             const oneShotPower = maxOneShotPower();
             while (oneShotZone("S", "map", this.optimalLevel + 1) === oneShotPower) {
@@ -235,20 +240,18 @@ class MappingProfile {
             // can't increase map levels yet
             this.optimalLevel = Math.min(this.optimalLevel, this.z);
         }
-        if (haveMapReducer && (this.optimalLevel === this.z) && (this.minLevel <= this.baseLevel)) {
+        if (this.haveMapReducer && (this.optimalLevel === this.z) && (this.minLevel <= this.baseLevel)) {
             // if min level allows, and we have Map Reducer, lower the map level
             this.optimalLevel = this.baseLevel;
         }
 
-        const profile = MappingProfile.#profiles[this.name];
-        this.required = profile.required;
-        this.optional = profile.optional;
         for (const mod of profile.mods) {
             if (mod === 'cache') {
                 // only consider the best unlocked cache mod (LMC>HC>SMC>LC)
                 const unlockedCaches = MappingProfile.#cacheMods.filter(m => mapSpecialModifierConfig[m].unlocksAt <= this.hze);
                 if (unlockedCaches) {
-                    this.mods.push(unlockedCaches[0]);
+                    this.#bestCacheMod = unlockedCaches[0];
+                    this.mods.push(this.#bestCacheMod);
                 }
             } else if (mapSpecialModifierConfig[mod].unlocksAt <= this.hze) {
                 this.mods.push(mod);
@@ -267,6 +270,20 @@ class MappingProfile {
         if (priority === MappingProfile.priorities.optimalLevel) {
             return this.optimalLevel;
         }
+    }
+
+    getTargetMod(priority) {
+        let mod = '0';
+        if (priority === MappingProfile.priorities.prestige) {
+            mod = 'p';
+        } else if (priority === MappingProfile.priorities.cache) {
+            mod = this.#bestCacheMod;
+        } else if (priority === MappingProfile.priorities.fa) {
+            mod = 'fa';
+        } else {
+            console.log('unknown map mod ', priority);
+        }
+        return (this.mods.includes(mod) ? mod : '0');
     }
 
     selectBetterCraftedMap(map1, map2, prioritizeMods) {
@@ -317,6 +334,11 @@ class MapCrafter {
         MappingProfile.priorities.minLevel,
         MappingProfile.priorities.baseLevel,
         MappingProfile.priorities.optimalLevel
+    ];
+    static #modOptions = [
+        MappingProfile.priorities.fa,
+        MappingProfile.priorities.cache,
+        MappingProfile.priorities.prestige
     ];
 
     constructor(profile) {
@@ -399,10 +421,10 @@ class MapCrafter {
                 this.setSlider(req, 9);
             } else if (MapCrafter.#levelOptions.includes(req)) {
                 this.setLevel(this.profile.getTargetLevel(req));
+            } else if (MapCrafter.#modOptions.includes(req)) {
+                this.setMod(this.profile.getTargetMod(req));
             } else if (req === MappingProfile.priorities.biome) {
                 this.setBiome(this.profile.preferredBiome);
-            } else if (req === MappingProfile.priorities.mod && this.profile.mods.length) {
-                this.setMod(this.profile.mods[0]);
             } else {
                 devDebug(ctx, 'Unknown map requirement', {req: req});
             }
@@ -450,12 +472,20 @@ class MapCrafter {
                 this.maybeUpdateFragmentsNeeded(currentMap);
                 while (!this.canAfford() && level > this.profile.minLevel) {
                     level -= 1;
+                    if (this.profile.haveMapReducer && level === this.profile.z) {
+                        level -= 1; // if we have map reducer, skip the zone level
+                    }
                     this.setLevel(level);
                     this.maybeUpdateFragmentsNeeded(currentMap);
                 }
-            } else if (opt === MappingProfile.priorities.mod) {
-                this.setAffordableMod();
+            } else if (MapCrafter.#modOptions.includes(opt)) {
+                const prevMod = this.getMod();
+                this.setMod(this.profile.getTargetMod(opt));
+                if (this.canAfford() || !this.isAnUpgradeOver(currentMap)) {
+                    continue;
+                }
                 this.maybeUpdateFragmentsNeeded(currentMap);
+                this.setMod(prevMod);
             } else if (opt === MappingProfile.priorities.biome) {
                 this.setBiome(this.profile.preferredBiome);
                 if (this.canAfford() || !this.isAnUpgradeOver(currentMap)) {
