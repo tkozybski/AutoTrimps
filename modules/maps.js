@@ -472,7 +472,7 @@ class MapCrafter {
                 this.maybeUpdateFragmentsNeeded(currentMap);
                 while (!this.canAfford() && level > this.profile.minLevel) {
                     level -= 1;
-                    if (this.profile.haveMapReducer && level === this.profile.z) {
+                    if (this.profile.haveMapReducer && level === this.profile.z && level > this.profile.minLevel) {
                         level -= 1; // if we have map reducer, skip the zone level
                     }
                     this.setLevel(level);
