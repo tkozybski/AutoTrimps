@@ -1549,11 +1549,11 @@ function updateCustomButtons() {
     //Buildings
     var gemNoLimit = getPageSetting('GemEfficiencyIgnoresMax');
     var foodNoLimit = getPageSetting('FoodEfficiencyIgnoresMax');
-    var fuckbuilding = (bwRewardUnlocked("AutoStructure") == true && game.talents.deciBuild.purchased && getPageSetting('hidebuildings')==true && getPageSetting('BuyBuildingsNew')==0);
+    var fuckbuilding = (bwRewardUnlocked("AutoStructure") == true && bwRewardUnlocked("DecaBuild") && getPageSetting('hidebuildings')==true && getPageSetting('BuyBuildingsNew')==0);
     !radonon ? turnOn("BuyBuildingsNew"): turnOff("BuyBuildingsNew");
     !radonon ? turnOn("MaxGym"): turnOff("MaxGym");
     !radonon ? turnOn("GymWall"): turnOff("GymWall");
-    (!radonon && bwRewardUnlocked("AutoStructure") == true && game.talents.deciBuild.purchased) ? turnOn("hidebuildings") : turnOff("hidebuildings");
+    (!radonon && bwRewardUnlocked("AutoStructure") == true && bwRewardUnlocked("DecaBuild")) ? turnOn("hidebuildings") : turnOff("hidebuildings");
     (!radonon && !fuckbuilding && !foodNoLimit) ? turnOn("MaxHut") : turnOff("MaxHut");
     (!radonon && !fuckbuilding && !foodNoLimit) ? turnOn("MaxHouse") : turnOff("MaxHouse");
     (!radonon && !fuckbuilding && (!gemNoLimit || !foodNoLimit)) ? turnOn("MaxMansion") : turnOff("MaxMansion");
