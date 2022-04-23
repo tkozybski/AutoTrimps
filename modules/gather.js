@@ -55,7 +55,7 @@ function manualLabor2() {
 
 	//Init - Others
 	var needMiner = firstFightOK && game.global.challengeActive != "Metal" && !game.upgrades.Miners.done;
-	var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
+	var breedingTrimps = game.resources.trimps.owned - trimpsEffectivelyEmployed();
 	var hasTurkimp = game.talents.turkimp2.purchased || game.global.turkimpTimer > 0;
 
 	//Verifies if trapping is still relevant

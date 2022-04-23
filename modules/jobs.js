@@ -74,7 +74,7 @@ function safeFireJob(job, amount) {
 
 function buyJobs() {
     var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-    var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
+    var breeding = (game.resources.trimps.owned - trimpsEffectivelyEmployed());
     var totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     var farmerRatio = parseFloat(getPageSetting('FarmerRatio'));
     var lumberjackRatio = parseFloat(getPageSetting('LumberjackRatio'));
@@ -120,7 +120,6 @@ function buyJobs() {
                 return;
         }
     } else {
-        var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
         if (!(game.global.challengeActive == "Trapper") && game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
             if (breeding > game.resources.trimps.realMax() * 0.33) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;

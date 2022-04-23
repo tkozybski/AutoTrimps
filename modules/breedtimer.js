@@ -15,6 +15,17 @@ function customLeadTimer() {
     else return Math.min(30, 35 - 3.0 * game.challenges.Lead.stacks/20.0);
 }
 
+function trimpsEffectivelyEmployed() {
+    //Init
+    var employedTrimps = game.resources.trimps.employed;
+
+    //Multitasking
+    if (game.permaBoneBonuses.multitasking.owned)
+        employedTrimps *= (1 - game.permaBoneBonuses.multitasking.mult());
+
+    return employedTrimps;
+}
+
 function potencyMod() {
     //Init
     var trimps = game.resources.trimps;
@@ -43,7 +54,7 @@ function potencyMod() {
             potencyMod = potencyMod.mul(dailyModifiers.toxic.getMult(game.global.dailyChallenge.toxic.strength, game.global.dailyChallenge.toxic.stacks));
     }
 
-    //Tocixity
+    //Toxicity
     if (game.global.challengeActive == "Toxicity" && game.challenges.Toxicity.stacks > 0)
         potencyMod = potencyMod.mul(Math.pow(game.challenges.Toxicity.stackMult, game.challenges.Toxicity.stacks));
 
@@ -64,7 +75,7 @@ function potencyMod() {
 function breedingPS() {
     //Init
     var trimps = game.resources.trimps;
-    var breeding = new DecimalBreed(trimps.owned).minus(trimps.employed);
+    var breeding = new DecimalBreed(trimps.owned).minus(trimpsEffectivelyEmployed());
 
     //Gets the modifier, then: 1.1x format -> 0.1 format -> 1.0 x breeding
     return potencyMod().minus(1).mul(10).mul(breeding);
@@ -74,7 +85,9 @@ function breedTotalTime() {
     //Init
     var trimps = game.resources.trimps;
     var trimpsMax = trimps.realMax();
-    var maxBreedable = new DecimalBreed(trimpsMax).minus(trimps.employed);
+
+    //Calc
+    var maxBreedable = new DecimalBreed(trimpsMax).minus(trimpsEffectivelyEmployed());
     var breeding = maxBreedable.minus(trimps.getCurrentSend());
 
     return DecimalBreed.log10(maxBreedable.div(breeding)).div(DecimalBreed.log10(potencyMod())).div(10);
@@ -84,8 +97,10 @@ function breedTimeRemaining() {
     //Init
     var trimps = game.resources.trimps;
     var trimpsMax = trimps.realMax();
-    var maxBreedable = new DecimalBreed(trimpsMax).minus(trimps.employed);
-    var breeding = new DecimalBreed(trimps.owned).minus(trimps.employed);
+
+    //Calc
+    var maxBreedable = new DecimalBreed(trimpsMax).minus(trimpsEffectivelyEmployed());
+    var breeding = new DecimalBreed(trimps.owned).minus(trimpsEffectivelyEmployed());
     return DecimalBreed.log10(maxBreedable.div(breeding)).div(DecimalBreed.log10(potencyMod())).div(10);
 }
 
