@@ -264,8 +264,8 @@ class MappingProfile {
             return this.minLevel;
         }
         if (priority === MappingProfile.priorities.baseLevel) {
-            // base level is meaningless if it's higher than optimal, so let's limit it
-            return Math.min(this.baseLevel, this.optimalLevel);
+            // base level is meaningless if it's lower than min or higher than optimal, so let's limit it
+            return Math.max(this.minLevel, Math.min(this.baseLevel, this.optimalLevel));
         }
         if (priority === MappingProfile.priorities.optimalLevel) {
             return this.optimalLevel;
