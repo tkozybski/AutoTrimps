@@ -58,14 +58,14 @@ function safeBuyBuilding(building) {
     return true;
 }
 
-function advancedNurseries() {
+function advancedNurseries(hdStats, vmStatus) {
     //Only build nurseries if: A) Lacking Health & B) Not lacking Damage & C&D) Has max Map Stacks E) Has at least 1 Map Stack F) Not farming Spire or advN is off
     //Also, it requires less health during spire
     const maxHealthMaps = game.global.challengeActive === "Daily" ? getPageSetting('dMaxMapBonushealth') : getPageSetting('MaxMapBonushealth');
-    const a = calcHealthRatio(false, true) < getMapHealthCutOff();
-    const b = calcHDRatio() < getFarmCutOff() || weaponCapped();
+    const a = hdStats.hitsSurvived < getMapHealthCutOff(vmStatus);
+    const b = hdStats.hdRatio < getFarmCutOff(vmStatus) || weaponCapped();
     const c = game.global.mapBonus >= maxHealthMaps;
-    const d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || calcHDRatio() < getMapCutOff();
+    const d = game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') || hdStats.hdRatio < getMapCutOff(vmStatus);
     const e = game.global.mapBonus >= 1 || getPageSetting('MaxMapBonuslimit') == 0 || maxHealthMaps == 0;
     const f = !preSpireFarming || !getPageSetting('AdvancedNurseries');
     const off = !getPageSetting('AdvancedNurseries') || game.stats.highestLevel.valueTotal() < 230;
@@ -186,7 +186,7 @@ function buyGemEfficientHousing() {
     }
 }
 
-function buyBuildings() {
+function buyBuildings(hdStats, vmStatus) {
     var customVars = MODULES["buildings"];
     var oldBuy = preBuy2();
     var hidebuild = (getPageSetting('BuyBuildingsNew')===0 && getPageSetting('hidebuildings')==true);
@@ -207,14 +207,14 @@ function buyBuildings() {
         if (getPageSetting('DynamicGyms')) {
 	        //Target Zone
 	        var targetZone = game.global.world;
-	        if (game.global.challengeActive == "Lead" && !preVoidCheck && game.global.world%2 == 1) targetZone++;
+	        if (game.global.challengeActive == "Lead" && !vmStatus.prepareForVoids && game.global.world%2 == 1) targetZone++;
 
             //Enemy stats
             var block = calcOurBlock() / (game.global.brokenPlanet ? 2 : 1);
             var pierce = game.global.brokenPlanet ? (getPierceAmt() * (game.global.formation == 3 ? 2 : 1)) : 0;
             var nextGym = game.upgrades.Gymystic.modifier + Math.max(0, game.upgrades.Gymystic.done-1)/100;
             var currentEnemyDamageOK = block > nextGym * calcSpecificEnemyAttack();
-            var zoneEnemyDamageOK = block > calcEnemyAttack(undefined, targetZone) * (1 - pierce);
+            var zoneEnemyDamageOK = block > calcEnemyAttack((vmStatus.prepareForVoids ? "void" : "world"), targetZone) * (1 - pierce);
 
             //Challenge stats
             var moreBlockThanHealth = block >= nextGym * calcOurHealth(true, true);
@@ -262,7 +262,7 @@ function buyBuildings() {
     var dailyNurseryPreSpire = dailySpireNurseryActive && game.buildings.Nursery.owned < getPageSetting('dPreSpireNurseries');
 
     //Nurseries
-    if (game.buildings.Nursery.locked == 0 && !hidebuild && (advancedNurseries() && nurseryZoneOk && maxNurseryOk || nurseryPreSpire || dailyNurseryPreSpire)) {
+    if (game.buildings.Nursery.locked == 0 && !hidebuild && (advancedNurseries(hdStats, vmStatus) && nurseryZoneOk && maxNurseryOk || nurseryPreSpire || dailyNurseryPreSpire)) {
         //Nursery Wall
         var nurseryWallpct = getPageSetting('NurseryWall');
         if (nurseryWallpct <= 1 || getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) < (game.resources.gems.owned / nurseryWallpct))

@@ -3,6 +3,23 @@ var critDD = 1;
 var trimpAA = 1;
 
 //Helium
+
+class HDStats {
+    hdRatio;
+    hitsSurvived;
+    ourDamage;
+    targetZoneType;
+
+    constructor(vmStatus) {
+        const z = game.global.world;
+
+        this.targetZoneType = (vmStatus.prepareForVoids ? "void" : "world");
+        this.hdRatio = calcHDRatio(z, this.targetZoneType);
+        this.hitsSurvived = calcHitsSurvived(z, this.targetZoneType);
+        this.ourDamage = calcOurDmg();
+    }
+}
+
 function debugCalc() {
     //Pre-Init
     var type = (!game.global.mapsActive) ? "world" : (getCurrentMapObject().location == "Void" ? "void" : "map");
@@ -185,22 +202,18 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHealthRatio(stance, fullGeneticist, type, targetZone, mapDifficulty = 1) {
-    //Pre Init
-    if (!type) type = preVoidCheck ? "void" : "world";
-    if (!targetZone) targetZone = game.global.world;
-
+function calcHitsSurvived(targetZone, type) {
     //Init
     var expMult = 1;
     var voidDamage = 0;
-    const formationMod = (game.upgrades.Dominance.done && !stance) ? 2 : 1;
+    const formationMod = (game.upgrades.Dominance.done) ? 2 : 1;
 
     //Our Health and Block
-    var health = calcOurHealth(stance, fullGeneticist) / formationMod;
-    var block = calcOurBlock(stance) / formationMod;
+    var health = calcOurHealth(false, true) / formationMod;
+    var block = calcOurBlock(false) / formationMod;
 
     //Calc for maps
-    if (type == "map") return health / Math.max(mapDifficulty * calcEnemyAttack("map", targetZone) - block, 0);
+    if (type == "map") return health / Math.max(calcEnemyAttack("map", targetZone) - block, 0);
 
     //Lead farms one zone ahead
     if (game.global.challengeActive == "Lead" && type == "world" && game.global.world%2 == 1) targetZone++;
@@ -231,7 +244,7 @@ function calcHealthRatio(stance, fullGeneticist, type, targetZone, mapDifficulty
 
     //Pierce & Voids
     var pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
-    if (!stance && game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+    if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
 
     //Cancel Map Health influence, even for void maps (they are set above)
     if (game.talents.mapHealth.purchased && game.global.mapsActive && type != "map") health /= 2;
@@ -691,10 +704,6 @@ function calcEnemyAttackCore(type, zone, cell, name, minOrMax, customAttack) {
 }
 
 function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
-    //Pre-Init
-    if (!type) type = preVoidCheck ? "void" : "world";
-    if (!zone) zone = game.global.world;
-
     //Init
     var attack = calcEnemyAttackCore(type, zone, cell, name, minOrMax);
     var corrupt = zone >= mutations.Corruption.start();
@@ -877,10 +886,6 @@ function calcEnemyHealthCore(type, zone, cell, name, customHealth) {
 }
 
 function calcEnemyHealth(type, zone, cell = 99, name = "Turtlimp") {
-    //Pre-Init
-    if (!type) type = preVoidCheck ? "void" : "world";
-    if (!zone) zone = game.global.world;
-
     //Init
     var health = calcEnemyHealthCore(type, zone, cell, name);
     var corrupt = zone >= mutations.Corruption.start();
@@ -960,10 +965,6 @@ function calcSpecificEnemyHealth(type, zone, cell, forcedName) {
 }
 
 function calcHDRatio(targetZone, type) {
-    //Pre-Init
-    if (!targetZone) targetZone = game.global.world;
-    if (!type) type = preVoidCheck ? "void" : "world";
-
     //Init
     var ignoreMapBonus = type != "world" || (game.global.challengeActive == "Lead" && targetZone%2 == 1);
     var ourBaseDamage = calcOurDmg("avg", "X", false, ignoreMapBonus);
@@ -1017,10 +1018,10 @@ function calcHDRatio(targetZone, type) {
     return calcEnemyHealth(type, targetZone) / (ourBaseDamage + addPoison());
 }
 
-function calcCurrentStance() {
+function calcCurrentStance(hdStats) {
     if (game.global.uberNature == "Wind" && getEmpowerment() == "Wind" && !game.global.mapsActive &&
-        (((game.global.challengeActive != "Daily" && calcHDRatio() < getPageSetting('WindStackingMinHD'))
-            || (game.global.challengeActive == "Daily" && calcHDRatio() < getPageSetting('dWindStackingMinHD')))
+        (((game.global.challengeActive != "Daily" && hdStats.hdRatio < getPageSetting('WindStackingMinHD'))
+            || (game.global.challengeActive == "Daily" && hdStats.hdRatio < getPageSetting('dWindStackingMinHD')))
                 && ((game.global.challengeActive != "Daily" && game.global.world >= getPageSetting('WindStackingMin'))
                     || (game.global.challengeActive == "Daily" && game.global.world >= getPageSetting('dWindStackingMin'))))
                         || (game.global.uberNature == "Wind" && getEmpowerment() == "Wind" && !game.global.mapsActive && checkIfLiquidZone() && getPageSetting('liqstack') == true))
@@ -1062,8 +1063,8 @@ function calcCurrentStance() {
                     || (game.global.challengeActive == "Daily" && game.global.world < getPageSetting('dWindStackingMin')))
                         useHigh = true;
 
-            if ((getPageSetting('wsmax') > 0 && game.global.world >= getPageSetting('wsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive != "Daily" && getPageSetting('wsmaxhd') > 0 && calcHDRatio() < getPageSetting('wsmaxhd'))
-                || (getPageSetting('dwsmax') > 0 && game.global.world >= getPageSetting('dwsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive == "Daily" && getPageSetting('dwsmaxhd') > 0 && calcHDRatio() < getPageSetting('dwsmaxhd')))
+            if ((getPageSetting('wsmax') > 0 && game.global.world >= getPageSetting('wsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive != "Daily" && getPageSetting('wsmaxhd') > 0 && hdStats.hdRatio < getPageSetting('wsmaxhd'))
+                || (getPageSetting('dwsmax') > 0 && game.global.world >= getPageSetting('dwsmax') && !game.global.mapsActive && getEmpowerment() == "Wind" && game.global.challengeActive == "Daily" && getPageSetting('dwsmaxhd') > 0 && hdStats.hdRatio < getPageSetting('dwsmaxhd')))
                     useHigh = false;
 
             //Low
