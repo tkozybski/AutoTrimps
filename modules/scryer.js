@@ -47,6 +47,7 @@ function useScryerStance() {
     }
 
     //Never
+    var aboveMaxZone = getPageSetting('ScryerMaxZone') > 0 && game.global.world >= getPageSetting('ScryerMaxZone');
     var USS = getPageSetting('UseScryerStance'), MA = game.global.mapsActive, SC = getPageSetting('ScryerSkipCorrupteds2') == 0;
     var never_scry  = game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.world <= 60 || game.global.highestLevelCleared < 180;
         never_scry |= USS &&  MA && getPageSetting('ScryerUseinMaps2') == 0 && getCurrentMapObject().location != "Void" && getCurrentMapObject().location != "Bionic" && getCurrentMapObject().level <= game.global.world;
@@ -62,7 +63,7 @@ function useScryerStance() {
     var isCorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).mutation == "Corruption";
     var nextIsCorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).mutation == "Corruption";
     var scryNext = !nextIsCorrupt && (transitionRequired || oneShotPower(undefined, 0, true));
-    var skipOnMaxZone = getPageSetting('onlyminmaxworld') == 2 && getPageSetting('ScryerSkipCorrupteds2') != 1 && game.global.world >= getPageSetting('ScryerMaxZone');
+    var skipOnMaxZone = getPageSetting('onlyminmaxworld') == 2 && getPageSetting('ScryerSkipCorrupteds2') != 1 && aboveMaxZone;
     if (USS && !MA && (SC || skipOnMaxZone) && isCorrupt) {
         transitionRequired = scryNext;
         never_scry |= !scryNext;
