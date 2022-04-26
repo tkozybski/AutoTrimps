@@ -453,11 +453,6 @@ function calcOurDmg(minMaxAvg = "avg", specificStance, realDamage, ignoreMapBonu
     if (game.global.uberNature == "Poison") number *= 3;
     if (game.global.totalSquaredReward > 0) number *= ((game.global.totalSquaredReward / 100) + 1);
 
-    //Init Damage Variation (Crit)
-    var min = number * getCritMulti(false, (critMode) ? critMode : "never");
-    var avg = number * getCritMulti(false, (critMode) ? critMode : "maybe");
-    var max = number * getCritMulti(false, (critMode) ? critMode : "force");
-
     //Empowerments - Ice (Experimental)
     if (getEmpowerment() == "Ice") {
         //Uses the actual number in some places like Stances
@@ -472,11 +467,10 @@ function calcOurDmg(minMaxAvg = "avg", specificStance, realDamage, ignoreMapBonu
         }
     }
 
-    //Empowerments - Poison (Old One)
-    /*if (getEmpowerment() == "Poison" && getPageSetting('addpoison') == true) {
-        number *= (1 + game.empowerments.Poison.getModifier());
-        number *= getMapCutOff();
-    }*/
+    //Init Damage Variation (Crit)
+    var min = number * getCritMulti(false, (critMode) ? critMode : "never");
+    var avg = number * getCritMulti(false, (critMode) ? critMode : "maybe");
+    var max = number * getCritMulti(false, (critMode) ? critMode : "force");
 
     //Damage Fluctuation
     min *= minFluct;
