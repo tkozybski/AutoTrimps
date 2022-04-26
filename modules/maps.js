@@ -1204,7 +1204,7 @@ function autoMap() {
 
                 // Bionic Wonderland I+ (Unlocks)
                 if (map.location === "Bionic") {
-                    bionicPool.push(theMap);
+                    bionicPool.push(map);
                 }
             }
         }
