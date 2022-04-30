@@ -715,6 +715,10 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
             attack *= 0.75 + 0.25 * dailyModifiers.crits.getMult(game.global.dailyChallenge.crits.strength);
     }
 
+    //Magneto Shriek during Domination
+    if (game.global.challengeActive == "Domination" && game.global.usingShriek)
+        attack *= game.mapUnlocks.roboTrimp.getShriekValue();
+
     //Void Map Difficulty (implicit 100% difficulty on regular maps)
     if (type == "void") attack *= (zone >= 60) ? 4.5 : 2.5;
 
