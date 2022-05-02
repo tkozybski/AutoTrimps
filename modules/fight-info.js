@@ -43,18 +43,24 @@
 
 	//Fast imps
 	M["fightinfo"].fast = [
+		"Squimp",
 		"Snimp",
-    	"Kittimp",
-    	"Gorillimp",
-    	"Squimp",
-    	"Shrimp",
-    	"Chickimp",
+		"Gorillimp",
+		"Shrimp",
+		"Chickimp",
+		"Kittimp",
     	"Frimp",
     	"Slagimp",
     	"Lavimp",
     	"Kangarimp",
     	"Entimp",
+		"Fusimp",
     	"Carbimp",
+		"Shadimp",
+		"Voidsnimp",
+		"Prisimp",
+		"Sweltimp",
+		"Horrimp",
 	];
 
 	//Last processed
