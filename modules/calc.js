@@ -5,12 +5,12 @@ var trimpAA = 1;
 //Helium
 
 class HDStats {
-    hdRatio;
-    hitsSurvived;
-    ourDamage;
-    targetZoneType;
-
     constructor(vmStatus) {
+        this.hdRatio = undefined;
+        this.hitsSurvived = undefined;
+        this.ourDamage = undefined;
+        this.targetZoneType = undefined;
+
         const z = game.global.world;
 
         this.targetZoneType = (vmStatus.prepareForVoids ? "void" : "world");
