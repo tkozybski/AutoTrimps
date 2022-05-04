@@ -1,4 +1,4 @@
-var ATversion = 'ZekRayDee v7.0';
+var ATversion = 'ZekRayDee v5.2';
 var atscript = document.getElementById('AutoTrimps-script');
 var basepath = 'https://Psycho-Ray.github.io/AutoTrimps/', modulepath='modules/';
 atscript !== null && (basepath = atscript.src.replace(/AutoTrimps2\.js$/,''));
@@ -23,16 +23,17 @@ function initializeAutoTrimps() {
     for (var m in ATmoduleList) {
         ATscriptLoad(modulepath, ATmoduleList[m]);
     }
-    debug('AutoTrimps - Zek Fork Loaded!', '*spinner3');
+    debug('AutoTrimps - Ray Fork Loaded!', '*spinner3');
 }
 
 var changelogList = [];
-changelogList.push({date: "15/01/2022", version: "v5.1.0", description: "<b>v6.0.1</b> This is the day that Psycho-Ray learned how to do buttons! (UI improvements incoming)", isNew: true});
-changelogList.push({date: "09/05/2021", version: "v5.0.0", description: "<b>v6.0.0</b> Psycho-Ray (Nevereth) here. This is a big overhaul for U1 :) ", isNew: false});
+changelogList.push({date: "04/05/2022", version: "v5.2.0", description: "<b>v5.7.0</b> Thanks to livercat's awesome contribution, AT-Ray is now compatible with Steam Trimps!", isNew: true});
+changelogList.push({date: "15/01/2022", version: "v5.1.0", description: "<b>v5.6.5</b> This is the day that Psycho-Ray learned how to do buttons! (UI improvements incoming)", isNew: false});
+changelogList.push({date: "09/05/2021", version: "v5.0.0", description: "<b>v5.5.1</b> Psycho-Ray (Nevereth) here. This is a big overhaul for U1 :) ", isNew: false});
 changelogList.push({date: "15/09/2020", version: "v4.4.1", description: "<b>v5.4.0</b> Fixed things. Check your TF settings U2 people i added a toggle", isNew: false});
 changelogList.push({date: "06/09/2020", version: "v4.4.0", description: "<b>v5.4.0</b> There is not enough space to describe how much stuff has changed. But its got all 5.4 content ready. <b>CHANGED THE WAY JOBS\, GEAR\, BUILDINGS WORKS! CHECK SETTINGS!</b> ", isNew: false});
-changelogList.push({date: "28/05/2020", version: "v4.3.2", description: "<b>v5.3.8</b> Various bug fixes. <b>CHANGED THE WAY TF GATHER WORKS! CHECK TF SETTINGS!</b> ", isNew: false});
-changelogList.push({date: "08/05/2020", version: "v4.3.1", description: "<b>v5.3.7</b> Various bug fixes. <b>CHANGED THE WAY MELTING POINT SETTING WORKS PLEASE CHECK SETTING IN MAPS!</b> ", isNew: false});
+//changelogList.push({date: "28/05/2020", version: "v4.3.2", description: "<b>v5.3.8</b> Various bug fixes. <b>CHANGED THE WAY TF GATHER WORKS! CHECK TF SETTINGS!</b> ", isNew: false});
+//changelogList.push({date: "08/05/2020", version: "v4.3.1", description: "<b>v5.3.7</b> Various bug fixes. <b>CHANGED THE WAY MELTING POINT SETTING WORKS PLEASE CHECK SETTING IN MAPS!</b> ", isNew: false});
 //changelogList.push({date: "20/02/2020", version: "v4.3.0", description: "<b>v5.3.0</b> Added Arch. Automated Quest. Fixed bugs. Updated calc. ", isNew: false});
 //changelogList.push({date: "22/11/2019", version: "v4.2.0", description: "<b>v5.2.1</b> Added Quagmire functionality. Added time and tribute farming. Added option to run Dailies in either universe. Added check to c2runner to not run a challenge if you have not unlocked it. Autoallocation sort of fixed. Added Greed to loot dumping. Graphs are still bad when moving between universes. Removed autonu due to being broken. ", isNew: false});
 //changelogList.push({date: "25/08/2019", version: "v4.1.0", description: "<b>v5.1.0</b> <b>CHECK COMBAT FOR BETTERAUTOFIGHT, IF MIGHT BE A BLACK BAR, CLICK IT!</b> A bunch of U2 stuff added, offline progress still being worked on. ", isNew: false});
@@ -47,9 +48,9 @@ function printChangelog() {
         body+=result;
     }
     var footer =
-        '<b>ZӘK Fork</b> - <u>Report any bugs/problems please</u>!\
-        <br>Talk with the dev: <b>Zek#0647</b> @ <a target="#" href="https://discord.gg/Ztcnfjr">Zeks Discord Channel</a>\
-        <br>See <a target="#" href="https://github.com/Zorn192/AutoTrimps/blob/gh-pages/README.md">ReadMe</a> Or check <a target="#" href="https://github.com/Zorn192/AutoTrimps/commits/gh-pages" target="#">the commit history</a> (if you want).'
+        '<b>Ray Fork</b> - <u>Report any bugs/problems please</u>!\
+        <br>Talk with the dev: <b>Psycho Ray (Nevereth)#8348</b> @ <a target="#" href="https://discord.com/channels/371177798305447938/371348913036197899">Trimps Discord Channel</a>\
+        <br>See <a target="#" href="https://github.com/Psycho-Ray/AutoTrimps/blob/gh-pages/README.md">ReadMe</a> Or check <a target="#" href="https://github.com/Psycho-Ray/AutoTrimps/commits/gh-pages" target="#">the commit history</a> (if you want).'
     ,   action = 'cancelTooltip()'
     ,   title = 'Script Update Notice<br>' + ATversion
     ,   acceptBtnText = "Thank you for playing AutoTrimps. Accept and Continue."
@@ -58,7 +59,7 @@ function printChangelog() {
 }
 
 var runInterval = 100;
-var startupDelay = 4000;
+var startupDelay = 1000;
 
 setTimeout(delayStart, startupDelay);
 
