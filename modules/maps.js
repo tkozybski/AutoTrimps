@@ -189,10 +189,7 @@ class MappingProfile {
             }
         }
 
-        let profile = profiles[this.name];
-        if (profile.copy) {
-            profile = profiles[profile.copy];
-        }
+        const profile = profiles[this.name];
         this.required = profile.required;
         this.optional = profile.optional;
 
@@ -223,7 +220,7 @@ class MappingProfile {
         const extraMapLevelsAvailable = this.hze >= 209;
         if (extraMapLevelsAvailable && this.optimalLevel === this.baseLevel) {
             const oneShotPower = maxOneShotPower();
-            while (oneShotZone(this.optimalLevel + 1, "map", "S") === oneShotPower) {
+            while (oneShotZone("S", "map", this.optimalLevel + 1) === oneShotPower) {
                 this.optimalLevel++;
             }
         }
