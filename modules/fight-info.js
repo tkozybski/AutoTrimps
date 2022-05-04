@@ -6,13 +6,14 @@
 	//This changes the colour of the cell. It's usually bad, because it overrides trimps and looks bad against corruption, among other reasons
 	M["fightinfo"].changeCellColor = false;
 
-	//This option reverts to AT's old way of giving an unique icon for each of the ten exotic imps
+	//This option reverts to AT's old way of giving an unique icon for each of the exotic/powerful imps
 	M["fightinfo"].allExoticIcons = true;
+	M["fightinfo"].allPowerfulIcons = true;
 
 	M["fightinfo"].imp = {
 		skel     : {icon: '"glyphicon glyphicon-italic"',      shadow: "0px 0px 10px #ffffff", color: '#ffffff'},
 		exotic   : {icon: '"glyphicon glyphicon-sunglasses"',  shadow: "0px 0px 10px #fb753f", color: '#ff0000'},
-		powerful : {icon: '"glyphicon glyphicon-hazard"',      shadow: "0px 0px 10px #8c0000", color: '#0000ff'},
+		powerful : {icon: '"glyphicon glyphicon-fire"',        shadow: "0px 0px 10px #ff0c55", color: '#ff0c55'},
 		fast     : {icon: '"glyphicon glyphicon-forward"',     shadow: "0px 0px 10px #ffffff", color: '#666666'},
 		poison   : {icon: '"glyphicon glyphicon-flask"',       shadow: "0px 0px 10px #ffffff", color: '#00ff00'},
 		wind     : {icon: '"icomoon icon-air"',                shadow: "0px 0px 10px #ffffff", color: '#99ffff'},
@@ -20,12 +21,14 @@
 	};
 
 	//Powerful imps
-	M["fightinfo"].powerful = [
-		"Improbability",
-		"Omnipotrimp",
-		"Mutimp",
-		"Hulking_Mutimp"
-	];
+	M["fightinfo"].powerful = {
+		blimp          : {name: "Blimp",          icon: '"glyphicon glyphicon-plane"'        },
+		cthulimp       : {name: "Cthulimp",       icon: '"icomoon icon-archive"'             },
+		improbability  : {name: "Improbability",  icon: '"glyphicon glyphicon-question-sign"'},
+		omnipotrimp    : {name: "Omnipotrimp",    icon: '"glyphicon glyphicon-fire"'         },
+		mutimp         : {name: "Mutimp",         icon: '"glyphicon glyphicon-menu-up"'      },
+		hulking_mutimp : {name: "Hulking_Mutimp", icon: '" glyphicon glyphicon-chevron-up"'  }
+	};
 
 	//Exotic imps
 	M["fightinfo"].exotics = {
@@ -84,7 +87,7 @@
 		if (name.startsWith("ice"))    tags.push("ice");
 	}
 
-	function updateCell($cell, cell, pallet, customIcon, overrideSpecial) {
+	function updateCell($cell, cell, pallet, customIcon, overrideSpecial, overrideCoords) {
 		//Cell Color
 		if (M.fightinfo.changeCellColor) $cell.style.color = pallet.color;
 		$cell.style.textShadow = pallet.shadow;
@@ -92,7 +95,10 @@
 		//Glyph Icon
 		var icon = (customIcon) ? customIcon : pallet.icon
 		var replaceable = ["fruit", "Metal", "gems", "freeMetals", "groundLumber", "Wood", "Map", "Any"]
-		if (cell.special.length == 0 || overrideSpecial && replaceable.includes(cell.special))
+		if (overrideCoords) replaceable.push("Coordination");
+
+		//Icon Overriding
+		if (cell.special.length == 0 || overrideSpecial && replaceable.includes(cell.special) )
 			$cell.innerHTML = "<span class="+icon+"></span>";
 	}
 
@@ -128,13 +134,14 @@
 
 			//Exotic cell
 			else if (cell.name.toLowerCase() in M["fightinfo"].exotics) {
-				var icon = M.fightinfo.allExoticIcons ? M.fightinfo.exotics[cell.name.toLowerCase()].icon : undefined;
+				let icon = M.fightinfo.allExoticIcons ? M.fightinfo.exotics[cell.name.toLowerCase()].icon : undefined;
 				updateCell($cell, cell, M.fightinfo.imp.exotic, icon, true);
 			}
 
 			//Powerful Imp
-			else if (M["fightinfo"].powerful.indexOf(cell.name) > -1) {
-				updateCell($cell, cell, M.fightinfo.imp.powerful);
+			else if (cell.name.toLowerCase() in M["fightinfo"].powerful) {
+				let icon = M.fightinfo.allPowerfulIcons ? M.fightinfo.powerful[cell.name.toLowerCase()].icon : undefined;
+				updateCell($cell, cell, M.fightinfo.imp.powerful, icon, M.fightinfo.allPowerfulIcons, true);
 			}
 
 			//Fast Imp
