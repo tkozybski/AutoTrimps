@@ -1183,7 +1183,7 @@ function autoMap(hdStats, vmStatus) {
     if (doMaxMapBonus) shouldDoMaps = true;
 
     const farming = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || (vmStatus.prepareForVoids && !enoughDamage));
-    const needMetal = (!enoughHealth || !enoughDamage);
+    const needMetal = (!enoughHealth && !armorCapped() || !enoughDamage && !weaponCapped());
 
     const mappingProfile = new MappingProfile(farming, needMetal, needPrestige, prestigeMapLevel, shouldFarmLowerZone);
     const runUniques = (getPageSetting('AutoMaps') === 1);

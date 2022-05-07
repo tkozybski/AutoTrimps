@@ -250,7 +250,7 @@ function countPrestigesInMap() {
 function armorCapped() {
     var capped = areWeHealthLevelCapped();
 
-    const prestigeList = ['Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Greatersword', 'GamesOP'];
+    const prestigeList = ['Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Greatersword', 'GambesOP'];
     var numUnbought = 0;
     for (var i = 0, len = prestigeList.length; i < len; i++) {
         var p = prestigeList[i];
