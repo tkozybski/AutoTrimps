@@ -322,7 +322,7 @@ class MappingProfile {
             baseLevel: this.baseLevel,
             optimalLevel: this.optimalLevel,
             biome: this.preferredBiome,
-            mods: `[${this.mods}]`,
+            mods: `[${this.mods.map(x => x.toUpperCase())}]`,
             required: `[${this.required}]`,
             optional: `[${this.optional}]`,
         }
@@ -351,6 +351,7 @@ class MapCrafter {
         this.modSelector = document.getElementById("advSpecialSelect");
         this.baseLevelInput = document.getElementById('mapLevelInput');
         this.extraLevelInput = document.getElementById('advExtraLevelSelect');
+        this.perfectCheckbox = document.getElementById('advPerfectCheckbox');
         for (const what of ['size', 'loot', 'difficulty']) {
             this.sliders[what] = document.getElementById(what + "AdvMapsRange");
         }
@@ -502,6 +503,13 @@ class MapCrafter {
             }
         }
 
+        if (this.canAfford() && this.perfectSlidersAvailable()) {
+             swapNiceCheckbox(this.perfectCheckbox, true);
+             if (!this.canAfford()) {
+                 swapNiceCheckbox(this.perfectCheckbox, false);
+             }
+        }
+
         this.maybeUpdateFragmentsNeeded(currentMap);
         return this.canAfford() && this.isAnUpgradeOver(currentMap);
     }
@@ -567,6 +575,18 @@ class MapCrafter {
         }
         // add map mod if the current one is useless
         return !this.profile.mods.includes(existingMap.bonus) && this.profile.mods.includes(this.getMod());
+    }
+
+    perfectSlidersAvailable() {
+        let sliderValuesArePerfect = true;
+        Object.values(this.sliders).some(function(slider) {
+            if (parseInt(slider.value) !== 9) {
+                sliderValuesArePerfect = false;
+                return false;
+            }
+            return true;
+        });
+        return sliderValuesArePerfect;
     }
 
     getDevDebugArgs() {
@@ -793,47 +813,43 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
 }
 
 function makeAutomapStatusTooltip(mapsCutoff, farmingCutoff, maxMapStacks, hitsSurvivedCutoff, maxHealthStacks, healthFarmingCutoff, hdRatio, hitsSurvived, vmStatus, mappingProfile) {
-    hdRatio = hdRatio.toFixed(2);
-    hitsSurvived = hitsSurvived.toFixed(2);
-    const mapStacksText = (mapsCutoff && maxMapStacks ? `Will run maps to get up to <i>${maxMapStacks}</i> stacks when it's greater than <i>${mapsCutoff}</i>.` : 'Getting map stacks for damage is disabled.');
-    const farmingText = (farmingCutoff ? `Will farm maps when it's greater than ${farmingCutoff}.` : 'Farming for damage is disabled.');
-    const healthMapStacksText = (hitsSurvivedCutoff && maxHealthStacks ? `Will run maps to get up to <i>${maxHealthStacks}</i> stacks when it's lower than <i>${hitsSurvivedCutoff}</i>.` : 'Getting map stacks for health is disabled.');
-    const healthFarmingText = (healthFarmingCutoff ? `Will farm maps when it's lower than <i>${healthFarmingCutoff}</i>.` : 'Farming for health is disabled.');
+    const mapStacksText = (mapsCutoff && maxMapStacks ? `Will run maps to get up to <i>${maxMapStacks}</i> stacks when it's greater than <i>${mapsCutoff}</i>.` : 'Getting map stacks for damage is <i>disabled</i>.');
+    const farmingText = (farmingCutoff ? `Will farm maps when it's greater than ${farmingCutoff}.` : 'Farming for damage is <i>disabled</i>.');
+    const healthMapStacksText = (hitsSurvivedCutoff && maxHealthStacks ? `Will run maps to get up to <i>${maxHealthStacks}</i> stacks when it's lower than <i>${hitsSurvivedCutoff}</i>.` : 'Getting map stacks for health is <i>disabled</i>.');
+    const healthFarmingText = (healthFarmingCutoff ? `Will farm maps when it's lower than <i>${healthFarmingCutoff}</i>.` : 'Farming for health is <i>disabled</i>.');
     const simulatedEnemy = (vmStatus.prepareForVoids ? 'Cthulimp in a Void Map' : 'Turtlimp at cell 99');
     let tooltip = 'tooltip(' +
         '\"Automaps Status\", ' +
         '\"customText\", ' +
         'event, ' +
         '\"Variables that control the current state and target of Automaps.<br>' +
-        'Values in <b>bold</b> are dynamically calculated based on current zone.<br>' +
+        'Values in <b>bold</b> are dynamically calculated based on current zone and activity.<br>' +
         'Values in <i>italics</i> are controlled via AT settings (you can change them).<br>' +
         '<br>' +
-        `<b>Hits to kill (in X formation): ${hdRatio}</b> (assuming a ${simulatedEnemy})<br>` +
+        `<b>Hits to kill (in X formation): ${prettify(hdRatio)}</b> (assuming a ${simulatedEnemy})<br>` +
         `${mapStacksText}<br>` +
         `${farmingText}<br>` +
         `<br>` +
-        `<b>Hits survived: ${hitsSurvived}</b><br>` +
+        `<b>Hits survived: ${prettify(hitsSurvived)}</b><br>` +
         `${healthMapStacksText}<br>` +
         `${healthFarmingText}<br>`;
     if (mappingProfile) {
         tooltip += `<br>` +
-            `Map crafting info:<br>` +
+            `<b>Map crafting info</b><br>` +
             `Minimum level: <b>${mappingProfile.minLevel}</b><br>` +
             `Optimal level: <b>${mappingProfile.optimalLevel}</b><br>` +
             `Mapping profile: ${mappingProfile.name}<br>` +
-            `Preferred mods: [${mappingProfile.mods}]<br>` +
-            `Preferred biome: ${mappingProfile.preferredBiome}<br>` +
-            `Required map stats: ${mappingProfile.required}<br>` +
-            `Map stats priority: ${mappingProfile.optional}<br>`;
+            `Preferred mods: ${mappingProfile.mods.map(x => x.toUpperCase()).join(', ')}<br>` +
+            `Preferred biome: ${mappingProfile.preferredBiome.replace('Plentiful', 'Gardens (plentiful)')}<br>` +
+            `Required map stats: ${mappingProfile.required.join(', ')}<br>` +
+            `Map stats priority: ${mappingProfile.optional.join(', ')}<br>`;
         if (fragmentsNeeded) {
             tooltip += `<br>` +
                 `Will try to craft a better map when we have <b>${prettify(fragmentsNeeded)}</b> fragments.`;
-        } else {
-            tooltip += `<br>` +
-                `Running the optimal map considering our current combat stats.`;
         }
     }
-    return `${tooltip}\")`;
+    tooltip += '\")';
+    return tooltip;
 }
 
 
