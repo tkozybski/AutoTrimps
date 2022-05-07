@@ -565,8 +565,8 @@ class MapCrafter {
             // increase map level
             return true;
         }
-        // add map mod if we currently don't have one
-        return existingMap.bonus === undefined && this.getMod() !== undefined;
+        // add map mod if the current one is useless
+        return !this.profile.mods.includes(existingMap.bonus) && this.profile.mods.includes(this.getMod());
     }
 
     getDevDebugArgs() {
