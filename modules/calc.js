@@ -202,27 +202,16 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHitsSurvived(targetZone, type) {
+function calcHitsSurvived(targetZone, type, mapDifficulty) {
     //Init
-    let damageMult = 1;
-    let voidDamage = 0;
     const formationMod = (game.upgrades.Dominance.done) ? 2 : 1;
 
     //Our Health and Block
     let health = calcOurHealth(false, true) / formationMod;
     let block = calcOurBlock(false) / formationMod;
 
-    //Calc for maps
-    if (type === "map") {
-        return health / Math.max(calcEnemyAttack("map", targetZone) - block, 0);
-    }
-
-    //Lead farms one zone ahead
-    if (game.global.challengeActive === "Lead" && type === "world" && game.global.world%2 === 1) {
-        targetZone++;
-    }
-
-    //Explosive Daily and Crushed
+    //Explosive Daily and Crushed challenge
+    let damageMult = 1;
     if (health > block && getPageSetting('IgnoreCrits') !== 2) {
         const dailyExplosive = game.global.challengeActive === "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
         const crushed = game.global.challengeActive === "Crushed";
@@ -233,10 +222,21 @@ function calcHitsSurvived(targetZone, type) {
         }
     }
 
+    //Calc for maps
+    if (type === "map") {
+        return health / Math.max(damageMult * mapDifficulty * calcEnemyAttack("map", targetZone) - block, 0);
+    }
+
+    //Lead farms one zone ahead
+    if (game.global.challengeActive === "Lead" && type === "world" && game.global.world%2 === 1) {
+        targetZone += 1;
+    }
+
     //Enemy Damage
     const worldDamage = calcEnemyAttack("world", targetZone);
 
     //Enemy Damage on Void Maps
+    let voidDamage = 0;
     if (type === "void") {
         //Void Damage may actually be lower than world damage, so it needs to be calculated here to be compared later
         voidDamage = damageMult * calcEnemyAttack("void", targetZone) - block;
