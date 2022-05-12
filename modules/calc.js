@@ -204,53 +204,69 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
 
 function calcHitsSurvived(targetZone, type) {
     //Init
-    var expMult = 1;
-    var voidDamage = 0;
+    let damageMult = 1;
+    let voidDamage = 0;
     const formationMod = (game.upgrades.Dominance.done) ? 2 : 1;
 
     //Our Health and Block
-    var health = calcOurHealth(false, true) / formationMod;
-    var block = calcOurBlock(false) / formationMod;
+    let health = calcOurHealth(false, true) / formationMod;
+    let block = calcOurBlock(false) / formationMod;
 
     //Calc for maps
-    if (type == "map") return health / Math.max(calcEnemyAttack("map", targetZone) - block, 0);
+    if (type === "map") {
+        return health / Math.max(calcEnemyAttack("map", targetZone) - block, 0);
+    }
 
     //Lead farms one zone ahead
-    if (game.global.challengeActive == "Lead" && type == "world" && game.global.world%2 == 1) targetZone++;
+    if (game.global.challengeActive === "Lead" && type === "world" && game.global.world%2 === 1) {
+        targetZone++;
+    }
 
-    //Explosive Daily
-    const dailyExplosive = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
-    if (dailyExplosive && health > block)
-        expMult = dailyModifiers.explosive.getMult(game.global.dailyChallenge.explosive.strength);
+    //Explosive Daily and Crushed
+    if (health > block) {
+        const dailyExplosive = game.global.challengeActive === "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
+        const crushed = game.global.challengeActive === "Crushed";
+        if (dailyExplosive) {
+            damageMult = dailyModifiers.explosive.getMult(game.global.dailyChallenge.explosive.strength);
+        } else if (crushed) {
+            damageMult = 3;
+        }
+    }
 
     //Enemy Damage
-    var worldDamage = calcEnemyAttack("world", targetZone);
+    const worldDamage = calcEnemyAttack("world", targetZone);
 
     //Enemy Damage on Void Maps
-    if (type == "void") {
+    if (type === "void") {
         //Void Damage may actually be lower than world damage, so it needs to be calculated here to be compared later
-        voidDamage = expMult * calcEnemyAttack("void", targetZone) - block;
-
-        //Void Power compensation
-        if (!game.global.mapsActive || getCurrentMapObject().location != "Void") {
+        voidDamage = damageMult * calcEnemyAttack("void", targetZone) - block;
+        //Void Power compensation (it affects our health, so apply multipliers after block)
+        if (!game.global.mapsActive || getCurrentMapObject().location !== "Void") {
             if      (game.talents.voidPower3.purchased) voidDamage /= 1.15;
             else if (game.talents.voidPower2.purchased) voidDamage /= 1.35;
             else if (game.talents.voidPower.purchased)  voidDamage /= 1.65;
         }
-
         //Map health compensation
-        if (game.talents.mapHealth.purchased && type == "world") voidDamage /= 2;
+        if (game.talents.mapHealth.purchased && type === "world") {
+            voidDamage /= 2;
+        }
     }
 
     //Pierce & Voids
-    var pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
-    if (game.global.formation == 3) pierce *= 2; //Cancels the influence of the Barrier Formation
+    let pierce = (game.global.brokenPlanet) ? getPierceAmt() : 0;
+
+    //Cancel the influence of the Barrier Formation
+    if (game.global.formation === 3) {
+        pierce *= 2;
+    }
 
     //Cancel Map Health influence, even for void maps (they are set above)
-    if (game.talents.mapHealth.purchased && game.global.mapsActive && type != "map") health /= 2;
+    if (game.talents.mapHealth.purchased && game.global.mapsActive && type !== "map") {
+        health /= 2;
+    }
 
     //The Resulting Ratio
-    var finalDmg = Math.max(expMult * worldDamage - block, voidDamage, worldDamage * pierce, 0);
+    const finalDmg = Math.max(damageMult * worldDamage - block, voidDamage, worldDamage * pierce, 0);
     return health / finalDmg;
 }
 
@@ -538,7 +554,6 @@ function badGuyChallengeMult() {
     //WARNING! Something is afoot!
     //A few challenges
     if      (game.global.challengeActive == "Meditate")   number *= 1.5;
-    else if (game.global.challengeActive == "Crushed")    number *= 3;
     else if (game.global.challengeActive == "Watch")      number *= 1.25;
     else if (game.global.challengeActive == "Corrupted")  number *= 3;
     else if (game.global.challengeActive == "Domination") number *= 2.5;
@@ -712,7 +727,6 @@ function calcEnemyAttack(type, zone, cell = 99, name = "Snimp", minOrMax) {
     //Challenges
     if      (game.global.challengeActive == "Balance")    attack *= (type == "world") ? 1.17 : 2.35;
     else if (game.global.challengeActive == "Life")       attack *= 6;
-    else if (game.global.challengeActive == "Crushed")    attack *= 3;
     else if (game.global.challengeActive == "Toxicity")   attack *= 5;
     else if (game.global.challengeActive == "Lead")       attack *= (zone%2 == 0) ? 5.08 : (1 + 0.04 * game.challenges.Lead.stacks);
     else if (game.global.challengeActive == "Domination") attack *= 2.5;
