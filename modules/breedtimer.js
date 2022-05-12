@@ -5,10 +5,10 @@ var DecimalBreed = Decimal.clone({precision: 30, rounding: 4});
 var missingTrimps = new DecimalBreed(0);
 
 //Lowers breed timer proportionally to the amount of Momentum during Lead
-function customLeadTimer() {
+function customLeadTimer(hdStats) {
     //If instakilling, timer = 30
     var formation = game.upgrades.Dominance.done ? "D" : "X";
-    if (oneShotZone(formation)) return 30;
+    if (oneShotZone(game.global.world, hdStats.targetZoneType, formation)) return 30;
 
     //Timer = 10 to 30, according to the number of stacks. Or from 5-30 if Scrying
     if (game.global.formation != 4) return Math.min(30, 35 - game.challenges.Lead.stacks/8.0);
@@ -104,7 +104,7 @@ function breedTimeRemaining() {
     return DecimalBreed.log10(maxBreedable.div(breeding)).div(DecimalBreed.log10(potencyMod())).div(10);
 }
 
-function ATGA2() {
+function ATGA2(hdStats) {
 	if (game.jobs.Geneticist.locked == false && getPageSetting('ATGA2') == true && getPageSetting('ATGA2timer') > 0 && game.global.challengeActive != "Trapper"){
 		//Init
         var timeRemaining = breedTimeRemaining();
@@ -141,7 +141,7 @@ function ATGA2() {
 			target = new Decimal(Math.ceil(isNaN(atl) ? target : atl/1000*(((game.portal.Agility.level) ? 1000 * Math.pow(1 - game.portal.Agility.modifier, game.portal.Agility.level) : 1000) + ((game.talents.hyperspeed2.purchased && (game.global.world <= Math.floor((game.global.highestLevelCleared + 1) * 0.5))) || (game.global.mapExtraBonus == "fa")) * -100 + (game.talents.hyperspeed.purchased) * -100)));
 		}
 		
-		if (game.global.challengeActive == 'Lead') target = new Decimal(customLeadTimer());
+		if (game.global.challengeActive == 'Lead') target = new Decimal(customLeadTimer(hdStats));
 
 		var now = new Date().getTime();
 		var thresh = new DecimalBreed(totalTime.mul(0.02));

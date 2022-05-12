@@ -28,11 +28,11 @@ function readyToSwitch(stance = "S") {
     return die || survive(stance, 2);
 }
 
-function useScryerStance() {
+function useScryerStance(hdStats) {
     var scry = 4;
     var scryF = 'S';
     var x = 0;
-    
+
     if (game.global.uberNature == "Wind" && getEmpowerment() != "Wind") {
         scry = 5;
         scryF = 'W';
@@ -41,7 +41,7 @@ function useScryerStance() {
     
     var AutoStance = getPageSetting('AutoStance');
     function autoStanceFunctionScryer() {
-        if ((getPageSetting('AutoStance') == 3) || (getPageSetting('use3daily') == true && game.global.challengeActive == "Daily")) windStance();
+        if ((getPageSetting('AutoStance') == 3) || (getPageSetting('use3daily') == true && game.global.challengeActive == "Daily")) windStance(hdStats);
         else if (AutoStance==1) autoStance();
         else if (AutoStance==2) autoStance2();
     }
@@ -69,7 +69,7 @@ function useScryerStance() {
         never_scry |= !scryNext;
     }
     else transitionRequired = false;
-    
+
     //check Healthy never -- TODO
     var curEnemyHealth = getCurrentEnemy(1);
     var isHealthy = curEnemyHealth && curEnemyHealth.mutation == "Healthy";
@@ -116,7 +116,7 @@ function useScryerStance() {
 
     //Overkill
     if (useOverkill && getCurrentEnemy()) {
-        //Switches to S if it has enough damage to secure an overkill
+        //Switches to S/W if it has enough damage to secure an overkill
         var HS = oneShotPower(scryF);
         var HSD = oneShotPower("D", 0, true);
         var HS_next = oneShotPower(scryF, 1);
@@ -139,7 +139,7 @@ function useScryerStance() {
     var max_zone = getPageSetting('ScryerMaxZone');
     var valid_min = game.global.world >= min_zone && game.global.world > 60;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
-    
+
     if (USS && valid_min && valid_max && (!MA || getPageSetting('onlyminmaxworld') == 0) && readyToSwitch()) {
         //Smooth transition to S before killing the target
         if (transitionRequired) {
@@ -152,7 +152,7 @@ function useScryerStance() {
             }
         }
 
-        //Set to scry if it won't kill us or we are willing to die for it
+        //Set to scry if it won't kill us, or we are willing to die for it
         setFormation(scry);
         wantToScry = true;
         return;

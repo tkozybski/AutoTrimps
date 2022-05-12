@@ -56,11 +56,7 @@ function maxOneShotPower(considerEdges) {
     return power;
 }
 
-function oneShotZone(specificStance, type, zone, maxOrMin) {
-    //Pre-Init
-    if (!type) type = preVoidCheck ? "void" : "world";
-    if (!zone) zone = game.global.world;
-
+function oneShotZone(zone, type, specificStance, maxOrMin) {
     //Calculates our minimum damage
     var baseDamage = calcOurDmg(maxOrMin ? "max" : "min", specificStance, true, type != "world");
     var damageLeft = baseDamage + addPoison(false, (type == "world") ? zone : game.global.world);
@@ -291,77 +287,78 @@ function autoStance2() {
                setFormation(2);
 }
 
-function windStance() {
+function windStance(hdStats) {
     //Fail safes
     if (game.global.gridArray.length === 0) return;
     if (game.global.soldierHealth <= 0) return;
     if (!game.upgrades.Formations.done) return;
     if (game.global.world <= 70) return;
     var stancey = 2;
-    if (game.global.challengeActive != "Daily") {
-	if (calcCurrentStance() == 5) {
+    const currentStance = calcCurrentStance(hdStats);
+    if (game.global.challengeActive !== "Daily") {
+	if (currentStance === 5) {
             stancey = 5;
             lowHeirloom();
         }
-        if (calcCurrentStance() == 2) {
+        if (currentStance === 2) {
             stancey = 2;
             lowHeirloom();
         }
-        if (calcCurrentStance() == 0) {
+        if (currentStance === 0) {
             stancey = 0;
             lowHeirloom();
         }
-        if (calcCurrentStance() == 1) {
+        if (currentStance === 1) {
             stancey = 1;
             lowHeirloom();
         }
-        if (calcCurrentStance() == 15) {
+        if (currentStance === 15) {
             stancey = 5;
             highHeirloom();
         }
-        if (calcCurrentStance() == 12) {
+        if (currentStance === 12) {
             stancey = 2;
             highHeirloom();
         }
-        if (calcCurrentStance() == 10) {
+        if (currentStance === 10) {
             stancey = 0;
             highHeirloom();
         }
-        if (calcCurrentStance() == 11) {
+        if (currentStance === 11) {
             stancey = 1;
             highHeirloom();
         }
     }
-    if (game.global.challengeActive == "Daily") {
-	if (calcCurrentStance() == 5) {
+    if (game.global.challengeActive === "Daily") {
+	if (currentStance === 5) {
             stancey = 5;
             dlowHeirloom();
         }
-        if (calcCurrentStance() == 2) {
+        if (currentStance === 2) {
             stancey = 2;
             dlowHeirloom();
         }
-        if (calcCurrentStance() == 0) {
+        if (currentStance === 0) {
             stancey = 0;
             dlowHeirloom();
         }
-        if (calcCurrentStance() == 1) {
+        if (currentStance === 1) {
             stancey = 1;
             dlowHeirloom();
         }
-        if (calcCurrentStance() == 15) {
+        if (currentStance === 15) {
             stancey = 5;
             dhighHeirloom();
         }
-        if (calcCurrentStance() == 12) {
+        if (currentStance === 12) {
             stancey = 2;
             dhighHeirloom();
         }
-        if (calcCurrentStance() == 10) {
+        if (currentStance === 10) {
             stancey = 0;
             dhighHeirloom();
         }
-        if (calcCurrentStance() == 11) {
+        if (currentStance === 11) {
             stancey = 1;
             dhighHeirloom();
         }
