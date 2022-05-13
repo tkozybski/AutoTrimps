@@ -223,7 +223,7 @@ function calcHitsSurvived(targetZone, type) {
     }
 
     //Explosive Daily and Crushed
-    if (health > block) {
+    if (health > block && getPageSetting('IgnoreCrits') !== 2) {
         const dailyExplosive = game.global.challengeActive === "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
         const crushed = game.global.challengeActive === "Crushed";
         if (dailyExplosive) {
