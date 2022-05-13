@@ -251,7 +251,7 @@ class MappingProfile {
         }
 
         //Humane Mode: Decreases Optimal level until we can acceptably survive in it
-        while (this.optimalLevel > this.minLevel && humaneMapSafety(this.optimalLevel, 30, 1.65))
+        while (this.optimalLevel > this.minLevel && humaneMapIsSafe(this.optimalLevel, 30, 1.65))
             this.optimalLevel--;
 
         if (this.haveMapReducer && (this.optimalLevel === this.z) && (this.minLevel <= this.baseLevel)) {
@@ -302,7 +302,7 @@ class MappingProfile {
 
     selectBetterCraftedMap(map1, map2, prioritizeMods) {
         // disqualify some maps right away
-        const maps = [map1, map2].filter(m => (m && m.level >= this.minLevel && m.level <= this.optimalLevel && humaneMapSafety(m.level, m.size, m.diff)));
+        const maps = [map1, map2].filter(m => (m && m.level >= this.minLevel && m.level <= this.optimalLevel && humaneMapIsSafe(m.level, m.size, m.diff)));
         if (!maps.length) {
             return undefined;
         } else if (maps.length === 1) {
@@ -392,13 +392,14 @@ class MapCrafter {
         let level = maxLevel;
         this.setLevel(level);
         while (!this.canAfford() && level > minLevel) {
-            this.setLevel(--level);
+            level -= 1;
+            this.setLevel(level);
         }
     }
 
     setHumaneSliders() {
         //Init
-        var safe = (size, diff) => humaneMapSafety(this.getTotalLevel(), 75 - size * 5, getMapMinMax("difficulty", diff)[1]);
+        var safe = (size, diff) => humaneMapIsSafe(this.getTotalLevel(), 75 - size * 5, getMapMinMax("difficulty", diff)[1]);
         this.setSlider("difficulty", 0);
         this.setSlider("size", 0);
 
@@ -612,34 +613,44 @@ function isCloserTo(v1, v2, baseline) {
     return Math.abs(baseline - v1) < Math.abs(baseline - v2);
 }
 
-function humaneMapSafety(level, size = 99, diff = 1.65) {
-    //Init
-    var humaneMapSafety = getPageSetting('HumaneMapSafety');
+function humaneMapIsSafe(level, size = 99, diff = 1.65) {
+    // true if we can reliably survive with zero deaths
 
     //Only relevant during Humane Mode
-    if (!getPageSetting('HumaneMode') || humaneMapSafety === 0)
+    if (!getPageSetting('HumaneMode'))
         return true;
 
-    //Out Block Mode
-    if (humaneMapSafety < 0) {
-        //Calculates Health and Block
-        var enemyDmg = diff * calcEnemyAttack("map", this.optimalLevel);
-        var block = calcOurBlock(false, true);
-
-        //Barrier Formation
-        if (game.upgrades.Barrier.done) block *= 4;
-
-        //Checks if it can out block the map
-        if (block >= enemyDmg) return true;
+    const humaneMapSafety = getPageSetting('HumaneMapSafety');
+    if (humaneMapSafety === 0) {
+        return true;
     }
 
-    //Out Last mode
+    //Outblock Mode
+    if (humaneMapSafety < 0) {
+        //Calculates Health and Block
+        const enemyDmg = diff * calcEnemyAttack("map", this.optimalLevel);
+        let block = calcOurBlock(false, true);
+
+        //Barrier Formation
+        if (game.upgrades.Barrier.done) {
+            block *= 4;
+        }
+
+        //Checks if it can outblock the map
+        if (block >= enemyDmg) {
+            return true;
+        }
+    }
+
+    //Outlast mode
     if (humaneMapSafety > 0) {
         //Calculates our ratio
-        var healthRatio = calcHealthRatio(false, false, "map", this.optimalLevel, diff); //TODO Fix Genes for Humane
+        const healthRatio = calcHitsSurvived(this.optimalLevel, "map", diff); //TODO Fix Genes for Humane
 
         //Checks if it's above the required threshold
-        if (healthRatio >= humaneMapSafety) return true;
+        if (healthRatio >= humaneMapSafety) {
+            return true;
+        }
     }
 
     return false;
@@ -650,7 +661,7 @@ function shouldRunUniqueMap(vmStatus, map) {
     const isC2 = game.global.runningChallengeSquared;
 
     const mapData = uniqueMaps[map.name];
-    if (mapData === undefined || game.global.world < mapData.zone || getMapRatio(vmStatus, map) > 1 || !humaneMapSafety(map.level, map.size, map.diff)) {
+    if (mapData === undefined || game.global.world < mapData.zone || getMapRatio(vmStatus, map) > 1 || !humaneMapIsSafe(map.level, map.size, map.diff)) {
         return false;
     }
     if (!isC2 && mapData.challenges.includes(challenge)) {
@@ -935,8 +946,8 @@ function getMapHealthCutOff(vmStatus, pure) {
     }
 
     //Skip void multipliers if Voids are easier to run than a regular zone (due to pierce)
-    const regularRatio = calcHealthRatio(false, true, "world");
-    const voidRatio = calcHealthRatio(false, true, "void");
+    const regularRatio = calcHitsSurvived(game.global.world, "world");
+    const voidRatio = calcHitsSurvived(game.global.world, "void");
     const skipVoidMultipliers = voidRatio >= regularRatio;
 
     //Void Map cut off - will ALSO scale with scryer, if scrying on void maps
@@ -1031,7 +1042,7 @@ function getMapRatio(vmStatus, map, customLevel, customDiff) {
 
     //Calc
     var mapDmg = (calcHDRatio(level, "map") / diff) / getMapCutOff(vmStatus, true);
-    var mapHp = getMapHealthCutOff(vmStatus, true) / (calcHitsSurvived(level, 'map') / diff); //TODO Full genes in Humane Mode
+    var mapHp = getMapHealthCutOff(vmStatus, true) / (calcHitsSurvived(level, 'map', diff) / diff); //TODO Full genes in Humane Mode
     return Math.max(mapDmg, mapHp);
 }
 

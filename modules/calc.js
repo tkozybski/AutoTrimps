@@ -202,7 +202,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHitsSurvived(targetZone, type, mapDifficulty) {
+function calcHitsSurvived(targetZone, type, mapDifficulty = 1) {
     //Init
     const formationMod = (game.upgrades.Dominance.done) ? 2 : 1;
 
