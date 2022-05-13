@@ -258,21 +258,28 @@ function autoStance() {
     //Stance Selector
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
         //If no formation can survive a mega crit, it ignores it, and recalculates for a regular crit, then no crit
-        //If even that is not enough, then it ignore Explosive Daily, and finally it ignores Reflect Daily
-        var critPower;
-        var atMaxOneShotPower = (stance) => oneShotPower(stance) == maxOneShotPower(true);
+        //If even that is not enough, then it ignores Explosive Daily, and finally it ignores Reflect Daily
+        let critPower;
+        const enemy = getCurrentEnemy();
+        const atMaxOneShotPower = (stance) => enemy && enemy.health > 0 && oneShotPower(stance) === maxOneShotPower(true);
         for (critPower=2; critPower >= -2; critPower--) {
-            //Prefers more block with damage is not an issue
-            if      (survive("B", critPower) && atMaxOneShotPower("B")) {setFormation(3); break;}
+            //Prefers more block when damage is not an issue
+            if      (survive("B",  critPower) && atMaxOneShotPower("B")) {setFormation(3); break;}
             else if (survive("XB", critPower) && atMaxOneShotPower("X")) {setFormation("0"); break;}
 
             //Otherwise, prefers damage
-            else if (survive("D", critPower))  {setFormation(2);   break;}
+            else if (survive("D",  critPower)) {setFormation(2);   break;}
             else if (survive("XB", critPower)) {setFormation("0"); break;}
-            else if (survive("B", critPower))  {setFormation(3);   break;}
-            else if (survive("X", critPower))  {setFormation("0"); break;}
-            else if (survive("H", critPower))  {setFormation(1);   break;}
+            else if (survive("B",  critPower)) {setFormation(3);   break;}
+            else if (survive("X",  critPower)) {setFormation("0"); break;}
+            else if (survive("H",  critPower)) {setFormation(1);   break;}
 	    }
+
+        //Humane Mode: Pauses before failing
+        const humanePause = getPageSetting("HumaneMode") && getPageSetting("HumanePauseBeforeFailing");
+        const diedOnce = game.achievements.humaneRun.progress().includes("be careful!");
+        if (humanePause && diedOnce && critPower < 2)
+            toggleSetting("pauseGame");
 
         //If it cannot survive the worst case scenario on any formation, attempt it's luck on H, if available, or X
         if (critPower < -2) {

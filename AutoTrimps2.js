@@ -163,6 +163,10 @@ function mainLoop() {
 
     //Logic for Universe 1
     if (game.global.universe == 1){
+        //Pause at Zone
+        if (getPageSetting("PauseAtZone") === game.global.world && game.global.lastClearedCell === 0)
+            toggleSetting("pauseGame");
+
         const vmStatus = getVoidMapStatus();
         const hdStats = new HDStats(vmStatus);
 
