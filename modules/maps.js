@@ -1198,7 +1198,7 @@ function autoMap(hdStats, vmStatus) {
                 lowestMap = map;
             }
         } else {
-            if (runUniques && shouldRunUniqueMap(vmStatus, map) && !selectedMap) {
+            if (runUniques && shouldRunUniqueMap(vmStatus, map) && selectedMap === 'world') {
                 selectedMap = map;
             }
 
@@ -1212,12 +1212,12 @@ function autoMap(hdStats, vmStatus) {
             }
         }
     }
-    if (vmStatus.runVoidsNow && voidMap && !restartVoidMap) {
+    if (voidMap && !restartVoidMap) {
         selectedMap = voidMap;
     }
 
     //Bionic Wonderland I+ (Unlocks, RoboTrimp or Bionic Sniper)
-    if (!selectedMap && bionicPool.length > 0) {
+    if (selectedMap === 'world' && bionicPool.length > 0) {
         bionicPool.sort(function (bionicA, bionicB) {return bionicA.level - bionicB.level});
         let bionicMaxLevel = 0;
         while (getMapRatio(vmStatus, undefined, 125 + 15 * bionicMaxLevel, 2.6) <= 1) {
