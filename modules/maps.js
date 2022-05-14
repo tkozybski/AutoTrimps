@@ -30,6 +30,10 @@ var doMaxMapBonus = false;
 var vanillaMAZ = false;
 var fragmentsNeeded = 0;
 
+const prestigeList = ['Supershield', 'Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest', 'Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Bestplate', 'GambesOP'];
+const weaponPrestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest'];
+const metalPrestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest', 'Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Bestplate', 'GambesOP'];
+
 const voidPrefixes = Object.freeze({
     'Deadly': 10,
     'Heinous': 11,
@@ -174,7 +178,7 @@ const profiles = Object.freeze({
 const cacheMods = ['lmc', 'hc', 'smc', 'lc'];
 
 class MappingProfile {
-    constructor(isFarming, needMetal, needPrestige, shouldFarmLowerZone) {
+    constructor(isFarming, needMetal, needPrestige, prestigeMapLevel, shouldFarmLowerZone) {
         this.mods = [];
 
         this.z = game.global.world;
@@ -185,7 +189,7 @@ class MappingProfile {
 
         this.baseLevel = this.z - (this.haveMapReducer ?  1 : 0);
         if (needPrestige) {
-            this.minLevel = this.z;
+            this.minLevel = prestigeMapLevel;
             if (needMetal) {
                 this.name = 'prestigeFarming';
             } else {
@@ -1140,20 +1144,28 @@ function autoMap(hdStats, vmStatus) {
     if (game.options.menu.repeatVoids.enabled != 0) toggleSetting('repeatVoids');
 
     //Prestige
-    if ((getPageSetting('ForcePresZ') >= 0) && (game.global.world >= getPageSetting('ForcePresZ'))) {
-        const prestigeList = ['Supershield', 'Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest', 'Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Bestplate', 'GambesOP'];
-        needPrestige = prestigeList.some(prestige => game.mapUnlocks[prestige].last <= (game.global.world - 5));
-        //needPrestige = (offlineProgress.countMapItems(game.global.world) !== 0); TODO - Test this!
-    } else
-        needPrestige = prestige != "Off" && game.mapUnlocks[prestige] && game.mapUnlocks[prestige].last <= (game.global.world - 5) && game.global.challengeActive != "Frugal";
+    //needPrestige = (offlineProgress.countMapItems(game.global.world) !== 0); TODO - Test this!
+    const forcePrestigeZ = getPageSetting('ForcePresZ');
+    let prestigeMapLevel = z;
+    if (prestige !== 'Off') {
+        const prestigeUnlock = game.mapUnlocks[prestige];
+        prestigeMapLevel = prestigeUnlock.last + 5;
+        needPrestige = game.upgrades[prestige].allowed && prestigeUnlock && prestigeMapLevel <= z;
+    } else if ((forcePrestigeZ >= 0) && (game.global.world >= forcePrestigeZ)) {
+        for (const p of prestigeList) {
+            const prestigeUnlock = game.mapUnlocks[p];
+            if (!needPrestige && game.upgrades[p].allowed && prestigeUnlock && (prestigeUnlock.last + 5) <= z) {
+                prestigeMapLevel = prestigeUnlock.last + 5;
+                needPrestige = true;
+            }
+        }
+    }
 
     //Prestige Skip 1
     skippedPrestige = false;
     if (needPrestige && getPsString("gems", true) > 0 && (getPageSetting('PrestigeSkip1_2') == 1 || getPageSetting('PrestigeSkip1_2') == 2)) {
-        var prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest', 'Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Bestplate', 'GambesOP'];
         var numUnbought = 0;
-        for (var i in prestigeList) {
-            var p = prestigeList[i];
+        for (const p of metalPrestigeList) {
             if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
                 numUnbought++;
         }
@@ -1165,10 +1177,9 @@ function autoMap(hdStats, vmStatus) {
 
     //Prestige Skip 2
     if ((needPrestige || skippedPrestige) && (getPageSetting('PrestigeSkip1_2') == 1 || getPageSetting('PrestigeSkip1_2') == 3)) {
-        const prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest'];
-        const numLeft = prestigeList.filter(prestige => game.mapUnlocks[prestige].last <= (game.global.world - 5));
+        const numLeft = weaponPrestigeList.filter(prestige => game.mapUnlocks[prestige].last <= (game.global.world - 5));
         const shouldSkip = numLeft <= MODULES.maps.UnearnedPrestigesRequired;
-        if (shouldSkip != skippedPrestige) {
+        if (shouldSkip !== skippedPrestige) {
             needPrestige = !needPrestige;
             skippedPrestige = !skippedPrestige;
         }
@@ -1251,7 +1262,7 @@ function autoMap(hdStats, vmStatus) {
     const farming = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || (vmStatus.prepareForVoids && !enoughDamage));
     const needMetal = (!enoughHealth || !enoughDamage);
 
-    const mappingProfile = new MappingProfile(farming, needMetal, needPrestige, shouldFarmLowerZone);
+    const mappingProfile = new MappingProfile(farming, needMetal, needPrestige, prestigeMapLevel, shouldFarmLowerZone);
     const runUniques = (getPageSetting('AutoMaps') === 1);
     const onlyStackedVoids = getPageSetting('onlystackedvoids');
 
@@ -1281,12 +1292,9 @@ function autoMap(hdStats, vmStatus) {
             if (runUniques && shouldRunUniqueMap(vmStatus, map) && selectedMap === 'world') {
                 selectedMap = map;
             }
-
             if (map.location === "Bionic") {
                 bionicPool.push(map);
             }
-
-            // Void maps
             if (map.location === 'Void' && vmStatus.runVoidsNow && (!onlyStackedVoids || map.stacked > 0)) {
                 voidMap = selectEasierVoidMap(voidMap, map);
             }
@@ -1334,12 +1342,6 @@ function autoMap(hdStats, vmStatus) {
             selectedMap = (spireMap ? spireMap : "create");
         } else if (optimalMap) {
             selectedMap = optimalMap;
-        } else if (needPrestige) {
-            if (highestMap && z <= highestMap.level) {
-                selectedMap = highestMap;
-            } else {
-                selectedMap = "create";
-            }
         } else {
             selectedMap = "create";
         }
@@ -1361,15 +1363,22 @@ function autoMap(hdStats, vmStatus) {
                 repeatClicked();
             }
 
-            //End Prestige Init
-            var targetPrestige = autoTrimpSettings.Prestige.selected;
-            var lastPrestige = (targetPrestige && targetPrestige != "Off") ? game.mapUnlocks[targetPrestige].last : undefined;
-            var lastCellPrestige = game.global.mapGridArray[game.global.mapGridArray.length - 1].special;
-            var nextToLastCellPrestige = game.global.mapGridArray[game.global.mapGridArray.length - 2].special;
-            var endPrestige = lastCellPrestige == targetPrestige || nextToLastCellPrestige == targetPrestige;
-
             //End Prestige
-            if (!shouldDoMaps && endPrestige && z <= lastPrestige + (getScientistLevel() >= 4 && lastPrestige%10 < 6 ? 14 : 9)) {
+            let currentMapPrestiges = 0;
+            let endPrestige = false;
+            for (const i of [1, 2]) {
+                const special = game.global.mapGridArray[game.global.mapGridArray.length - i].special;
+                if (prestigeList.includes(special)) {
+                    currentMapPrestiges += 1;
+                    if (special === prestige) {
+                        endPrestige = true;
+                    }
+                }
+            }
+            if (currentMapPrestiges >= countPrestigesInMap()) {
+                endPrestige = true;
+            }
+            if (!shouldDoMaps && endPrestige) {
                 repeatClicked();
             }
 
