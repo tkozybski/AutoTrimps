@@ -202,7 +202,7 @@ function calcOurHealth(stance, fullGeneticist, realHealth) {
     return health;
 }
 
-function calcHitsSurvived(targetZone, type, mapDifficulty = 1) {
+function calcHitsSurvived(targetZone, type, mapDifficulty = 1, mapSize = 99) {
     //Init
     const formationMod = (game.upgrades.Dominance.done) ? 2 : 1;
 
@@ -224,7 +224,8 @@ function calcHitsSurvived(targetZone, type, mapDifficulty = 1) {
 
     //Calc for maps
     if (type === "map") {
-        return health / Math.max(damageMult * mapDifficulty * calcEnemyAttack("map", targetZone) - block, 0);
+        const finalDmg = Math.max(damageMult * mapDifficulty * calcEnemyAttack("map", targetZone, mapSize) - block, 0);
+        return health / finalDmg;
     }
 
     //Lead farms one zone ahead

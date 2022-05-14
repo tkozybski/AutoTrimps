@@ -302,7 +302,7 @@ class MappingProfile {
 
     selectBetterCraftedMap(map1, map2, prioritizeMods) {
         // disqualify some maps right away
-        const maps = [map1, map2].filter(m => (m && m.level >= this.minLevel && m.level <= this.optimalLevel && humaneMapIsSafe(m.level, m.size, m.diff)));
+        const maps = [map1, map2].filter(m => (m && m.level >= this.minLevel && m.level <= this.optimalLevel && humaneMapIsSafe(m.level, m.size, m.difficulty)));
         if (!maps.length) {
             return undefined;
         } else if (maps.length === 1) {
@@ -628,29 +628,25 @@ function humaneMapIsSafe(level, size = 99, diff = 1.65) {
     //Outblock Mode
     if (humaneMapSafety < 0) {
         //Calculates Health and Block
-        const enemyDmg = diff * calcEnemyAttack("map", this.optimalLevel);
+        const enemyDmg = diff * calcEnemyAttack("map", level, size);
         let block = calcOurBlock(false, true);
 
         //Barrier Formation
-        if (game.upgrades.Barrier.done) {
+        if (game.upgrades.Barrier.done)
             block *= 4;
-        }
 
         //Checks if it can outblock the map
-        if (block >= enemyDmg) {
+        if (block >= enemyDmg)
             return true;
-        }
     }
 
     //Outlast mode
-    if (humaneMapSafety > 0) {
+    else if (humaneMapSafety > 0) {
         //Calculates our ratio
-        const healthRatio = calcHitsSurvived(this.optimalLevel, "map", diff); //TODO Fix Genes for Humane
+        const healthRatio = calcHitsSurvived(this.optimalLevel, "map", diff, size); //TODO Fix Genes for Humane
 
         //Checks if it's above the required threshold
-        if (healthRatio >= humaneMapSafety) {
-            return true;
-        }
+        if (healthRatio >= humaneMapSafety) return true;
     }
 
     return false;
@@ -1041,6 +1037,7 @@ function getMapRatio(vmStatus, map, customLevel, customDiff) {
     var diff = customDiff ? customDiff : map.difficulty;
 
     //Calc
+    //TODO Rework for readability
     var mapDmg = (calcHDRatio(level, "map") / diff) / getMapCutOff(vmStatus, true);
     var mapHp = getMapHealthCutOff(vmStatus, true) / (calcHitsSurvived(level, 'map', diff) / diff); //TODO Full genes in Humane Mode
     return Math.max(mapDmg, mapHp);
