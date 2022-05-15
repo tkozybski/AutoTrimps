@@ -242,13 +242,13 @@ function postBuy3() {
     game.global.lastCustomAmt = preBuyCustomLast2;
 }
 
+function countPrestigesInMap() {
+    const map = (game.global.mapsActive ? getCurrentMapObject() : lastMapWeWereIn);
+    return (map ? addSpecials(true, true, map) : 0);
+}
+
 function armorCapped() {
     var capped = areWeHealthLevelCapped();
-    var prestigeItemsLeft;
-    if (game.global.mapsActive)
-        prestigeItemsLeft = addSpecials(true, true, getCurrentMapObject());
-    else if (lastMapWeWereIn)
-        prestigeItemsLeft = addSpecials(true, true, lastMapWeWereIn);
 
     const prestigeList = ['Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Greatersword', 'GamesOP'];
     var numUnbought = 0;
@@ -257,16 +257,11 @@ function armorCapped() {
         if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
             numUnbought++;
     }
-    return capped && prestigeItemsLeft == 0 && numUnbought == 0;
+    return capped && countPrestigesInMap() === 0 && numUnbought === 0;
 }
 
 function weaponCapped() {
     var capped = areWeAttackLevelCapped();
-    var prestigeItemsLeft;
-    if (game.global.mapsActive)
-        prestigeItemsLeft = addSpecials(true, true, getCurrentMapObject());
-    else if (lastMapWeWereIn)
-        prestigeItemsLeft = addSpecials(true, true, lastMapWeWereIn);
 
     const prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest'];
     var numUnbought = 0;
@@ -275,7 +270,7 @@ function weaponCapped() {
         if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
             numUnbought++;
     }
-    return capped && prestigeItemsLeft == 0 && numUnbought == 0;
+    return capped && countPrestigesInMap() === 0 && numUnbought === 0;
 }
 
 function autoLevelEquipment(hdStats, vmStatus) {
