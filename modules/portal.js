@@ -284,20 +284,12 @@ function doPortal(challenge) {
 }
 
 function decaySkipMaps() {
-    //Pre-Init
-    if (game.global.challengeActive !== "Decay") return false;
-
-    //Init
-    let stacks = game.challenges.Decay ? game.challenges.Decay.stacks : 0;
-    let stacksToPush = getPageSetting('DecayStacksToPush');
-
-    //Finishes the challenge if above max stacks
-    if (stacksToPush > 0 && stacks > stacksToPush) {
-        debug(`Finished Decay challenge because we had more than ${stacksToPush} stacks.`, "general", "oil");
-        return true;
+    if (game.global.challengeActive !== "Decay") {
+        return false;
     }
-
-    return false;
+    const stacks = game.challenges.Decay ? game.challenges.Decay.stacks : 0;
+    const stacksToPush = getPageSetting('DecayStacksToPush');
+    return stacksToPush > 0 && stacks > stacksToPush;
 }
 
 function decayFinishChallenge() {
