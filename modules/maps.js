@@ -17,7 +17,6 @@ MODULES.maps.devDebug = false;
 
 var enoughDamage = true;
 var enoughHealth = true;
-var needPrestige = false;
 var skippedPrestige = false;
 var shouldDoMaps = false;
 var shouldFarm = false;
@@ -184,6 +183,7 @@ class MappingProfile {
         this.z = game.global.world;
         this.hze = getHighestLevelCleared();
         this.haveMapReducer = game.talents.mapLoot.purchased;
+        this.needPrestige = needPrestige;
 
         const siphonology = game.portal.Siphonology.level;
 
@@ -731,7 +731,7 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
         status = 'Skipping Spire';
     } else if (doMaxMapBonus) {
         status = 'Max Map Bonus After Zone';
-    } else if (needPrestige) {
+    } else if (mappingProfile && mappingProfile.needPrestige) {
         status = 'Prestige';
     } else {
         const wantedHealth = (healthCutoff / hitsSurvived).toFixed(2);
@@ -1050,7 +1050,7 @@ function autoMap(hdStats, vmStatus) {
     }
 
     //Vars
-    var prestige = autoTrimpSettings.Prestige.selected;
+    const targetPrestige = getPageSetting('Prestige');
     var challSQ = game.global.runningChallengeSquared;
     const debugCtx = {
         id: generateUID(),
@@ -1058,27 +1058,30 @@ function autoMap(hdStats, vmStatus) {
     }
 
     //Reset to defaults
-    if (prestige != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
+    if (targetPrestige != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
     if ((game.options.menu.repeatUntil.enabled == 1 || game.options.menu.repeatUntil.enabled == 2 || game.options.menu.repeatUntil.enabled == 3) && !game.global.mapsActive && !game.global.preMapsActive) toggleSetting('repeatUntil');
     if (game.options.menu.exitTo.enabled != 0) toggleSetting('exitTo');
     if (game.options.menu.repeatVoids.enabled != 0) toggleSetting('repeatVoids');
 
     //Prestige
     //needPrestige = (offlineProgress.countMapItems(game.global.world) !== 0); TODO - Test this!
-    const forcePrestigeZ = getPageSetting('ForcePresZ');
+    let needPrestige = false;
     let prestigeMapLevel = z;
-    if (prestige !== 'Off') {
-        const prestigeUnlock = game.mapUnlocks[prestige];
-        prestigeMapLevel = prestigeUnlock.last + 5;
-        needPrestige = game.upgrades[prestige].allowed && prestigeUnlock && prestigeMapLevel <= z;
-    } else if ((forcePrestigeZ >= 0) && (game.global.world >= forcePrestigeZ)) {
+    const forcePrestigeZ = getPageSetting('ForcePresZ');
+    if ((forcePrestigeZ >= 0) && (game.global.world >= forcePrestigeZ)) {
         for (const p of prestigeList) {
             const prestigeUnlock = game.mapUnlocks[p];
-            if (!needPrestige && game.upgrades[p].allowed && prestigeUnlock && (prestigeUnlock.last + 5) <= z) {
-                prestigeMapLevel = prestigeUnlock.last + 5;
+            const pMapLevel = prestigeUnlock.last + 5;
+            if (game.upgrades[p].allowed && prestigeUnlock && pMapLevel <= z) {
+                prestigeMapLevel = Math.min(prestigeMapLevel, pMapLevel);
                 needPrestige = true;
             }
         }
+    }
+    if (!needPrestige && targetPrestige !== 'Off') {
+        const prestigeUnlock = game.mapUnlocks[targetPrestige];
+        prestigeMapLevel = prestigeUnlock.last + 5;
+        needPrestige = game.upgrades[targetPrestige].allowed && prestigeUnlock && prestigeMapLevel <= z;
     }
 
     //Prestige Skip 1
@@ -1289,7 +1292,7 @@ function autoMap(hdStats, vmStatus) {
                 const special = game.global.mapGridArray[game.global.mapGridArray.length - i].special;
                 if (prestigeList.includes(special)) {
                     currentMapPrestiges += 1;
-                    if (special === prestige) {
+                    if (special === targetPrestige) {
                         endPrestige = true;
                     }
                 }
