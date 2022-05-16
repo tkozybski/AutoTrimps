@@ -1183,7 +1183,7 @@ function autoMap(hdStats, vmStatus) {
     if (doMaxMapBonus) shouldDoMaps = true;
 	
     //Hardcode decay farming
-    if (game.global.challengeActive == "Decay" && (z == 54 || z == 55) && !decaySkipMaps() ) {
+    if (game.global.challengeActive == "Decay" && (z == 53 || z == 54 || z == 55) && !decaySkipMaps() ) {
 	shouldDoMaps = true;
     }
 
