@@ -891,14 +891,14 @@ function getMapHealthCutOff(vmStatus, pure) {
 }
 
 function getMapCutOff(vmStatus, pure) {
+    if (game.global.challengeActive == "Decay" && game.global.world < 56) {
+       return 0.25;    
+    }
+    
     let mapCutoff = getPageSetting("mapcuntoff");
     if (pure) {
         // Unaltered mapCutOff
         return mapCutoff;
-    }
-	
-    if (game.global.challengeActive == "Decay" && game.global.world < 56) {
-       return 0.25;    
     }
 
     if (game.global.spireActive) {
