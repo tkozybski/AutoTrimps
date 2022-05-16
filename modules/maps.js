@@ -9,8 +9,7 @@ MODULES.maps.SkipNumUnboughtPrestiges = 2;
 MODULES.maps.UnearnedPrestigesRequired = 2;
 
 //Psycho
-MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right m
-        const heodifier (good when farming spire or pushing)
+MODULES.maps.forceModifier = true; //Will make elaborate attempts at keeping you at maps with the right modifier (good when farming spire or pushing)
 MODULES.maps.magmaHitsSurvived = 2; //Your geneticists are frequently lagging 1-2 zones behind when speeding through magma, which is why this is important
 
 // Dev debug
