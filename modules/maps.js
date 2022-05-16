@@ -897,7 +897,7 @@ function getMapCutOff(vmStatus, pure) {
         return mapCutoff;
     }
 	
-    if (game.global.challengeActive == "Decay" && z < 56) {
+    if (game.global.challengeActive == "Decay" && game.global.world < 56) {
        return 0.25;    
     }
 
