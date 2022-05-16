@@ -1191,7 +1191,7 @@ function autoMap(hdStats, vmStatus) {
     var maxMapBonusLimit = getPageSetting("MaxMapBonuslimit");
     //My hardcoded settings 
     if (game.global.challengeActive == "Decay" && z >= 50 && z <= 53) {
-       maxMapBonusLimit = 3;
+       maxMapBonusLimit = 5;
        maxMapBonusZ = z;
     }
 
