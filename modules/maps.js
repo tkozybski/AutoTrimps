@@ -1178,7 +1178,11 @@ function autoMap(hdStats, vmStatus) {
     }
 
     // Map Bonus
-    const maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
+    var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
+    //Hardcode decay farming
+    if (game.global.challengeActive == "Decay" && (z == 54 || z == 55) && !decaySkipMaps() ) {
+	shouldDoMaps = 10;
+    }
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < getPageSetting("MaxMapBonuslimit") && z >= maxMapBonusZ);
     if (doMaxMapBonus) shouldDoMaps = true;
 
