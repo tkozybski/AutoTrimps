@@ -1181,16 +1181,16 @@ function autoMap(hdStats, vmStatus) {
     var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
     var maxMapBonusLimit = getPageSetting("MaxMapBonuslimit");
     //My hardcoded settings 
-    if (game.global.challengeActive == "Decay" && z >= 50 && z <= 55) {
-       maxMapBonusLimit = 10;
-       maxMapBonusZ = z;
-    }
+    //if (game.global.challengeActive == "Decay" && z >= 50 && z <= 55) {
+    //   maxMapBonusLimit = 10;
+    //   maxMapBonusZ = z;
+    //}
 
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < maxMapBonusLimit && z >= maxMapBonusZ);
     if (doMaxMapBonus) shouldDoMaps = true;   
 
     //Hardcode decay farming
-    if (game.global.challengeActive == "Decay" && (z == 53 || z == 54 || z == 55) && !decaySkipMaps() ) {
+    if (game.global.challengeActive == "Decay" && z >= 53 && z <= 55 && !decaySkipMaps() ) {
 	shouldDoMaps = true;
     }
 	
