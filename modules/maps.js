@@ -896,6 +896,10 @@ function getMapCutOff(vmStatus, pure) {
         // Unaltered mapCutOff
         return mapCutoff;
     }
+	
+    if (game.global.challengeActive == "Decay" && z < 56) {
+       return 0.25;    
+    }
 
     if (game.global.spireActive) {
         // Spire
@@ -1181,10 +1185,10 @@ function autoMap(hdStats, vmStatus) {
     var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
     var maxMapBonusLimit = getPageSetting("MaxMapBonuslimit");
     //My hardcoded settings 
-    //if (game.global.challengeActive == "Decay" && z >= 50 && z <= 55) {
-    //   maxMapBonusLimit = 10;
-    //   maxMapBonusZ = z;
-    //}
+    if (game.global.challengeActive == "Decay" && z >= 50 && z <= 53) {
+       maxMapBonusLimit = 3;
+       maxMapBonusZ = z;
+    }
 
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < maxMapBonusLimit && z >= maxMapBonusZ);
     if (doMaxMapBonus) shouldDoMaps = true;   
