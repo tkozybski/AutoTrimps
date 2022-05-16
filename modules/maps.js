@@ -1176,17 +1176,24 @@ function autoMap(hdStats, vmStatus) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
-
+	
     // Map Bonus
     var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
-    doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < getPageSetting("MaxMapBonuslimit") && z >= maxMapBonusZ);
-    if (doMaxMapBonus) shouldDoMaps = true;
-	
+    var maxMapBonusLimit = getPageSetting("MaxMapBonuslimit");
+    //My hardcoded settings 
+    if (game.global.challengeActive == "Decay" && z >= 50 && z <= 55) {
+       maxMapBonusLimit = 10;
+       maxMapBonusZ = z;
+    }
+
+    doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < maxMapBonusLimit && z >= maxMapBonusZ);
+    if (doMaxMapBonus) shouldDoMaps = true;   
+
     //Hardcode decay farming
     if (game.global.challengeActive == "Decay" && (z == 53 || z == 54 || z == 55) && !decaySkipMaps() ) {
 	shouldDoMaps = true;
     }
-
+	
     const farming = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || (vmStatus.prepareForVoids && !enoughDamage));
     const needMetal = (!enoughHealth || !enoughDamage);
 
