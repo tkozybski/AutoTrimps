@@ -1181,7 +1181,7 @@ function autoMap(hdStats, vmStatus) {
     var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
     //Hardcode decay farming
     if (game.global.challengeActive == "Decay" && (z == 54 || z == 55) && !decaySkipMaps() ) {
-	shouldDoMaps = 10;
+	shouldDoMaps = true;
     }
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < getPageSetting("MaxMapBonuslimit") && z >= maxMapBonusZ);
     if (doMaxMapBonus) shouldDoMaps = true;
