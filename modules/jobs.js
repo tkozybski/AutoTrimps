@@ -12,7 +12,7 @@ MODULES["jobs"].autoRatio6 = [1, 7, 12];
 MODULES["jobs"].autoRatio5 = [1, 2, 22];
 MODULES["jobs"].autoRatio4 = [1, 1.1, 10];
 MODULES["jobs"].autoRatio3 = [3, 1, 4];
-MODULES["jobs"].autoRatio2 = [3, 3.1, 5];
+MODULES["jobs"].autoRatio2 = [5, 2, 3];
 MODULES["jobs"].autoRatio1 = [1.1, 1.15, 1.2];
 MODULES["jobs"].customRatio;
 
@@ -261,7 +261,7 @@ function workerRatios() {
         ratioSet = MODULES["jobs"].autoRatio5;
     } else if (game.buildings.Tribute.owned > 1000) {
         ratioSet = MODULES["jobs"].autoRatio4;
-    } else if (game.resources.trimps.realMax() > 3000000) {
+    } else if (game.resources.trimps.realMax() > 4000000) {
         ratioSet = MODULES["jobs"].autoRatio3;
     } else if (game.resources.trimps.realMax() > 300000) {
         ratioSet = MODULES["jobs"].autoRatio2;
