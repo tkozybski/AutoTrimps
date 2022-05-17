@@ -194,8 +194,8 @@ function evaluateEquipmentEfficiency(equipName) {
 
     var isLiquified = (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp");
     var cap = 100;
-    if (equipmentList[equipName].Stat == 'health') cap = getPageSetting('CapEquiparm');
-    if (equipmentList[equipName].Stat == 'attack') cap = getPageSetting('CapEquip2');
+    if (equipmentList[equipName].Stat == 'health') cap = autoArmCap(); //getPageSetting('CapEquiparm');
+    if (equipmentList[equipName].Stat == 'attack') cap = autoEquipCap(); //getPageSetting('CapEquip2');
     if ((isLiquified) && cap > 0 && gameResource.level >= (cap / MODULES["equipment"].capDivisor)) {
         Factor = 0;
         Wall = true;
@@ -607,8 +607,8 @@ function RevaluateEquipmentEfficiency(equipName) {
 
     var isLiquified = (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp");
     var cap = 100;
-    if (RequipmentList[equipName].Stat == 'health') cap = autoArmCap(); //getPageSetting('RCapEquiparm');
-    if (RequipmentList[equipName].Stat == 'attack') cap = autoEquipCap(); //getPageSetting('RCapEquip2');
+    if (RequipmentList[equipName].Stat == 'health') cap = getPageSetting('RCapEquiparm');
+    if (RequipmentList[equipName].Stat == 'attack') cap = getPageSetting('RCapEquip2');
     if ((isLiquified) && cap > 0 && gameResource.level >= (cap / MODULES["equipment"].RcapDivisor)) {
         Factor = 0;
         Wall = true;
