@@ -162,15 +162,16 @@ function buyJobs() {
         }
     }
     if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
-        if (!game.buildings.Tribute.locked) {
-            var curtrainercost = game.jobs.Trainer.cost.food[0] * Math.pow(game.jobs.Trainer.cost.food[1], game.jobs.Trainer.owned);
-            var curtributecost = getBuildingItemPrice(game.buildings.Tribute, "food", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);
-            var trainerwall = getPageSetting('TrainerWall');
-
-            if (curtrainercost < curtributecost && game.resources.food.owned > (curtrainercost * trainerwall))
+        var curtrainercost = game.jobs.Trainer.cost.food[0] * Math.pow(game.jobs.Trainer.cost.food[1], game.jobs.Trainer.owned);
+        var trainerwall = getPageSetting('TrainerWall');
+        if (game.resources.food.owned > (curtrainercost * trainerwall)) {
+            if (!game.buildings.Tribute.locked) {
+                var curtributecost = getBuildingItemPrice(game.buildings.Tribute, "food", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);
+                if (curtrainercost < curtributecost)
+                    checkFireandHire('Trainer');
+            } else
                 checkFireandHire('Trainer');
-        } else
-            checkFireandHire('Trainer');
+        }
     }
     if (getPageSetting('MaxExplorers') > game.jobs.Explorer.owned || getPageSetting('MaxExplorers') == -1) {
         var curexplorercost = game.jobs.Explorer.cost.food[0] * Math.pow(game.jobs.Explorer.cost.food[1], game.jobs.Explorer.owned);
