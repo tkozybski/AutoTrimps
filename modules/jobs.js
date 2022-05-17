@@ -261,7 +261,7 @@ function workerRatios() {
         ratioSet = MODULES["jobs"].autoRatio5;
     } else if (game.buildings.Tribute.owned > 1000) {
         ratioSet = MODULES["jobs"].autoRatio4;
-    } else if (game.resources.trimps.realMax() > 4000000) {
+    } else if (game.resources.trimps.realMax() > 3000000 && game.global.challengeActive !== "Decay") {
         ratioSet = MODULES["jobs"].autoRatio3;
     } else if (game.resources.trimps.realMax() > 300000) {
         ratioSet = MODULES["jobs"].autoRatio2;
