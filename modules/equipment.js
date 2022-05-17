@@ -110,6 +110,32 @@ function equipCost(a, b, levelsToBuy = 1) {
     return c = b.Equip ? Math.ceil(c * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)) : Math.ceil(c * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)), c
 }
 
+function autoEquipCap() {
+    var currentZone = game.global.world;
+    var maxZone = game.global.highestLevelCleared;
+    if (maxZone < 20) {
+        return 9;
+    }
+    
+    //Probably need different calculations at zones higher than I am at now.
+    var calculated = Math.floor( Math.pow(maxZone-5, ((maxZone-currentZone)/100)));
+    return Math.max(1, calculated);
+    //return getPageSetting('RCapEquip2');
+}
+
+function autoArmCap() {
+    var currentZone = game.global.world;
+    var maxZone = game.global.highestLevelCleared;
+    if (maxZone < 20) {
+        return 10;
+    }
+    
+    //Probably need different calculations at zones higher than I am at now.
+    var calculated = Math.floor( Math.pow(maxZone-5, ((maxZone-currentZone)/100)));
+    return Math.max(1, calculated);
+    //return getPageSetting('RCapEquiparm');
+}
+
 function evaluateEquipmentEfficiency(equipName) {
     var equip = equipmentList[equipName];
     var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
@@ -581,8 +607,8 @@ function RevaluateEquipmentEfficiency(equipName) {
 
     var isLiquified = (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp");
     var cap = 100;
-    if (RequipmentList[equipName].Stat == 'health') cap = getPageSetting('RCapEquiparm');
-    if (RequipmentList[equipName].Stat == 'attack') cap = getPageSetting('RCapEquip2');
+    if (RequipmentList[equipName].Stat == 'health') cap = autoArmCap(); //getPageSetting('RCapEquiparm');
+    if (RequipmentList[equipName].Stat == 'attack') cap = autoEquipCap(); //getPageSetting('RCapEquip2');
     if ((isLiquified) && cap > 0 && gameResource.level >= (cap / MODULES["equipment"].RcapDivisor)) {
         Factor = 0;
         Wall = true;
