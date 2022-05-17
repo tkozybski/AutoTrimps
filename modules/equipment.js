@@ -110,11 +110,21 @@ function equipCost(a, b, levelsToBuy = 1) {
     return c = b.Equip ? Math.ceil(c * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)) : Math.ceil(c * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)), c
 }
 
-function autoEquipCap() {
+function autoEquipCap(hdStats, vmStatus) {
     var currentZone = game.global.world;
     var maxZone = game.global.highestLevelCleared;
     if (maxZone < 20) {
         return 9;
+    }
+
+    if (game.global.world >= 70 && survive("D", 2)) {
+        return 1;
+    }
+
+    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
+    var enoughDamageE = enoughDamage && oneShotZone(game.global.world, hdStats.targetZoneType, formation) >= 1;
+    if (enoughDamageE) {
+        return 1;
     }
 
     //When we current are at the max zone, we don't plan to prestige further
@@ -126,12 +136,19 @@ function autoEquipCap() {
     //return getPageSetting('CapEquip2');
 }
 
-function autoArmCap() {
+function autoArmCap(hdStats, vmStatus) {
     var currentZone = game.global.world;
     var maxZone = game.global.highestLevelCleared;
     if (maxZone < 20) {
         return 10;
     }
+
+
+    var enoughHealthE = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
+    if (enoughHealthE) {
+        return 1;
+    }
+
 
     //Probably need different calculations at zones higher than I am at now.
     var calculated = Math.floor(Math.pow(maxZone - 5, ((maxZone - currentZone) / 100)));
@@ -139,7 +156,7 @@ function autoArmCap() {
     //return getPageSetting('CapEquiparm');
 }
 
-function evaluateEquipmentEfficiency(equipName) {
+function evaluateEquipmentEfficiency(equipName, hdStats, vmStatus) {
     var equip = equipmentList[equipName];
     var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
     if (equipName == 'Shield') {
@@ -197,8 +214,8 @@ function evaluateEquipmentEfficiency(equipName) {
 
     var isLiquified = (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp");
     var cap = 100;
-    if (equipmentList[equipName].Stat == 'health') cap = autoArmCap(); //getPageSetting('CapEquiparm');
-    if (equipmentList[equipName].Stat == 'attack') cap = autoEquipCap(); //getPageSetting('CapEquip2');
+    if (equipmentList[equipName].Stat == 'health') cap = autoArmCap(hdStats, vmStatus); //getPageSetting('CapEquiparm');
+    if (equipmentList[equipName].Stat == 'attack') cap = autoEquipCap(hdStats, vmStatus); //getPageSetting('CapEquip2');
     if ((isLiquified) && cap > 0 && gameResource.level >= (cap / MODULES["equipment"].capDivisor)) {
         Factor = 0;
         Wall = true;
@@ -276,8 +293,8 @@ function countPrestigesInMap() {
     return (map ? addSpecials(true, true, map) : 0);
 }
 
-function armorCapped() {
-    var capped = areWeHealthLevelCapped();
+function armorCapped(hdStats, vmStatus) {
+    var capped = areWeHealthLevelCapped(hdStats, vmStatus);
 
     const prestigeList = ['Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Greatersword', 'GamesOP'];
     var numUnbought = 0;
@@ -289,8 +306,8 @@ function armorCapped() {
     return capped && countPrestigesInMap() === 0 && numUnbought === 0;
 }
 
-function weaponCapped() {
-    var capped = areWeAttackLevelCapped();
+function weaponCapped(hdStats, vmStatus) {
+    var capped = areWeAttackLevelCapped(hdStats, vmStatus);
 
     const prestigeList = ['Dagadder', 'Megamace', 'Polierarm', 'Axeidic', 'Greatersword', 'Harmbalest'];
     var numUnbought = 0;
@@ -348,7 +365,7 @@ function autoLevelEquipment(hdStats, vmStatus) {
         if (!gameResource.locked) {
             var $equipName = document.getElementById(equipName);
             $equipName.style.color = 'white';
-            var evaluation = evaluateEquipmentEfficiency(equipName);
+            var evaluation = evaluateEquipmentEfficiency(equipName, hdStats, vmStatus);
             var BKey = equip.Stat + equip.Resource;
 
             if (Best[BKey].Factor === 0 || Best[BKey].Factor < evaluation.Factor) {
@@ -449,8 +466,8 @@ function autoLevelEquipment(hdStats, vmStatus) {
     }
     postBuy3();
 }
-function areWeAttackLevelCapped() { var a = []; for (var b in equipmentList) { var c = equipmentList[b], d = c.Equip ? game.equipment[b] : game.buildings[b]; if (!d.locked) { var e = evaluateEquipmentEfficiency(b); "attack" == e.Stat && a.push(e) } } return a.every(f => 0 == f.Factor && !0 == f.Wall) }
-function areWeHealthLevelCapped() { var a = []; for (var b in equipmentList) { var c = equipmentList[b], d = c.Equip ? game.equipment[b] : game.buildings[b]; if (!d.locked) { var e = evaluateEquipmentEfficiency(b); "health" == e.Stat && "metal" == c.Resource && a.push(e) } } return a.every(f => 0 == f.Factor && !0 == f.Wall) }
+function areWeAttackLevelCapped(hdStats, vmStatus) { var a = []; for (var b in equipmentList) { var c = equipmentList[b], d = c.Equip ? game.equipment[b] : game.buildings[b]; if (!d.locked) { var e = evaluateEquipmentEfficiency(b, hdStats, vmStatus); "attack" == e.Stat && a.push(e) } } return a.every(f => 0 == f.Factor && !0 == f.Wall) }
+function areWeHealthLevelCapped(hdStats, vmStatus) { var a = []; for (var b in equipmentList) { var c = equipmentList[b], d = c.Equip ? game.equipment[b] : game.buildings[b]; if (!d.locked) { var e = evaluateEquipmentEfficiency(b, hdStats, vmStatus); "health" == e.Stat && "metal" == c.Resource && a.push(e) } } return a.every(f => 0 == f.Factor && !0 == f.Wall) }
 
 //Radon
 
