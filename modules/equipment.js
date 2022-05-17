@@ -117,7 +117,7 @@ function autoEquipCap(hdStats, vmStatus) {
         return 9;
     }
 
-    if (game.global.world >= 70 && survive("D", 2)) {
+    if (currentZone > 1 && !game.global.preMapsActive && game.global.world >= 70 && survive("D", 2)) {
         return 1;
     }
 
