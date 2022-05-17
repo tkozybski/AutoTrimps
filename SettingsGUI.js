@@ -515,7 +515,7 @@ function initializeAllSettings() {
     createSetting('always2', 'Always Level 2', 'Always buys level 2 of weapons and armor regardless of efficiency', 'boolean', false, null, "Gear");
 
     //Line 3
-    createSetting('autoGearLimit', 'Auto Level Cap', 'Try to find optimal gear level cap', 'boolean', false, null, "Gear");
+    createSetting('autoGearLimit', 'Auto Level Cap', 'Try to find optimal gear level cap', 'boolean', true, null, "Gear");
 
     //RGear
 
@@ -1627,9 +1627,9 @@ function updateCustomButtons() {
 
     !radonon ? turnOn("BuyArmorNew") : turnOff("BuyArmorNew");
     !radonon ? turnOn("BuyWeaponsNew") : turnOff("BuyWeaponsNew");
-    (!radonon && autoGearLimit) ? turnOn("CapEquip2") : turnOff("CapEquip2");
-    (!radonon && autoGearLimit) ? turnOn("CapEquiparm") : turnOff("CapEquiparm");
-    (!radonon && autoGearLimit) ? turnOn("dmgcuntoff") : turnOff("dmgcuntoff");
+    (!radonon && !autoGearLimit) ? turnOn("CapEquip2") : turnOff("CapEquip2");
+    (!radonon && !autoGearLimit) ? turnOn("CapEquiparm") : turnOff("CapEquiparm");
+    (!radonon && !autoGearLimit) ? turnOn("dmgcuntoff") : turnOff("dmgcuntoff");
     !radonon ? turnOn("DynamicPrestige2") : turnOff("DynamicPrestige2");
     !radonon ? turnOn("Prestige") : turnOff("Prestige");
     !radonon ? turnOn("ForcePresZ") : turnOff("ForcePresZ");
