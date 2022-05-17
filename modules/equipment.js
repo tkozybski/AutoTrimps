@@ -94,8 +94,8 @@ var equipmentList = {
         Equip: false
     }
 };
-var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};
-function PrestigeValue(a){var b=game.upgrades[a].prestiges,c=game.equipment[b],d;d=c.blockNow?"block":"undefined"==typeof c.health?"attack":"health";var e=Math.round(c[d]*Math.pow(1.19,c.prestige*game.global.prestige[d]+1));return e}
+var mapresourcetojob = { "food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist" };
+function PrestigeValue(a) { var b = game.upgrades[a].prestiges, c = game.equipment[b], d; d = c.blockNow ? "block" : "undefined" == typeof c.health ? "attack" : "health"; var e = Math.round(c[d] * Math.pow(1.19, c.prestige * game.global.prestige[d] + 1)); return e }
 
 function equipEffect(equip, equipInfo, levelsToBuy = 1) {
     if (equipInfo.Equip) return equip[equipInfo.Stat + 'Calculated'] * levelsToBuy;
@@ -116,11 +116,14 @@ function autoEquipCap() {
     if (maxZone < 20) {
         return 9;
     }
-    
+
+    //When we current are at the max zone, we don't plan to prestige further
+    //It's better to max out levels then(?)
+
     //Probably need different calculations at zones higher than I am at now.
-    var calculated = Math.floor( Math.pow(maxZone-5, ((maxZone-currentZone)/100)));
-    return Math.max(1, calculated);
-    //return getPageSetting('RCapEquip2');
+    var calculated = Math.floor(Math.pow(maxZone / 2, ((maxZone - currentZone) / 100)));
+    return Math.max(getPageSetting('CapEquip2'), calculated);
+    //return getPageSetting('CapEquip2');
 }
 
 function autoArmCap() {
@@ -129,11 +132,11 @@ function autoArmCap() {
     if (maxZone < 20) {
         return 10;
     }
-    
+
     //Probably need different calculations at zones higher than I am at now.
-    var calculated = Math.floor( Math.pow(maxZone-5, ((maxZone-currentZone)/100)));
-    return Math.max(1, calculated);
-    //return getPageSetting('RCapEquiparm');
+    var calculated = Math.floor(Math.pow(maxZone - 5, ((maxZone - currentZone) / 100)));
+    return Math.max(getPageSetting('CapEquiparm'), calculated);
+    //return getPageSetting('CapEquiparm');
 }
 
 function evaluateEquipmentEfficiency(equipName) {
@@ -226,29 +229,29 @@ function evaluateEquipmentEfficiency(equipName) {
 var resourcesNeeded;
 var Best;
 
-function orangewindstack(){(9<game.equipment.Dagger.level&&0==game.upgrades.Dagadder.locked&&buyUpgrade('Dagadder',!0,!0),9<game.equipment.Mace.level&&0==game.upgrades.Megamace.locked&&buyUpgrade('Megamace',!0,!0),9<game.equipment.Polearm.level&&0==game.upgrades.Polierarm.locked&&buyUpgrade('Polierarm',!0,!0),9<game.equipment.Battleaxe.level&&0==game.upgrades.Axeidic.locked&&buyUpgrade('Axeidic',!0,!0),9<game.equipment.Greatsword.level&&0==game.upgrades.Greatersword.locked&&buyUpgrade('Greatersword',!0,!0),9<game.equipment.Arbalest.level&&0==game.upgrades.Harmbalest.locked&&buyUpgrade('Harmbalest',!0,!0),0==game.upgrades.Bootboost.locked&&buyUpgrade('Bootboost',!0,!0),0==game.upgrades.Hellishmet.locked&&buyUpgrade('Hellishmet',!0,!0),0==game.upgrades.Pantastic.locked&&buyUpgrade('Pantastic',!0,!0),0==game.upgrades.Smoldershoulder.locked&&buyUpgrade('Smoldershoulder',!0,!0),0==game.upgrades.Bestplate.locked&&buyUpgrade('Bestplate',!0,!0),0==game.upgrades.GambesOP.locked&&buyUpgrade('GambesOP',!0,!0),0==game.upgrades.Supershield.locked&&buyUpgrade('Supershield',!0,!0))}
-function dorangewindstack(){(9<game.equipment.Dagger.level&&0==game.upgrades.Dagadder.locked&&buyUpgrade('Dagadder',!0,!0),9<game.equipment.Mace.level&&0==game.upgrades.Megamace.locked&&buyUpgrade('Megamace',!0,!0),9<game.equipment.Polearm.level&&0==game.upgrades.Polierarm.locked&&buyUpgrade('Polierarm',!0,!0),9<game.equipment.Battleaxe.level&&0==game.upgrades.Axeidic.locked&&buyUpgrade('Axeidic',!0,!0),9<game.equipment.Greatsword.level&&0==game.upgrades.Greatersword.locked&&buyUpgrade('Greatersword',!0,!0),9<game.equipment.Arbalest.level&&0==game.upgrades.Harmbalest.locked&&buyUpgrade('Harmbalest',!0,!0),0==game.upgrades.Bootboost.locked&&buyUpgrade('Bootboost',!0,!0),0==game.upgrades.Hellishmet.locked&&buyUpgrade('Hellishmet',!0,!0),0==game.upgrades.Pantastic.locked&&buyUpgrade('Pantastic',!0,!0),0==game.upgrades.Smoldershoulder.locked&&buyUpgrade('Smoldershoulder',!0,!0),0==game.upgrades.Bestplate.locked&&buyUpgrade('Bestplate',!0,!0),0==game.upgrades.GambesOP.locked&&buyUpgrade('GambesOP',!0,!0),0==game.upgrades.Supershield.locked&&buyUpgrade('Supershield',!0,!0))}
+function orangewindstack() { (9 < game.equipment.Dagger.level && 0 == game.upgrades.Dagadder.locked && buyUpgrade('Dagadder', !0, !0), 9 < game.equipment.Mace.level && 0 == game.upgrades.Megamace.locked && buyUpgrade('Megamace', !0, !0), 9 < game.equipment.Polearm.level && 0 == game.upgrades.Polierarm.locked && buyUpgrade('Polierarm', !0, !0), 9 < game.equipment.Battleaxe.level && 0 == game.upgrades.Axeidic.locked && buyUpgrade('Axeidic', !0, !0), 9 < game.equipment.Greatsword.level && 0 == game.upgrades.Greatersword.locked && buyUpgrade('Greatersword', !0, !0), 9 < game.equipment.Arbalest.level && 0 == game.upgrades.Harmbalest.locked && buyUpgrade('Harmbalest', !0, !0), 0 == game.upgrades.Bootboost.locked && buyUpgrade('Bootboost', !0, !0), 0 == game.upgrades.Hellishmet.locked && buyUpgrade('Hellishmet', !0, !0), 0 == game.upgrades.Pantastic.locked && buyUpgrade('Pantastic', !0, !0), 0 == game.upgrades.Smoldershoulder.locked && buyUpgrade('Smoldershoulder', !0, !0), 0 == game.upgrades.Bestplate.locked && buyUpgrade('Bestplate', !0, !0), 0 == game.upgrades.GambesOP.locked && buyUpgrade('GambesOP', !0, !0), 0 == game.upgrades.Supershield.locked && buyUpgrade('Supershield', !0, !0)) }
+function dorangewindstack() { (9 < game.equipment.Dagger.level && 0 == game.upgrades.Dagadder.locked && buyUpgrade('Dagadder', !0, !0), 9 < game.equipment.Mace.level && 0 == game.upgrades.Megamace.locked && buyUpgrade('Megamace', !0, !0), 9 < game.equipment.Polearm.level && 0 == game.upgrades.Polierarm.locked && buyUpgrade('Polierarm', !0, !0), 9 < game.equipment.Battleaxe.level && 0 == game.upgrades.Axeidic.locked && buyUpgrade('Axeidic', !0, !0), 9 < game.equipment.Greatsword.level && 0 == game.upgrades.Greatersword.locked && buyUpgrade('Greatersword', !0, !0), 9 < game.equipment.Arbalest.level && 0 == game.upgrades.Harmbalest.locked && buyUpgrade('Harmbalest', !0, !0), 0 == game.upgrades.Bootboost.locked && buyUpgrade('Bootboost', !0, !0), 0 == game.upgrades.Hellishmet.locked && buyUpgrade('Hellishmet', !0, !0), 0 == game.upgrades.Pantastic.locked && buyUpgrade('Pantastic', !0, !0), 0 == game.upgrades.Smoldershoulder.locked && buyUpgrade('Smoldershoulder', !0, !0), 0 == game.upgrades.Bestplate.locked && buyUpgrade('Bestplate', !0, !0), 0 == game.upgrades.GambesOP.locked && buyUpgrade('GambesOP', !0, !0), 0 == game.upgrades.Supershield.locked && buyUpgrade('Supershield', !0, !0)) }
 
 function windstackingprestige(hdStats) {
     if (
-		(game.global.challengeActive != "Daily" && getEmpowerment() == "Wind" && getPageSetting('WindStackingMin') > 0 && game.global.world >= getPageSetting('WindStackingMin') && hdStats.hdRatio < 5) ||
-		(game.global.challengeActive == "Daily" && getEmpowerment() == "Wind" && getPageSetting('dWindStackingMin') > 0 && game.global.world >= getPageSetting('dWindStackingMin') && hdStats.hdRatio < 5) ||
-		(game.global.challengeActive != "Daily" && getPageSetting('wsmax') > 0 && getPageSetting('wsmaxhd') > 0 && game.global.world >= getPageSetting('wsmax') && hdStats.hdRatio < getPageSetting('wsmaxhd')) ||
-		(game.global.challengeActive == "Daily" && getPageSetting('dwsmax') > 0 && getPageSetting('dwsmaxhd') > 0 && game.global.world >= getPageSetting('dwsmax') && hdStats.hdRatio < getPageSetting('dwsmaxhd'))
-	) {
-	if (game.global.challengeActive != "Daily") orangewindstack();
-	if (game.global.challengeActive == "Daily") dorangewindstack();
+        (game.global.challengeActive != "Daily" && getEmpowerment() == "Wind" && getPageSetting('WindStackingMin') > 0 && game.global.world >= getPageSetting('WindStackingMin') && hdStats.hdRatio < 5) ||
+        (game.global.challengeActive == "Daily" && getEmpowerment() == "Wind" && getPageSetting('dWindStackingMin') > 0 && game.global.world >= getPageSetting('dWindStackingMin') && hdStats.hdRatio < 5) ||
+        (game.global.challengeActive != "Daily" && getPageSetting('wsmax') > 0 && getPageSetting('wsmaxhd') > 0 && game.global.world >= getPageSetting('wsmax') && hdStats.hdRatio < getPageSetting('wsmaxhd')) ||
+        (game.global.challengeActive == "Daily" && getPageSetting('dwsmax') > 0 && getPageSetting('dwsmaxhd') > 0 && game.global.world >= getPageSetting('dwsmax') && hdStats.hdRatio < getPageSetting('dwsmaxhd'))
+    ) {
+        if (game.global.challengeActive != "Daily") orangewindstack();
+        if (game.global.challengeActive == "Daily") dorangewindstack();
         return false;
     }
     else return true;
 }
 
-var preBuyAmt2=1;
-var preBuyFiring2=1;
-var preBuyTooltip2=false;
-var preBuymaxSplit2=1;
-var preBuyCustomFirst2=1;
-var preBuyCustomLast2=1;
+var preBuyAmt2 = 1;
+var preBuyFiring2 = 1;
+var preBuyTooltip2 = false;
+var preBuymaxSplit2 = 1;
+var preBuyCustomFirst2 = 1;
+var preBuyCustomLast2 = 1;
 
 function preBuy3() {
     preBuyAmt2 = game.global.buyAmt;
@@ -337,7 +340,7 @@ function autoLevelEquipment(hdStats, vmStatus) {
     //Check mirror dailies
     var mirroredDaily = game.global.challengeActive == "Daily" && typeof game.global.dailyChallenge.mirrored !== "undefined";
     var mirroredDailyOk = !MODULES.equipment.mirroredDailyCap || !mirroredDaily || oneShotPower() < maxOneShotPower(true) || !enoughDamage;
-    
+
     //For each equipment...
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];
@@ -446,8 +449,8 @@ function autoLevelEquipment(hdStats, vmStatus) {
     }
     postBuy3();
 }
-function areWeAttackLevelCapped(){var a=[];for(var b in equipmentList){var c=equipmentList[b],d=c.Equip?game.equipment[b]:game.buildings[b];if(!d.locked){var e=evaluateEquipmentEfficiency(b);"attack"==e.Stat&&a.push(e)}}return a.every(f=>0==f.Factor&&!0==f.Wall)}
-function areWeHealthLevelCapped(){var a=[];for(var b in equipmentList){var c=equipmentList[b],d=c.Equip?game.equipment[b]:game.buildings[b];if(!d.locked){var e=evaluateEquipmentEfficiency(b);"health"==e.Stat&&"metal"==c.Resource&&a.push(e)}}return a.every(f=>0==f.Factor&&!0==f.Wall)}
+function areWeAttackLevelCapped() { var a = []; for (var b in equipmentList) { var c = equipmentList[b], d = c.Equip ? game.equipment[b] : game.buildings[b]; if (!d.locked) { var e = evaluateEquipmentEfficiency(b); "attack" == e.Stat && a.push(e) } } return a.every(f => 0 == f.Factor && !0 == f.Wall) }
+function areWeHealthLevelCapped() { var a = []; for (var b in equipmentList) { var c = equipmentList[b], d = c.Equip ? game.equipment[b] : game.buildings[b]; if (!d.locked) { var e = evaluateEquipmentEfficiency(b); "health" == e.Stat && "metal" == c.Resource && a.push(e) } } return a.every(f => 0 == f.Factor && !0 == f.Wall) }
 
 //Radon
 
@@ -536,7 +539,7 @@ var RequipmentList = {
     }
 };
 
-var Rmapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"}; 
+var Rmapresourcetojob = { "food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist" };
 
 function RequipEffect(gameResource, equip) {
     if (equip.Equip) {
@@ -630,12 +633,12 @@ function RevaluateEquipmentEfficiency(equipName) {
 
 var RresourcesNeeded;
 var RBest;
-var RpreBuyAmt2=1;
-var RpreBuyFiring2=1;
-var RpreBuyTooltip2=false;
-var RpreBuymaxSplit2=1;
-var RpreBuyCustomFirst2=1;
-var RpreBuyCustomLast2=1;
+var RpreBuyAmt2 = 1;
+var RpreBuyFiring2 = 1;
+var RpreBuyTooltip2 = false;
+var RpreBuymaxSplit2 = 1;
+var RpreBuyCustomFirst2 = 1;
+var RpreBuyCustomLast2 = 1;
 
 function RpreBuy3() {
     RpreBuyAmt2 = game.global.buyAmt;
@@ -726,9 +729,7 @@ function RautoLevelEquipment() {
                             (!DelayArmorWhenNeeded)
                         )
                     )
-                )
-
-                {
+                ) {
                     var upgrade = RequipmentList[equipName].Upgrade;
                     debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, "equips", '*upload');
                     buyUpgrade(upgrade, true, true);
@@ -778,7 +779,7 @@ function RautoLevelEquipment() {
     RpostBuy3();
 }
 
-function RareWeAttackLevelCapped(){var a=[];for(var b in RequipmentList){var c=RequipmentList[b],d=c.Equip?game.equipment[b]:game.buildings[b];if(!d.locked){var e=RevaluateEquipmentEfficiency(b);"attack"==e.Stat&&a.push(e)}}return a.every(f=>0==f.Factor&&!0==f.Wall)}
+function RareWeAttackLevelCapped() { var a = []; for (var b in RequipmentList) { var c = RequipmentList[b], d = c.Equip ? game.equipment[b] : game.buildings[b]; if (!d.locked) { var e = RevaluateEquipmentEfficiency(b); "attack" == e.Stat && a.push(e) } } return a.every(f => 0 == f.Factor && !0 == f.Wall) }
 
 function Rgetequips(map, special) { //(level, p b or false)
     var specialCount = 0;
@@ -802,7 +803,7 @@ function Rgetequips(map, special) { //(level, p b or false)
     var prestigeItemsAvailable = [];
     for (var item in unlocksObj) {
         var special = unlocksObj[item];
-	if (!special.prestige) continue;
+        if (!special.prestige) continue;
         if (special.locked) continue;
         if (game.global.universe == 2 && special.blockU2) continue;
         if (game.global.universe == 1 && special.blockU1) continue;
@@ -862,18 +863,18 @@ function Rgetequips(map, special) { //(level, p b or false)
 }
 
 //barakatx2
-const prestigeZones = [["Supershield","Dagadder","Bootboost"], ["Megamace", "Hellishmet"], ["Polierarm", "Pantastic"], ["Axeidic", "Smoldershoulder"], ["Greatersword", "Harmbalest", "Bestplate", "GambesOP"]]
-    function attainablePrestiges(zone) {
-        const baseExpectedPrestigesAvailable = Math.floor(zone / 10) * 2 - 1
-        const prestigeZoneOffset = Math.floor(Math.min(zone % 10, 5))
-        var attainablePrestiges = 0
-        for (var i = 1; i <= prestigeZoneOffset; i++) {
-            prestigeZones[i-1].forEach(prestige => {
-                attainablePrestiges += baseExpectedPrestigesAvailable + 2 - game.upgrades[prestige].allowed
-            })
-        }
-        return attainablePrestiges / 2
+const prestigeZones = [["Supershield", "Dagadder", "Bootboost"], ["Megamace", "Hellishmet"], ["Polierarm", "Pantastic"], ["Axeidic", "Smoldershoulder"], ["Greatersword", "Harmbalest", "Bestplate", "GambesOP"]]
+function attainablePrestiges(zone) {
+    const baseExpectedPrestigesAvailable = Math.floor(zone / 10) * 2 - 1
+    const prestigeZoneOffset = Math.floor(Math.min(zone % 10, 5))
+    var attainablePrestiges = 0
+    for (var i = 1; i <= prestigeZoneOffset; i++) {
+        prestigeZones[i - 1].forEach(prestige => {
+            attainablePrestiges += baseExpectedPrestigesAvailable + 2 - game.upgrades[prestige].allowed
+        })
     }
+    return attainablePrestiges / 2
+}
 
 //Shol Territory
 
@@ -886,14 +887,14 @@ function mostEfficientEquipment(fakeLevels = {}) {
     }
 
     var mostEfficient = [
-    {
-        name: "",
-        statPerResource: -Infinity,
-    },
-    {
-        name: "",
-        statPerResource: -Infinity,
-    }
+        {
+            name: "",
+            statPerResource: -Infinity,
+        },
+        {
+            name: "",
+            statPerResource: -Infinity,
+        }
     ];
 
     var artBoost = Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.radLevel);
@@ -921,15 +922,15 @@ function Requipcalc(capattack, caphealth, level2, zonego, attack, health, name, 
 
     if (canAffordBuilding(name, null, null, true, false, amount) && smithylogic(name, resource, true) &&
         (
-	 (stat == 'a' && game.equipment[name].level < capattack) ||
-         (stat == 'h' && game.equipment[name].level < caphealth)
-	) &&
+            (stat == 'a' && game.equipment[name].level < capattack) ||
+            (stat == 'h' && game.equipment[name].level < caphealth)
+        ) &&
         (
-         (level2 && game.equipment[name].level == 1) ||
-         (zonego) ||
-         (Rgetequipcost(name, resource, amount) <= (percent * source)) ||
-         ((stat == 'a' && !attack) || (stat == 'h' && !health))
-	)
+            (level2 && game.equipment[name].level == 1) ||
+            (zonego) ||
+            (Rgetequipcost(name, resource, amount) <= (percent * source)) ||
+            ((stat == 'a' && !attack) || (stat == 'h' && !health))
+        )
     ) {
         RpreBuy3();
 
@@ -937,12 +938,12 @@ function Requipcalc(capattack, caphealth, level2, zonego, attack, health, name, 
             buyEquipment(name, null, true, 1);
         }
 
-	var mostEfficientStuff = mostEfficientEquipment();
+        var mostEfficientStuff = mostEfficientEquipment();
 
-	if (mostEfficientStuff != undefined) {
+        if (mostEfficientStuff != undefined) {
             buyEquipment(mostEfficientStuff[0], null, true, amount);
             buyEquipment(mostEfficientStuff[1], null, true, amount);
-	}
+        }
 
         RpostBuy3();
     }
@@ -981,20 +982,20 @@ function buyPrestigeMaybe(equipName) {
     if (game.upgrades[prestigeUpgradeName].cost.resources.science[0] *
         Math.pow(game.upgrades[prestigeUpgradeName].cost.resources.science[1], game.equipment[equipName].prestige - 1)
         > game.resources.science.owned) {
-            return false;
+        return false;
     }
 
     if (game.upgrades[prestigeUpgradeName].cost.resources.gems[0] *
         Math.pow(game.upgrades[prestigeUpgradeName].cost.resources.gems[1], game.equipment[equipName].prestige - 1)
         > game.resources.gems.owned) {
-            return false;
+        return false;
     }
 
     var levelOnePrestige = getNextPrestigeCost(prestigeUpgradeName) * artBoost;
 
     if (levelOnePrestige > game.resources[resource].owned) return false;
 
-    var newLevel = Math.floor(getMaxAffordable(levelOnePrestige * 1.2,game.resources[resource].owned,1.2,true)) + 1;
+    var newLevel = Math.floor(getMaxAffordable(levelOnePrestige * 1.2, game.resources[resource].owned, 1.2, true)) + 1;
 
     var newStatValue = (newLevel) * Math.round(equipment[equipStat] * Math.pow(1.19, ((equipment.prestige + 1) * game.global.prestige[equipStat]) + 1));
     var currentStatValue = equipment.level * equipment[equipStat + 'Calculated'];
@@ -1012,14 +1013,14 @@ function RautoEquip() {
         prestigeLeft = false;
         for (var equipName in game.equipment) {
             if (buyPrestigeMaybe(equipName)) {
-              if(!game.equipment[equipName].locked) {
-                buyUpgrade(RequipmentList[equipName].Upgrade, true, true);
-                prestigeLeft = true;
-              }
+                if (!game.equipment[equipName].locked) {
+                    buyUpgrade(RequipmentList[equipName].Upgrade, true, true);
+                    prestigeLeft = true;
+                }
             }
         }
     } while (prestigeLeft)
-    
+
     // Gather settings
     var alwaysLvl2 = getPageSetting('Requip2');
     var attackEquipCap = ((getPageSetting('Requipcapattack') <= 0) ? Infinity : getPageSetting('Requipcapattack'));
@@ -1048,9 +1049,9 @@ function RautoEquip() {
         var equipCap = attackEquipCap;
         var underStats = RcalcHDratio() >= getPageSetting('Rdmgcuntoff');
 
-        for (var i = 0; i < 2; i++){
+        for (var i = 0; i < 2; i++) {
             if (canAffordBuilding(equipName, null, null, true, false, 1)) {
-                if (smithylogic(equipName,resourceUsed,true)) {
+                if (smithylogic(equipName, resourceUsed, true)) {
                     if (game.equipment[equipName].level < equipCap) {
                         // Check any of the overrides
                         if (
@@ -1072,7 +1073,7 @@ function RautoEquip() {
             resourceUsed = (equipName == 'Shield') ? 'wood' : 'metal';
             equipCap = healthEquipCap;
             underStats = RcalcOurHealth(true) < getPageSetting('Rhitssurvived') * RcalcBadGuyDmg(null, RgetEnemyMaxAttack(game.global.world, 50, 'Snimp', 1.0));
-            
+
         }
 
     } while (keepBuying)
@@ -1097,8 +1098,8 @@ function equipfarmdynamicHD() {
         equipfarmzone = getPageSetting('Requipfarmzone');
         equipfarmHD = getPageSetting('RequipfarmHD');
         equipfarmmult = getPageSetting('Requipfarmmult');
-	equipfarmHDzone = (game.global.world - equipfarmzone);
-	equipfarmHDmult = (equipfarmHDzone == 0) ? equipfarmHD : Math.pow(equipfarmmult, equipfarmHDzone) * equipfarmHD;
+        equipfarmHDzone = (game.global.world - equipfarmzone);
+        equipfarmHDmult = (equipfarmHDzone == 0) ? equipfarmHD : Math.pow(equipfarmmult, equipfarmHDzone) * equipfarmHD;
     }
     return equipfarmHDmult;
 }
@@ -1125,9 +1126,9 @@ function estimateEquipsForZone() {
     var tempEqualityUse = 0;
     while (
         (healthNeededMulti > 1 || attackNeededMulti > 1)  // If it's below 1 we don't actually need more
-            &&
+        &&
         (healthNeededMulti * game.portal.Equality.modifier > attackNeededMulti / game.portal.Equality.modifier) // Need more health proportionally
-            &&
+        &&
         tempEqualityUse < game.portal.Equality.radLevel
     ) {
         tempEqualityUse++;
@@ -1135,14 +1136,14 @@ function estimateEquipsForZone() {
         attackNeededMulti /= game.portal.Equality.modifier;
     }
 
-    if (healthNeededMulti < 1 && attackNeededMulti < 1) {return [0, {}]};
+    if (healthNeededMulti < 1 && attackNeededMulti < 1) { return [0, {}] };
 
     var ourAttack = 6;
-    for(var i in RequipmentList){
-        if(game.equipment[i].locked !== 0) continue;
+    for (var i in RequipmentList) {
+        if (game.equipment[i].locked !== 0) continue;
         var attackBonus = game.equipment[i].attackCalculated;
-        var level       = game.equipment[i].level;
-        ourAttack += (attackBonus !== undefined ? attackBonus : 0)*level;
+        var level = game.equipment[i].level;
+        ourAttack += (attackBonus !== undefined ? attackBonus : 0) * level;
     }
 
     // Amount of stats needed directly from equipment
@@ -1150,7 +1151,7 @@ function estimateEquipsForZone() {
     var healthNeeded = ourHealth * healthNeededMulti / (getTotalHealthMod() * game.resources.trimps.maxSoldiers);
 
     var bonusLevels = {}; // How many levels you'll be getting in each shield-gambeson armor slots
-    
+
     while (healthNeeded > 0) {
         var bestArmor = mostEfficientEquipment(bonusLevels)[1];
         healthNeeded -= game.equipment[bestArmor][RequipmentList[bestArmor].Stat + "Calculated"];
@@ -1175,9 +1176,9 @@ function estimateEquipsForZone() {
     var totalCost = 0;
     for (var equip in bonusLevels) {
         var equipCost = game.equipment[equip].cost[RequipmentList[equip].Resource];
-        totalCost += getTotalMultiCost(equipCost[0],bonusLevels[equip],equipCost[1],true) * artBoost;
+        totalCost += getTotalMultiCost(equipCost[0], bonusLevels[equip], equipCost[1], true) * artBoost;
     }
 
     return [totalCost, bonusLevels, tempEqualityUse];
-    
+
 }
