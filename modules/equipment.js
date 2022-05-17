@@ -118,25 +118,33 @@ function autoEquipCap(hdStats, vmStatus) {
 
     var currentZone = game.global.world;
     var maxZone = game.global.highestLevelCleared;
-    if (maxZone < 20) {
+    if (maxZone < 30) {
         return 9;
     }
 
-    if (currentZone > 1 && !game.global.preMapsActive && game.global.world >= 70 && survive("D", 2)) {
-        return 1;
+    if (game.portal.Overkill.level == 0) {
+        if (currentZone > 1 && !game.global.preMapsActive && game.global.world >= 70 && survive("D", 2)) {
+            return 1;
+        }
+
+        var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
+        var enoughDamageE = enoughDamage && oneShotZone(game.global.world, hdStats.targetZoneType, formation) >= 1;
+        if (enoughDamageE) {
+            return 1;
+        }
     }
 
-    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
-    var enoughDamageE = enoughDamage && oneShotZone(game.global.world, hdStats.targetZoneType, formation) >= 1;
-    if (enoughDamageE) {
-        return 1;
-    }
+    //Maybe calculating based on current production time?
+    //var upgradeCost = Math.ceil(getNextPrestigeCost("Dagadder") * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level));
+    //var production = getPsString("metal", true);
+    //var secondsNeeded = upgradeCost / production;
 
     //When we current are at the max zone, we don't plan to prestige further
     //It's better to max out levels then(?)
-
     //Probably need different calculations at zones higher than I am at now.
-    var calculated = Math.floor(Math.pow(maxZone / 2, ((maxZone - currentZone) / 100)));
+    var powDiv = (currentZone >= 60) ? 4 : 2;
+    var pow = (maxZone - currentZone) / maxZone;
+    var calculated = Math.floor(Math.pow(maxZone / powDiv, pow));
     return Math.max(1, calculated);
 }
 
@@ -147,19 +155,20 @@ function autoArmCap(hdStats, vmStatus) {
 
     var currentZone = game.global.world;
     var maxZone = game.global.highestLevelCleared;
-    if (maxZone < 20) {
+    if (maxZone < 30) {
         return 10;
     }
 
-
-    var enoughHealthE = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
+    var enoughHealthE = (hdStats.hitsSurvived / 2) > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
     if (enoughHealthE) {
         return 1;
     }
 
-
     //Probably need different calculations at zones higher than I am at now.
-    var calculated = Math.floor(Math.pow(maxZone - 5, ((maxZone - currentZone) / 100)));
+    var powDiv = (game.global.world < 60) ? 50 : 100;
+    var pow = (maxZone - currentZone) / powDiv;
+    var calculated = Math.floor(Math.pow(maxZone / 4, pow));
+    //Min 1, Max 300
     return Math.max(1, calculated);
 }
 
