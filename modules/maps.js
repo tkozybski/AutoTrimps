@@ -103,12 +103,12 @@ const profiles = Object.freeze({
             priorities.cache
         ],
         optional: [
-            priorities.biome,
+            priorities.diff,
             priorities.size,
-            priorities.baseLevel,
+            priorities.biome,
             priorities.loot,
-            priorities.optimalLevel,
-            priorities.diff
+            priorities.baseLevel,
+            priorities.optimalLevel
         ],
         mods: ['cache', 'fa']
     },
@@ -117,12 +117,12 @@ const profiles = Object.freeze({
             priorities.minLevel
         ],
         optional: [
-            priorities.fa,
-            priorities.size,
-            priorities.prestige,
             priorities.diff,
+            priorities.size,
             priorities.biome,
-            priorities.loot
+            priorities.loot,
+            priorities.prestige,
+            priorities.fa
         ],
         mods: ['p', 'fa']
     },
@@ -131,14 +131,14 @@ const profiles = Object.freeze({
             priorities.minLevel
         ],
         optional: [
-            priorities.fa,
-            priorities.biome,
+            priorities.diff,
             priorities.size,
-            priorities.cache,
-            priorities.baseLevel,
+            priorities.biome,
             priorities.loot,
+            priorities.baseLevel,
             priorities.optimalLevel,
-            priorities.diff
+            priorities.fa,
+            priorities.cache
         ],
         mods: ['cache', 'fa']
     },
@@ -147,11 +147,11 @@ const profiles = Object.freeze({
             priorities.minLevel
         ],
         optional: [
-            priorities.fa,
+            priorities.diff,
             priorities.size,
             priorities.biome,
             priorities.loot,
-            priorities.diff
+            priorities.fa
         ],
         mods: ['fa']
     },
@@ -160,13 +160,13 @@ const profiles = Object.freeze({
             priorities.minLevel
         ],
         optional: [
-            priorities.cache,
-            priorities.biome,
+            priorities.diff,
             priorities.size,
-            priorities.baseLevel,
+            priorities.biome,
             priorities.loot,
+            priorities.baseLevel,
             priorities.optimalLevel,
-            priorities.diff
+            priorities.cache
         ],
         mods: ['cache', 'fa']
     },
