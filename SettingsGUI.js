@@ -1623,11 +1623,13 @@ function updateCustomButtons() {
 
 
     //Gear
+    var autoGearLimit = getPageSetting('autoGearLimit');
+
     !radonon ? turnOn("BuyArmorNew") : turnOff("BuyArmorNew");
     !radonon ? turnOn("BuyWeaponsNew") : turnOff("BuyWeaponsNew");
-    !radonon ? turnOn("CapEquip2") : turnOff("CapEquip2");
-    !radonon ? turnOn("CapEquiparm") : turnOff("CapEquiparm");
-    !radonon ? turnOn("dmgcuntoff") : turnOff("dmgcuntoff");
+    (!radonon && autoGearLimit) ? turnOn("CapEquip2") : turnOff("CapEquip2");
+    (!radonon && autoGearLimit) ? turnOn("CapEquiparm") : turnOff("CapEquiparm");
+    (!radonon && autoGearLimit) ? turnOn("dmgcuntoff") : turnOff("dmgcuntoff");
     !radonon ? turnOn("DynamicPrestige2") : turnOff("DynamicPrestige2");
     !radonon ? turnOn("Prestige") : turnOff("Prestige");
     !radonon ? turnOn("ForcePresZ") : turnOff("ForcePresZ");
