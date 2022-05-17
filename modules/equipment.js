@@ -1,6 +1,7 @@
 MODULES["equipment"] = {};
 MODULES["equipment"].capDivisor = 10;
 MODULES["equipment"].alwaysLvl2 = getPageSetting('always2');
+MODULES["equipment"].autoGearLimit = getPageSetting('autoGearLimit');
 MODULES["equipment"].waitTill60 = true;
 MODULES["equipment"].equipHealthDebugMessage = false;
 
@@ -111,6 +112,10 @@ function equipCost(a, b, levelsToBuy = 1) {
 }
 
 function autoEquipCap(hdStats, vmStatus) {
+    if (!getPageSetting('autoGearLimit')) {
+        return getPageSetting('CapEquip2');
+    }
+
     var currentZone = game.global.world;
     var maxZone = game.global.highestLevelCleared;
     if (maxZone < 20) {
@@ -132,11 +137,14 @@ function autoEquipCap(hdStats, vmStatus) {
 
     //Probably need different calculations at zones higher than I am at now.
     var calculated = Math.floor(Math.pow(maxZone / 2, ((maxZone - currentZone) / 100)));
-    return Math.max(getPageSetting('CapEquip2'), calculated);
-    //return getPageSetting('CapEquip2');
+    return Math.max(1, calculated);
 }
 
 function autoArmCap(hdStats, vmStatus) {
+    if (!getPageSetting('autoGearLimit')) {
+        return getPageSetting('CapEquiparm');
+    }
+
     var currentZone = game.global.world;
     var maxZone = game.global.highestLevelCleared;
     if (maxZone < 20) {
@@ -152,8 +160,7 @@ function autoArmCap(hdStats, vmStatus) {
 
     //Probably need different calculations at zones higher than I am at now.
     var calculated = Math.floor(Math.pow(maxZone - 5, ((maxZone - currentZone) / 100)));
-    return Math.max(getPageSetting('CapEquiparm'), calculated);
-    //return getPageSetting('CapEquiparm');
+    return Math.max(1, calculated);
 }
 
 function evaluateEquipmentEfficiency(equipName, hdStats, vmStatus) {
