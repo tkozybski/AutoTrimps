@@ -142,9 +142,11 @@ function autoEquipCap(hdStats, vmStatus) {
     //When we current are at the max zone, we don't plan to prestige further
     //It's better to max out levels then(?)
     //Probably need different calculations at zones higher than I am at now.
-    var powDiv = (currentZone >= 60) ? 4 : 2;
-    var pow = (maxZone - currentZone) / maxZone;
-    var calculated = Math.floor(Math.pow(maxZone / powDiv, pow));
+    //var powDiv = (currentZone >= 60) ? 4 : 2;
+    var calc = Math.sqrt(maxZone);//maxZone / powDiv
+    var pow = (maxZone - (currentZone * 1.2)) / maxZone;
+    var calculated = Math.floor(Math.pow(calc, pow));
+
     return Math.max(1, calculated);
 }
 
@@ -165,10 +167,10 @@ function autoArmCap(hdStats, vmStatus) {
     }
 
     //Probably need different calculations at zones higher than I am at now.
-    var powDiv = (game.global.world < 60) ? 50 : 100;
-    var pow = (maxZone - currentZone) / powDiv;
-    var calculated = Math.floor(Math.pow(maxZone / 4, pow));
-    //Min 1, Max 300
+    var calc = Math.sqrt(maxZone);//maxZone / powDiv
+    var pow = (maxZone - (currentZone * 1.2)) / maxZone;
+    var calculated = Math.floor(Math.pow(calc, pow));
+
     return Math.max(1, calculated);
 }
 
