@@ -100,11 +100,12 @@ const priorities = Object.freeze({
 const profiles = Object.freeze({
     farming: {
         required: [
-            priorities.cache
+            priorities.minLevel
         ],
         optional: [
             priorities.diff,
             priorities.size,
+            priorities.cache,
             priorities.biome,
             priorities.loot,
             priorities.baseLevel,
@@ -119,10 +120,10 @@ const profiles = Object.freeze({
         optional: [
             priorities.diff,
             priorities.size,
+            priorities.fa,
             priorities.biome,
             priorities.loot,
-            priorities.prestige,
-            priorities.fa
+            priorities.prestige
         ],
         mods: ['p', 'fa']
     },
@@ -133,12 +134,12 @@ const profiles = Object.freeze({
         optional: [
             priorities.diff,
             priorities.size,
+            priorities.fa,
+            priorities.cache,
             priorities.biome,
             priorities.loot,
             priorities.baseLevel,
-            priorities.optimalLevel,
-            priorities.fa,
-            priorities.cache
+            priorities.optimalLevel
         ],
         mods: ['cache', 'fa']
     },
@@ -149,9 +150,9 @@ const profiles = Object.freeze({
         optional: [
             priorities.diff,
             priorities.size,
+            priorities.fa,
             priorities.biome,
             priorities.loot,
-            priorities.fa
         ],
         mods: ['fa']
     },
@@ -162,11 +163,11 @@ const profiles = Object.freeze({
         optional: [
             priorities.diff,
             priorities.size,
+            priorities.cache,
             priorities.biome,
             priorities.loot,
             priorities.baseLevel,
-            priorities.optimalLevel,
-            priorities.cache
+            priorities.optimalLevel
         ],
         mods: ['cache', 'fa']
     },
