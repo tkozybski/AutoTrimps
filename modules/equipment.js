@@ -136,7 +136,7 @@ function autoEquipCap(hdStats, vmStatus) {
 
     var numUnbought = 0;
     for (const p of weaponPrestigeList) {
-        if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+        if (game.upgrades[p].done > 0 && (game.upgrades[p].allowed - game.upgrades[p].done > 0))
             numUnbought++;
     }
 
@@ -179,7 +179,7 @@ function autoArmCap(hdStats, vmStatus) {
 
     var numUnbought = 0;
     for (const p of armorPrestigeList) {
-        if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+        if (game.upgrades[p].done > 0 && (game.upgrades[p].allowed - game.upgrades[p].done > 0))
             numUnbought++;
     }
 
