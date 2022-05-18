@@ -134,6 +134,16 @@ function autoEquipCap(hdStats, vmStatus) {
         }
     }
 
+    var numUnbought = 0;
+    for (const p of metalPrestigeList) {
+        if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+            numUnbought++;
+    }
+
+    if (numUnbought >= 3) {
+        return 1;
+    }
+
     //Maybe calculating based on current production time?
     //var upgradeCost = Math.ceil(getNextPrestigeCost("Dagadder") * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level));
     //var production = getPsString("metal", true);
@@ -164,6 +174,16 @@ function autoArmCap(hdStats, vmStatus) {
 
     var enoughHealthE = (hdStats.hitsSurvived / 2) > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
     if (enoughHealthE) {
+        return 1;
+    }
+
+    var numUnbought = 0;
+    for (const p of metalPrestigeList) {
+        if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+            numUnbought++;
+    }
+
+    if (numUnbought >= 3) {
         return 1;
     }
 
