@@ -516,7 +516,7 @@ function initializeAllSettings() {
 
     //Line 3
     createSetting('autoGearLimit', 'Auto Level Cap', 'Try to find optimal gear level cap', 'boolean', true, null, "Gear");
-    createSetting('autoGearLimitDelta', 'Gear Levels to Buy', 'Increasing this value will cause AT to prioritize switching to prestige only sooner.', 'value', 1.3, null, "Gear");
+    createSetting('autoGearLimitDelta', 'Auto Cap Delta', 'Increasing this value will cause AT to prioritize switching to prestige only sooner.', 'value', 1.3, null, "Gear");
 
     //RGear
 
@@ -552,7 +552,7 @@ function initializeAllSettings() {
     createSetting('MaxMapBonuslimit', 'Max MapBonus Limit', 'Limit the amount of Map Bonuses you get. Default is 10. ', 'value', '10', null, 'Maps');
     createSetting('MaxMapBonushealth', 'Max MapBonus Health', 'Limit the amount of map bonuses you get when AutoMaps requires more health. <br><br>This is a very important setting to be used with Advanced Nurseries after Magma. Basically, if you are running out of nurseries too soon, increase this value, otherwise lower it. <br><br>Default is 10.', 'value', '10', null, 'Maps');
     createSetting('mapcuntoff', 'Map Cut Off', 'Decides when to get max map bonus. 4 is default. This means it will take 1 hit to kill an enemy if in D stance. AT will divide this amount by four before zone 70.', 'value', '4', null, 'Maps');
-    createSetting('DisableFarm', 'Farming H:D', 'If H:D goes above this value, it will farm for Damage & Health. The lower this setting, the more it will want to farm. Default is <b>16<b/>. <b>-1 to disable farming!</b>', 'value', 16, null, 'Maps');
+    createSetting('DisableFarm', 'Farming H:D', 'If H:D goes above this value, it will farm for Damage & Health. The lower this setting, the more it will want to farm. Default is <b>16<b/>. <b>-1 to disable farming!</b>. AT will divide this amount by four before zone 70.', 'value', 16, null, 'Maps');
     createSetting('NumHitsSurvived', 'Num Hits Survived', 'One of the most important settings in this version of AT. It roughly translates to how many your trimps can take from a C99 Snimp, on average. Keep in mind that this number is further multiplied by other variables according to the situation, like VoidHitMult when preparing to go to a Void Map. The recommended values are 1.5~~3.0 for very early game, 5 with geneticists and 7.5 with 45 stacks, but the actual recommendation is to use a number that would give your trimps a good survivability without farming too much for it. Values close too close to 1 or below it are usually not recommended, since they will get you stuck.', 'value', '5', null, 'Maps');
     createSetting('VoidMaps', 'Void Maps', '<b>0 to disable</b> The zone at which you want all your void maps to be cleared inclusive of the zone you type. Runs them at Cell 90 by default, and starts farming 1 row below that. Use odd zones on Lead.<br>', 'value', '0', null, "Maps");
     createSetting('RunNewVoidsUntilNew', 'New Voids Mod', '<b>0 to disable. Positive numbers are added to your Void Map zone. -1 for no cap.</b> This allows you to run new Void Maps obtained after your Void Map zone by adding this number to your Void Map zone. <br> <b>Example</b> Void map zone=187 and This setting=10. New Voids run until 197).<br>This means that any new void maps gained until Z197. CAUTION: May severely slow you down by trying to do too-high level void maps. Default 0 (OFF).', 'value', '0', null, 'Maps');
