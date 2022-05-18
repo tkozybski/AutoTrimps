@@ -701,10 +701,14 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
     }
     let status = 'Advancing';
     const hitsSurvived = hdStats.hitsSurvived;
-    const mapsCutoff = getMapCutOff(vmStatus);
-    const farmingCutoff = getFarmCutOff(vmStatus);
     const healthCutoff = getMapHealthCutOff(vmStatus);
     const automapsDisabled = getPageSetting("AutoMaps") === 0;
+    var farmingCutoff = getFarmCutOff(vmStatus);
+    var mapsCutoff = getMapCutOff(vmStatus);
+    if (game.global.world < 65) {
+        mapCutOff /= 4.0;
+        farmingCutoff /= 4.0;
+    }
 
     if (vanillaMAZ) {
         status = "Running Vanilla MAZ";
@@ -1122,8 +1126,10 @@ function autoMap(hdStats, vmStatus) {
 
     //Check for Health & Damage
     var mapCutOff = getMapCutOff(vmStatus);
+    var farmCutOff = getFarmCutOff(vmStatus);
     if (game.global.world < 65) {
         mapCutOff /= 4.0;
+        farmCutOff /= 4.0;
     }
 
     enoughHealth = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus);
@@ -1132,7 +1138,7 @@ function autoMap(hdStats, vmStatus) {
     //Farming
     let shouldFarmLowerZone = false;
     shouldFarm = false;
-    shouldFarmDamage = hdStats.hdRatio >= getFarmCutOff(vmStatus) && !weaponCapped(hdStats, vmStatus);
+    shouldFarmDamage = hdStats.hdRatio >= farmCutOff && !weaponCapped(hdStats, vmStatus);
 
     //Only actually trigger farming after doing map bonuses
     const maxHealthMaps = game.global.challengeActive === "Daily" ? getPageSetting('dMaxMapBonushealth') : getPageSetting('MaxMapBonushealth');
