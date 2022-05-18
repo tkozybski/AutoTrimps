@@ -898,7 +898,7 @@ function getMapCutOff(vmStatus, pure) {
     }
 
     let mapCutoff = getPageSetting("mapcuntoff");
-    if (game.global.world < 65) {
+    if (game.global.world < 70) {
         mapCutoff /= 4.0;
     }
 
@@ -955,7 +955,7 @@ function getMapCutOff(vmStatus, pure) {
 function getFarmCutOff(vmStatus) {
     //Int
     var cut = getPageSetting("DisableFarm");
-    if (game.global.world < 65) {
+    if (game.global.world < 70) {
         cut /= 4.0;
     }
 
