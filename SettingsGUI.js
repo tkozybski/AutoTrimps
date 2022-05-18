@@ -516,6 +516,7 @@ function initializeAllSettings() {
 
     //Line 3
     createSetting('autoGearLimit', 'Auto Level Cap', 'Try to find optimal gear level cap', 'boolean', true, null, "Gear");
+    createSetting('autoGearLimitDelta', 'Gear Levels to Buy', 'Increasing this value will cause AT to prioritize switching to prestige only sooner.', 'value', 1.3, null, "Gear");
 
     //RGear
 
@@ -1640,6 +1641,7 @@ function updateCustomButtons() {
     !radonon ? turnOn("gearamounttobuy") : turnOff("gearamounttobuy");
     !radonon ? turnOn("always2") : turnOff("always2");
     !radonon ? turnOn("autoGearLimit") : turnOff("autoGearLimit");
+    !radonon ? turnOn("autoGearLimitDelta") : turnOff("autoGearLimitDelta");
 
 
     //RGear
