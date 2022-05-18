@@ -247,6 +247,20 @@ function countPrestigesInMap() {
     return (map ? addSpecials(true, true, map) : 0);
 }
 
+function mapLevelHasPrestiges(level) {
+    for (const eq of Object.values(equipmentList)) {
+        if (!eq.Equip) {
+            continue;
+        }
+        const prestigeUnlock = game.mapUnlocks[eq.Upgrade];
+        const pMapLevel = prestigeUnlock.last + 5;
+        if (game.upgrades[eq.Upgrade].allowed && prestigeUnlock && pMapLevel <= level) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function armorCapped() {
     var capped = areWeHealthLevelCapped();
 
