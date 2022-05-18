@@ -778,6 +778,13 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
         var cutoff = getMapCutOff(vmStatus, true);
         var hdMult = cutoff / mapsCutoff;
 
+        var equipCap = -1;
+        var armCap = -1;
+        if (getPageSetting("autoGearLimit")) {
+            equipCap = autoEquipCap(hdStats, vmStatus);
+            armCap = autoArmCap(hdStats, vmStatus);
+        }
+
         const healthDiv = healthCutoff / getPageSetting("NumHitsSurvived");
         document.getElementById("autoMapStatusTooltip").setAttribute("onmouseover",
             makeAutomapStatusTooltip(
@@ -790,12 +797,14 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
                 hdStats.hdRatio * hdMult,
                 hitsSurvived / healthDiv,
                 vmStatus,
-                mappingProfile)
+                mappingProfile,
+                equipCap,
+                armCap)
         );
     }
 }
 
-function makeAutomapStatusTooltip(mapsCutoff, farmingCutoff, maxMapStacks, hitsSurvivedCutoff, maxHealthStacks, healthFarmingCutoff, hdRatio, hitsSurvived, vmStatus, mappingProfile) {
+function makeAutomapStatusTooltip(mapsCutoff, farmingCutoff, maxMapStacks, hitsSurvivedCutoff, maxHealthStacks, healthFarmingCutoff, hdRatio, hitsSurvived, vmStatus, mappingProfile, equipCap, armCap) {
     hdRatio = hdRatio.toFixed(2);
     hitsSurvived = hitsSurvived.toFixed(2);
     const mapStacksText = (mapsCutoff && maxMapStacks ? `Will run maps to get up to <i>${maxMapStacks}</i> stacks when it's greater than <i>${mapsCutoff}</i>.` : 'Getting map stacks for damage is disabled.');
@@ -818,6 +827,7 @@ function makeAutomapStatusTooltip(mapsCutoff, farmingCutoff, maxMapStacks, hitsS
         `<b>Hits survived: ${hitsSurvived}</b><br>` +
         `${healthMapStacksText}<br>` +
         `${healthFarmingText}<br>`;
+
     if (mappingProfile) {
         tooltip += `<br>` +
             `Map crafting info:<br>` +
@@ -836,6 +846,13 @@ function makeAutomapStatusTooltip(mapsCutoff, farmingCutoff, maxMapStacks, hitsS
                 `Running the optimal map considering our current combat stats.`;
         }
     }
+
+    if (equipCap > 0 && armCap > 0) {
+        tooltip += `<br><br>` +
+            `Weapon level cap: <b>${equipCap}</b><br>` +
+            `Armor level cap: <b>${armCap}</b><br>`;
+    }
+
     return `${tooltip}\")`;
 }
 
