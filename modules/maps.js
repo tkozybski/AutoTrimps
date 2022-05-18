@@ -705,10 +705,6 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
     const automapsDisabled = getPageSetting("AutoMaps") === 0;
     var farmingCutoff = getFarmCutOff(vmStatus);
     var mapsCutoff = getMapCutOff(vmStatus);
-    if (game.global.world < 65) {
-        mapCutOff /= 4.0;
-        farmingCutoff /= 4.0;
-    }
 
     if (vanillaMAZ) {
         status = "Running Vanilla MAZ";
@@ -778,15 +774,8 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
         document.getElementById('autoMapStatus').innerHTML = status;
         document.getElementById('hiderStatus').innerHTML = hiderStatus;
 
-        var cutoff = getPageSetting("mapcuntoff");
-        if (game.global.challengeActive == "Decay" && game.global.world < 56) {
-            cutoff = 0.25;
-        }
-
+        var cutoff = getMapCutOff(vmStatus, true);
         var hdMult = cutoff / mapsCutoff;
-        if (game.global.world < 65) {
-            hdMult /= 4.0;
-        }
 
         const healthDiv = healthCutoff / getPageSetting("NumHitsSurvived");
         document.getElementById("autoMapStatusTooltip").setAttribute("onmouseover",
@@ -909,7 +898,9 @@ function getMapCutOff(vmStatus, pure) {
     }
 
     let mapCutoff = getPageSetting("mapcuntoff");
-
+    if (game.global.world < 65) {
+        mapCutoff /= 4.0;
+    }
 
     if (pure) {
         // Unaltered mapCutOff
@@ -964,6 +955,9 @@ function getMapCutOff(vmStatus, pure) {
 function getFarmCutOff(vmStatus) {
     //Int
     var cut = getPageSetting("DisableFarm");
+    if (game.global.world < 65) {
+        cut /= 4.0;
+    }
 
     //Spire
     if (game.global.spireActive) return getPageSetting('SpireHD');
@@ -1131,10 +1125,6 @@ function autoMap(hdStats, vmStatus) {
     //Check for Health & Damage
     var mapCutOff = getMapCutOff(vmStatus);
     var farmCutOff = getFarmCutOff(vmStatus);
-    if (game.global.world < 65) {
-        mapCutOff /= 4.0;
-        farmCutOff /= 4.0;
-    }
 
     enoughHealth = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus);
     enoughDamage = hdStats.hdRatio < mapCutOff;
