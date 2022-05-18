@@ -285,9 +285,13 @@ function buyStorage() {
         var owned = game.resources[Bs[B]].owned;
         var max = game.resources[Bs[B]].max * packMod;
         max = calcHeirloomBonus("Shield", "storageSize", max);
-        if (game.global.mapsActive && game.unlocks.imps.Jestimp) {
-            jest = simpleSeconds(Bs[B], 45);
-            jest = scaleToCurrentMap(jest);
+        if (game.global.mapsActive) {
+            if (game.unlocks.imps.Jestimp) {
+                jest = simpleSeconds(Bs[B], 45);
+            } else if (game.unlocks.imps.Chronoimp) {
+                jest = simpleSeconds(Bs[B], 5);
+	    }
+	    jest = scaleToCurrentMap(jest);
         }
         if ((game.global.world == 1 && owned > max * customVars.storageLowlvlCutoff1) ||
             (game.global.world >= 2 && game.global.world < 10 && owned > max * customVars.storageLowlvlCutoff2) ||
