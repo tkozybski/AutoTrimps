@@ -1123,7 +1123,7 @@ function autoMap(hdStats, vmStatus) {
     //Check for Health & Damage
     var mapCutOff = getMapCutOff(vmStatus);
     if (game.global.world < 65) {
-        mapCutoff /= 4.0;
+        mapCutOff /= 4.0;
     }
 
     enoughHealth = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus);
