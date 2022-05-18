@@ -901,6 +901,8 @@ function getMapCutOff(vmStatus, pure) {
     }
 
     let mapCutoff = getPageSetting("mapcuntoff");
+
+
     if (pure) {
         // Unaltered mapCutOff
         return mapCutoff;
@@ -971,7 +973,8 @@ function getMapRatio(vmStatus, map, customLevel, customDiff) {
     var diff = customDiff ? customDiff : map.difficulty;
 
     //Calc
-    var mapDmg = (calcHDRatio(level, "map") / diff) / getMapCutOff(vmStatus, true);
+    var mapCutoff = getMapCutOff(vmStatus, true);
+    var mapDmg = (calcHDRatio(level, "map") / diff) / mapCutoff;
     var mapHp = getMapHealthCutOff(vmStatus, true) / (calcHitsSurvived(level, 'map') / diff);
     return Math.max(mapDmg, mapHp);
 }
@@ -1118,8 +1121,13 @@ function autoMap(hdStats, vmStatus) {
     }
 
     //Check for Health & Damage
+    var mapCutOff = getMapCutOff(vmStatus);
+    if (game.global.world < 65) {
+        mapCutoff /= 4.0;
+    }
+
     enoughHealth = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus);
-    enoughDamage = hdStats.hdRatio < getMapCutOff(vmStatus);
+    enoughDamage = hdStats.hdRatio < mapCutOff;
 
     //Farming
     let shouldFarmLowerZone = false;
