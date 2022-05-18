@@ -783,7 +783,11 @@ function updateAutoMapsStatus(get, hdStats, vmStatus, mappingProfile) {
             cutoff = 0.25;
         }
 
-        const hdMult = cutoff / mapsCutoff;
+        var hdMult = cutoff / mapsCutoff;
+        if (game.global.world < 65) {
+            hdMult /= 4.0;
+        }
+
         const healthDiv = healthCutoff / getPageSetting("NumHitsSurvived");
         document.getElementById("autoMapStatusTooltip").setAttribute("onmouseover",
             makeAutomapStatusTooltip(
