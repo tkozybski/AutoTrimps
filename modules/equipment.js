@@ -197,7 +197,7 @@ function autoArmCap(hdStats, vmStatus) {
     const dailyExplosive = game.global.challengeActive === "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
     const crushed = game.global.challengeActive === "Crushed";
     if (dailyExplosive | crushed) {
-        ret = Mat.min(10, ret * 1.3);
+        ret = Math.min(10, ret * 1.3);
     }
 
     //If we are at max and it's still not enough, then add more to max
