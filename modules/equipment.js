@@ -122,18 +122,6 @@ function autoEquipCap(hdStats, vmStatus) {
         return 9;
     }
 
-    if (game.portal.Overkill.level == 0) {
-        if (currentZone > 1 && !game.global.preMapsActive && game.global.world >= 70 && survive("D", 2)) {
-            return 1;
-        }
-
-        var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
-        var enoughDamageE = enoughDamage && oneShotZone(game.global.world, hdStats.targetZoneType, formation) >= 1;
-        if (enoughDamageE) {
-            return 1;
-        }
-    }
-
     var numUnbought = 0;
     for (const p of weaponPrestigeList) {
         if (game.upgrades[p].done > 0 && (game.upgrades[p].allowed - game.upgrades[p].done > 0))
@@ -142,6 +130,14 @@ function autoEquipCap(hdStats, vmStatus) {
 
     if (numUnbought >= 2) {
         return 1;
+    }
+
+    if (game.portal.Overkill.level == 0) {
+        var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
+        var enoughDamageE = enoughDamage && oneShotZone(game.global.world, hdStats.targetZoneType, formation) >= 1;
+        if (enoughDamageE) {
+            return 1;
+        }
     }
 
     //Maybe calculating based on current production time?
@@ -173,6 +169,7 @@ function autoArmCap(hdStats, vmStatus) {
         return 10;
     }
 
+    //Can survive two times more than cutoff
     var enoughHealthE = (hdStats.hitsSurvived / 2) > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
     if (enoughHealthE) {
         return 1;
@@ -195,7 +192,21 @@ function autoArmCap(hdStats, vmStatus) {
     var calculated = Math.floor(Math.pow(calc, pow));
 
     //Min 1, max 150
-    return Math.min(150, Math.max(1, calculated));
+    var ret = Math.min(150, Math.max(1, calculated));
+
+    const dailyExplosive = game.global.challengeActive === "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
+    const crushed = game.global.challengeActive === "Crushed";
+    if (dailyExplosive | crushed) {
+        ret = Mat.min(10, ret * 1.3);
+    }
+
+    //If we are at max and it's still not enough, then add more to max
+    // enoughHealthE = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult; 
+    // if (numUnbought == 0 && !enoughHealthE && ) {
+
+    // }
+
+    return ret;
 }
 
 function evaluateEquipmentEfficiency(equipName, hdStats, vmStatus) {
