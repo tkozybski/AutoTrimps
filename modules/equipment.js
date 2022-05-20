@@ -158,7 +158,8 @@ function autoEquipCap(hdStats, vmStatus) {
     var pow = (maxZone - (currentZone * delta)) / maxZone;
     var calculated = Math.floor(Math.pow(calc, pow));
 
-    return Math.max(1, calculated);
+    //Min 1, max 150
+    return Math.min(150, Math.max(1, calculated));
 }
 
 function autoArmCap(hdStats, vmStatus) {
@@ -193,7 +194,8 @@ function autoArmCap(hdStats, vmStatus) {
     var pow = (maxZone - (currentZone * delta)) / maxZone;
     var calculated = Math.floor(Math.pow(calc, pow));
 
-    return Math.max(1, calculated);
+    //Min 1, max 150
+    return Math.min(150, Math.max(1, calculated));
 }
 
 function evaluateEquipmentEfficiency(equipName, hdStats, vmStatus) {
@@ -445,7 +447,7 @@ function autoLevelEquipment(hdStats, vmStatus) {
                 BuyWeaponUpgrades &= mirroredDailyOk;
 
                 //Delays Armor Prestiges if lacking damage to advance, but not health. Never delays shield prestiges tho.
-                BuyArmorUpgrades &= DelayArmorWhenNeeded || !enoughHealth || enoughDamage || equipmentList[equipName].Resource == "wood";
+                BuyArmorUpgrades &= !DelayArmorWhenNeeded || !enoughHealth || enoughDamage || equipmentList[equipName].Resource == "wood";
 
                 //Buy Prestiges
                 if (BuyWeaponUpgrades && equipStat == "attack" || BuyArmorUpgrades && (equipStat == "health" || equipStat == "block")) {
