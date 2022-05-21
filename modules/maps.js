@@ -529,7 +529,6 @@ class MapCrafter {
             recycleBelow(true);
             result = buyMap();
             if (result === -2) {
-                
                 if (mapToRecycle) {
                     debug("Still too many maps, recycling map of the lowest level");
                     var mapIdx = game.global.mapsOwnedArray.indexOf(mapToRecycle);
