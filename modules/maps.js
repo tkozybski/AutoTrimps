@@ -529,9 +529,11 @@ class MapCrafter {
             recycleBelow(true);
             result = buyMap();
             if (result === -2) {
+                
                 if (mapToRecycle) {
                     debug("Still too many maps, recycling map of the lowest level");
-                    recycleMap(mapToRecycle.id);
+                    var mapIdx = game.global.mapsOwnedArray.indexOf(mapToRecycle);
+                    recycleMap(mapIdx);
                     result = buyMap();
                     if (result !== -2) {
                         return;
@@ -1413,8 +1415,8 @@ function autoMap(hdStats, vmStatus) {
         }
 
         if (shouldBuyMap) {
-            const mapToRecycleIfBuyingFails = lowestMap;
-            mapCrafter.purchase(mapToRecycleIfBuyingFails);
+            // const mapToRecycleIfBuyingFails = lowestMap;
+            mapCrafter.purchase(lowestMap);
         } else if (currentMap) {
             runSelectedMap(currentMap.id, getMapAdjective(currentMap.id, optimalMap, alternativeMap));
         } else {
