@@ -1415,8 +1415,8 @@ function autoMap(hdStats, vmStatus) {
         }
 
         if (shouldBuyMap) {
-            // const mapToRecycleIfBuyingFails = lowestMap;
-            mapCrafter.purchase(lowestMap);
+            const mapToRecycleIfBuyingFails = lowestMap;
+            mapCrafter.purchase(mapToRecycleIfBuyingFails);
         } else if (currentMap) {
             runSelectedMap(currentMap.id, getMapAdjective(currentMap.id, optimalMap, alternativeMap));
         } else {
