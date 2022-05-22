@@ -120,10 +120,10 @@ const profiles = Object.freeze({
         optional: [
             priorities.diff,
             priorities.size,
+            priorities.prestige,
             priorities.fa,
             priorities.biome,
-            priorities.loot,
-            priorities.prestige
+            priorities.loot
         ],
         mods: ['p', 'fa']
     },
