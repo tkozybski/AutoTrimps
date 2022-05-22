@@ -118,9 +118,8 @@ function autoEquipCap(hdStats, vmStatus) {
 
     var currentZone = game.global.world;
     var maxZone = game.global.highestLevelCleared;
-    if (maxZone < 30) {
-        return 9;
-    }
+    if (maxZone < 30) return 9;
+
 
     var numUnbought = 0;
     for (const p of weaponPrestigeList) {
@@ -128,9 +127,7 @@ function autoEquipCap(hdStats, vmStatus) {
             numUnbought++;
     }
 
-    if (numUnbought >= 2) {
-        return 1;
-    }
+    if (numUnbought >= 2) return 1;
 
     if (game.portal.Overkill.level == 0) {
         var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
@@ -138,6 +135,8 @@ function autoEquipCap(hdStats, vmStatus) {
         if (enoughDamageE) {
             return 1;
         }
+    } else {
+        if (currentZone < 50) return 150;
     }
 
     //Maybe calculating based on current production time?
@@ -152,10 +151,10 @@ function autoEquipCap(hdStats, vmStatus) {
     var delta = getPageSetting('autoGearLimitDelta');
     var calc = Math.sqrt(maxZone);//maxZone / powDiv
     var pow = (maxZone - (currentZone * delta)) / maxZone;
-    var calculated = Math.floor(Math.pow(calc, pow));
+    var calculated = Math.pow(calc, pow);
 
     //Min 1, max 150
-    return Math.min(150, Math.max(1, calculated));
+    return Math.floor(Math.min(150, Math.max(1, calculated)));
 }
 
 function autoArmCap(hdStats, vmStatus) {
@@ -189,24 +188,22 @@ function autoArmCap(hdStats, vmStatus) {
     var delta = getPageSetting('autoGearLimitDelta');
     var calc = Math.sqrt(maxZone);//maxZone / powDiv
     var pow = (maxZone - (currentZone * delta)) / maxZone;
-    var calculated = Math.floor(Math.pow(calc, pow));
+    var calculated = Math.pow(calc, pow);
 
-    //Min 1, max 150
-    var ret = Math.min(150, Math.max(1, calculated));
 
     const dailyExplosive = game.global.challengeActive === "Daily" && typeof game.global.dailyChallenge.explosive !== "undefined";
     const crushed = game.global.challengeActive === "Crushed";
     if (dailyExplosive | crushed) {
-        ret = Math.min(10, ret * 1.3);
+        calculated = Math.min(10, calculated * 1.3);
     }
 
     //If we are at max and it's still not enough, then add more to max
-    // enoughHealthE = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult; 
+    // enoughHealthE = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
     // if (numUnbought == 0 && !enoughHealthE && ) {
 
     // }
-
-    return ret;
+    //Min 1, max 150
+    return Math.floor(Math.min(150, Math.max(1, calculated)));
 }
 
 function evaluateEquipmentEfficiency(equipName, hdStats, vmStatus) {
