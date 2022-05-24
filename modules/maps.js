@@ -589,6 +589,9 @@ class MapCrafter {
 }
 
 function capitalize(s) {
+    if (!s) {
+        return s;
+    }
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
@@ -831,7 +834,7 @@ function makeAutomapStatusTooltip(mapsCutoff, farmingCutoff, maxMapStacks, hitsS
             `Minimum level: <b>${mappingProfile.minLevel}</b><br>` +
             `Optimal level: <b>${mappingProfile.optimalLevel}</b><br>` +
             `Mapping profile: ${mappingProfile.alias}<br>` +
-            `Preferred mods: ${mappingProfile.mods.map(x => x.toUpperCase()).join(', ')}<br>` +
+            `Preferred mods: ${mappingProfile.mods.map(x => (x ? x.toUpperCase() : x)).join(', ')}<br>` +
             `Preferred biome: ${mappingProfile.preferredBiome.replace('Plentiful', 'Gardens (plentiful)')}<br>` +
             `Required map stats: ${mappingProfile.required.join(', ')}<br>` +
             `Map stats priority: ${mappingProfile.optional.join(', ')}<br>`;
