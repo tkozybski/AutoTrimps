@@ -247,10 +247,24 @@ function countPrestigesInMap() {
     return (map ? addSpecials(true, true, map) : 0);
 }
 
+function mapLevelHasPrestiges(level) {
+    for (const eq of Object.values(equipmentList)) {
+        if (!eq.Equip) {
+            continue;
+        }
+        const prestigeUnlock = game.mapUnlocks[eq.Upgrade];
+        const pMapLevel = prestigeUnlock.last + 5;
+        if (game.upgrades[eq.Upgrade].allowed && prestigeUnlock && pMapLevel <= level) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function armorCapped() {
     var capped = areWeHealthLevelCapped();
 
-    const prestigeList = ['Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Greatersword', 'GamesOP'];
+    const prestigeList = ['Bootboost', 'Hellishmet', 'Pantastic', 'Smoldershoulder', 'Greatersword', 'GambesOP'];
     var numUnbought = 0;
     for (var i = 0, len = prestigeList.length; i < len; i++) {
         var p = prestigeList[i];
