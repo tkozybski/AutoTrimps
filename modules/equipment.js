@@ -129,14 +129,24 @@ function autoEquipCap(hdStats, vmStatus) {
 
     if (numUnbought >= 2) return 1;
 
+    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
+    var oneShot = oneShotZone(game.global.world, hdStats.targetZoneType, formation);
+
     if (game.portal.Overkill.level == 0) {
-        var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
-        var enoughDamageE = enoughDamage && oneShotZone(game.global.world, hdStats.targetZoneType, formation) >= 1;
-        if (enoughDamageE) {
+        if (enoughDamage && oneShot >= 1) {
             return 1;
         }
     } else {
-        if (currentZone < 50) return 150;
+        //TODO how to do proper level calculations
+        //Based on production?
+        if (numUnbought == 0) {
+            const oneShotPower = maxOneShotPower();
+            if (oneShot >= oneShotPower) {
+                return 1;
+            }
+
+            return 150;
+        }
     }
 
     //Maybe calculating based on current production time?
