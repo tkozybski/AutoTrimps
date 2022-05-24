@@ -306,7 +306,7 @@ class MappingProfile {
             baseLevel: this.baseLevel,
             optimalLevel: this.optimalLevel,
             biome: this.preferredBiome,
-            mods: `[${this.mods.map(x => x.toUpperCase())}]`,
+            mods: `[${this.mods.map(x => (x ? x.toUpperCase() : x))}]`,
             required: `[${this.required}]`,
             optional: `[${this.optional}]`,
         }
