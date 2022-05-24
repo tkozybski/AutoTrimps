@@ -223,6 +223,9 @@ function debugPrettifyMap(map) {
     if (!map) {
         return 'none'
     }
+    if (['world', 'create'].includes(map)) {
+        return map;
+    }
     let descriptor;
     if (!map.noRecycle) {
         // a crafted map

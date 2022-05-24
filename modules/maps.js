@@ -282,7 +282,7 @@ class MappingProfile {
         return (this.mods.includes(mod) ? mod : '0');
     }
 
-    selectBetterCraftedMap(map1, map2, prioritizeMods) {
+    selectBetterCraftedMap(map1, map2) {
         // disqualify some maps right away
         const maps = [map1, map2].filter(m => (m && m.level >= this.minLevel && m.level <= this.optimalLevel));
         if (!maps.length) {
@@ -291,7 +291,7 @@ class MappingProfile {
             return maps[0];
         }
         // select a new map if it's strictly better
-        if (getMapScore(map2, this.mods, prioritizeMods) > getMapScore(map1, this.mods, prioritizeMods)) {
+        if (getMapScore(map2, this.mods) > getMapScore(map1, this.mods)) {
             return map2;
         } else {
             return map1;
@@ -404,7 +404,7 @@ class MapCrafter {
         this.setLevel(this.profile.minLevel);
         fragmentsNeeded = 0;
 
-        // first set all required properties of the map
+        // first, set all required properties of the map
         for (const req of this.profile.required) {
             if (sliderOptions.includes(req)) {
                 this.setSlider(req, 9);
@@ -975,18 +975,14 @@ function getMapRatio(vmStatus, map, customLevel, customDiff) {
     return Math.max(mapDmg, mapHp);
 }
 
-function getMapScore(map, modPool, prioritizeMods) {
+function getMapScore(map, modPool) {
     // this function is used when comparing crafted maps - the greater result means a better map
     if (!map) {
         return [-1, -1];
     }
     // mod pools are ordered from best to worst, so we invert the index to get the score
     const modScore = (modPool.length - (modPool.includes(map.bonus) ? modPool.indexOf(map.bonus) : 999));
-    if (prioritizeMods) {
-        return [modScore, map.level]
-    } else {
-        return [map.level, modScore];
-    }
+    return [modScore, map.level];
 }
 
 function getVoidMapDifficulty(map) {
@@ -1162,22 +1158,23 @@ function autoMap(hdStats, vmStatus) {
 
     let restartVoidMap = false;
     if (game.global.challengeActive === 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
-        if (game.global.gridArray[99].nomStacks > MODULES.maps.NomFarmStacksCutoff[0]) {
-            if (game.global.mapBonus < maxStacksForDmg)
-                shouldDoMaps = true;
+        if (game.global.gridArray[99].nomStacks > MODULES.maps.NomFarmStacksCutoff[0] && game.global.mapBonus < maxStacksForDmg) {
+            shouldDoMaps = true;
         }
         if (game.global.gridArray[99].nomStacks === MODULES.maps.NomFarmStacksCutoff[1]) {
             shouldFarm = (hdStats.hdRatio > MODULES.maps.NomfarmingCutoff);
-            shouldDoMaps = true;
+            shouldDoMaps = shouldFarm;
         }
         if (!game.global.mapsActive && game.global.gridArray[game.global.lastClearedCell + 1].nomStacks >= MODULES.maps.NomFarmStacksCutoff[2]) {
             shouldFarm = (hdStats.hdRatio > MODULES.maps.NomfarmingCutoff);
-            shouldDoMaps = true;
+            shouldDoMaps = shouldFarm;
         }
         if (game.global.mapsActive && game.global.mapGridArray[game.global.lastClearedMapCell + 1].nomStacks >= MODULES.maps.NomFarmStacksCutoff[2]) {
             shouldFarm = (hdStats.hdRatio > MODULES.maps.NomfarmingCutoff);
-            shouldDoMaps = true;
-            restartVoidMap = true;
+            if (shouldFarm) {
+                shouldDoMaps = true;
+                restartVoidMap = true;
+            }
         }
     }
 
@@ -1227,9 +1224,9 @@ function autoMap(hdStats, vmStatus) {
         if (!map.noRecycle) {
             if (map.level === mappingProfile.optimalLevel && (mappingProfile.mods.length === 0 || map.bonus === mappingProfile.mods[0])) {
                 // the best map we can possibly run, no need to craft anything else
-                optimalMap = mappingProfile.selectBetterCraftedMap(optimalMap, map, needMetal);
+                optimalMap = mappingProfile.selectBetterCraftedMap(optimalMap, map);
             } else {
-                alternativeMap = mappingProfile.selectBetterCraftedMap(alternativeMap, map, needMetal);
+                alternativeMap = mappingProfile.selectBetterCraftedMap(alternativeMap, map);
             }
             if (!highestMap || map.level > highestMap.level) {
                 highestMap = map;
@@ -1303,7 +1300,9 @@ function autoMap(hdStats, vmStatus) {
     }
 
     const tryCrafting = selectedMap === "create";
-    const advancing = selectedMap === "world";
+    if (selectedMap === "world") {
+        shouldDoMaps = false;
+    }
 
     if (!game.global.preMapsActive && game.global.mapsActive) {
         // we're inside the map, check if we need to change the "repeat" setting
@@ -1400,7 +1399,7 @@ function autoMap(hdStats, vmStatus) {
             fragmentsNeeded: prettify(fragmentsNeeded)
         });
 
-        if (advancing) {
+        if (!shouldDoMaps) {
             // exit to world
             mapsClicked();
             fragmentsNeeded = 0;
@@ -1451,7 +1450,7 @@ function autoMap(hdStats, vmStatus) {
     }
 
     const runningMap = getCurrentMapObject();
-    if (advancing || (runningMap && runningMap.noRecycle)) {
+    if (!shouldDoMaps || (runningMap && runningMap.noRecycle)) {
         mappingProfile = undefined;
     }
     return updateAutoMapsStatus(false, hdStats, vmStatus, mappingProfile);
