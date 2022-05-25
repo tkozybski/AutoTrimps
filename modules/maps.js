@@ -1147,7 +1147,7 @@ function autoMap(hdStats, vmStatus) {
         }
     }
 
-    let shouldDoMaps = (!enoughDamage || shouldFarm);
+    let shouldDoMaps = (!enoughDamage || shouldFarm || needPrestige);
     let shouldDoHealthMaps = false;
     let shouldFarmLowerZone = false;
     if (shouldDoMaps && game.global.mapBonus >= maxStacksForDmg && !shouldFarm) {
