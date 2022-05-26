@@ -129,30 +129,41 @@ function autoEquipCap(hdStats, vmStatus) {
 
     if (numUnbought >= 2) return 1;
 
-    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
-    var oneShot = oneShotZone(game.global.world, hdStats.targetZoneType, formation);
+    //We must level up, otherwise we'll get stuck farming
+    if (numUnbought === 0 && !enoughDamage || hdStats.hdRatio >= getFarmCutOff(vmStatus) && countPrestigesInMap() === 0) {
+        var equipmentList = ["Dagger", "Mace", "Polearm", "Battleaxe", "Greatsword", "Arbalest"];
 
-    if (game.portal.Overkill.level == 0) {
-        if (enoughDamage && oneShot >= 1) {
-            return 1;
-        }
-    } else {
-        //TODO how to do proper level calculations
-        //Based on production?
-        if (numUnbought == 0) {
-            const oneShotPower = maxOneShotPower();
-            if (oneShot >= oneShotPower) {
-                return 1;
-            }
+        //For each equipment
+        var maxLevel = 0;
+        for (var i = 0; i < equipmentList.length; i++) {
+            //Check if it's unlocked
+            var equip = game.equipment[equipmentList[i]];
+            if (equip.locked !== 0) continue;
 
-            return 150;
+            //Get the bonus
+            if (equip.level > maxLevel)
+                maxLevel = equip.level;
         }
+
+        return maxLevel + 1;
+
     }
 
-    //Maybe calculating based on current production time?
-    //var upgradeCost = Math.ceil(getNextPrestigeCost("Dagadder") * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level));
-    //var production = getPsString("metal", true);
-    //var secondsNeeded = upgradeCost / production;
+    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 181) ? "X" : "S";
+    var oneShot = oneShotZone(game.global.world, hdStats.targetZoneType, formation);
+
+    if (game.portal.Overkill.level > 0 && numUnbought == 0) {
+        const oneShotPower = maxOneShotPower();
+        if (oneShot >= oneShotPower) {
+            return 1;
+        }
+
+        return 150;
+    }
+
+    if (enoughDamage && oneShot >= 1) {
+        return 1;
+    }
 
     //When we current are at the max zone, we don't plan to prestige further
     //It's better to max out levels then(?)
@@ -190,8 +201,25 @@ function autoArmCap(hdStats, vmStatus) {
             numUnbought++;
     }
 
-    if (numUnbought >= 2) {
-        return 1;
+    if (numUnbought >= 2) return 1;
+
+    //We must level up, otherwise we'll get stuck farming
+    if (!enoughHealth && getPageSetting('FarmOnLowHealth') && numUnbought === 0 && countPrestigesInMap() === 0) {
+        var equipmentList = ["Shield", "Boots", "Helmet", "Pants", "Shoulderguards", "Breastplate", "Gambeson"];
+        //For each equipment
+        var maxLevel = 0;
+        for (var i = 0; i < equipmentList.length; i++) {
+            //Check if it's unlocked
+            var equip = game.equipment[equipmentList[i]];
+            if (equip.locked !== 0) continue;
+
+            //Get the bonus
+            if (equip.level > maxLevel)
+                maxLevel = equip.level;
+        }
+
+        return maxLevel + 1;
+
     }
 
     //Probably need different calculations at zones higher than I am at now.
@@ -207,11 +235,6 @@ function autoArmCap(hdStats, vmStatus) {
         calculated = Math.min(10, calculated * 1.3);
     }
 
-    //If we are at max and it's still not enough, then add more to max
-    // enoughHealthE = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
-    // if (numUnbought == 0 && !enoughHealthE && ) {
-
-    // }
     //Min 1, max 150
     return Math.floor(Math.min(150, Math.max(1, calculated)));
 }
@@ -410,7 +433,7 @@ function autoLevelEquipment(hdStats, vmStatus) {
     }
 
     //Check for H & D
-    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 180) ? "X" : "S";
+    var formation = (game.global.world < 60 || game.global.highestLevelCleared < 181) ? "X" : "S";
     var enoughDamageE = enoughDamage && oneShotZone(game.global.world, hdStats.targetZoneType, formation) >= 1;
     var enoughHealthE = hdStats.hitsSurvived > getMapHealthCutOff(vmStatus) * MODULES.equipment.numHitsMult;
 
