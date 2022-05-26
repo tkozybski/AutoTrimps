@@ -708,6 +708,8 @@ function initializeAllSettings() {
     //Challenges
     createSetting('DecayStacksToPush', 'Decay: Stacks to Push', 'During Decay, AT will ignore maps and push to end the zone if we go above this amount of stacks.<br><br>Use -1 or 0 to disable.<br>Defaults to 300.', 'value', '300', null, 'Challenges');
     createSetting('DecayStacksToAbandon', 'Decay: Stacks to Abandon', 'During Decay, AT will abandon the challenge if we go above this amount of stacks.<br><br>Use -1 or 0 to disable.<br>Defaults to 300.', 'value', '600', null, 'Challenges');
+    createSetting('ToxicityStacksZone', 'Toxicity: Zone for Stacks', 'During Toxicity, AT will farm maps from this zone (inclusive) until it hits the specified stacks amount. <br><br>Use -1 or 0 to disable.<br>Defaults to -1.', 'value', '-1', null, 'Challenges');
+    createSetting('ToxicityStacksAmount', 'Decay: Stacks Amount', 'During Toxicity, AT will farm maps before Void Maps, until it hits 1500 stacks of Toxicity. You should set your VM zone to 165 for maximum gains..<br>Defaults to 1500.', 'value', '1500', null, 'Challenges');
 
     //RChallenges
     //Quagmire - Black Bogs
@@ -1816,6 +1818,9 @@ function updateCustomButtons() {
     //Decay
     !radonon && game.global.challengeActive == "Decay" ? turnOn("DecayStacksToPush") : turnOff("DecayStacksToPush");
     !radonon && game.global.challengeActive == "Decay" ? turnOn("DecayStacksToAbandon") : turnOff("DecayStacksToAbandon");
+    !radonon && game.global.challengeActive == "Toxicity" ? turnOn("ToxicityStacksZone") : turnOff("ToxicityStacksZone");
+    !radonon && game.global.challengeActive == "Toxicity" ? turnOn("ToxicityStacksAmount") : turnOff("ToxicityStacksAmount");
+
 
     //RChallenges
     //Quagmire - Black Bogs
