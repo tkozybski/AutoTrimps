@@ -1208,9 +1208,8 @@ function autoMap(hdStats, vmStatus) {
         var stacksZone = getPageSetting('ToxicityStacksZone');
         var stacksAmount = getPageSetting('ToxicityStacksAmount');
 
-
         if (stacksZone > 0 && stacksAmount > 0) {
-            if (stacksZone >= z && game.challenges.Toxicity.stacks < stacksAmount) {
+            if (z >= stacksZone && game.challenges.Toxicity.stacks < stacksAmount) {
                 shouldDoMaps = true;
             }
         }
