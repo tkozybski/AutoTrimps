@@ -1162,7 +1162,7 @@ function autoMap(hdStats, vmStatus) {
         if (game.options.menu.repeatUntil.enabled == 1 && shouldFarm) toggleSetting('repeatUntil');
     }
 
-    shouldDoMaps = (!enoughDamage || shouldFarm);
+    shouldDoMaps = (!enoughDamage || shouldFarm || needPrestige);
     let shouldDoHealthMaps = false;
     if (game.global.mapBonus >= getPageSetting('MaxMapBonuslimit') && !shouldFarm)
         shouldDoMaps = false;
@@ -1211,6 +1211,7 @@ function autoMap(hdStats, vmStatus) {
         if (stacksZone > 0 && stacksAmount > 0) {
             if (z >= stacksZone && game.challenges.Toxicity.stacks < stacksAmount) {
                 shouldDoMaps = true;
+                shouldFarm = true;
             }
         }
     }
