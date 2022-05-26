@@ -273,6 +273,15 @@ function buyBuildings(hdStats, vmStatus) {
 }
 
 function buyStorage() {
+    //No need to buy it manually anymore
+    //Enable if needed
+    if (game.global.improvedAutoStorage) {
+        if (!game.global.autoStorage)
+            toggleAutoStorage(false);
+
+        return;
+    }
+	
     var customVars = MODULES["buildings"];
     var packMod = 1 + game.portal.Packrat.level * game.portal.Packrat.modifier;
     var Bs = {
