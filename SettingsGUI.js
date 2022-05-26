@@ -471,6 +471,9 @@ function initializeAllSettings() {
 
     //Line 2
     createSetting('MaxTrainers', 'Max Trainers', 'Advanced. Cap your trainers (This is an absolute number not a ratio). recommend: -1', 'value', '-1', null, "Jobs");
+    createSetting('TrainerWall', 'Trainer Wall', 'Same as Gym Wall and Nursery Wall, but for Trainers.', 'value', -1, null, 'Jobs');
+    createSetting('ExplorerWall', 'Explorer Wall', "Same as Gym Wall and Nursery Wall, but for Explorers.", 'value', '-1', null, 'Jobs');
+
 
     
     //RJobs
