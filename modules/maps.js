@@ -229,7 +229,7 @@ class MappingProfile {
                 ratio /= 2;
             }
             // Stance priority: Scryer > Dominance > X
-            if (this.z >= 60 && this.hze >= 180) {
+            if (this.z >= 60 && this.hze >= 181) {
                 ratio *= 2;
             } else if (game.upgrades.Dominance.done) {
                 ratio /= 4;
@@ -1203,6 +1203,19 @@ function autoMap(hdStats, vmStatus) {
     //Decay challenge
     if (decaySkipMaps()) shouldDoMaps = false;
 
+    //Toxicity farming stacks
+    if (game.global.challengeActive == 'Toxicity') {
+        var stacksZone = getPageSetting('ToxicityStacksZone');
+        var stacksAmount = getPageSetting('ToxicityStacksAmount');
+
+
+        if (stacksZone > 0 && stacksAmount > 0) {
+            if (stacksZone >= z && game.challenges.Toxicity.stacks < stacksAmount) {
+                shouldDoMaps = true;
+            }
+        }
+    }
+
     //Spire
     let shouldDoSpireMaps = false;
     preSpireFarming = (isActiveSpireAT() || disActiveSpireAT()) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
@@ -1215,19 +1228,9 @@ function autoMap(hdStats, vmStatus) {
     // Map Bonus
     var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
     var maxMapBonusLimit = getPageSetting("MaxMapBonuslimit");
-    //My hardcoded settings 
-    if (game.global.challengeActive == "Decay" && z >= 50 && z <= 53) {
-        maxMapBonusLimit = Math.max(3, maxMapBonusLimit);
-        maxMapBonusZ = z;
-    }
 
     doMaxMapBonus = (maxMapBonusZ >= 0 && game.global.mapBonus < maxMapBonusLimit && z >= maxMapBonusZ);
     if (doMaxMapBonus) shouldDoMaps = true;
-
-    //Hardcode decay farming
-    if (game.global.challengeActive == "Decay" && z >= 53 && z <= 55 && !decaySkipMaps()) {
-        shouldDoMaps = true;
-    }
 
     const farming = (shouldFarm || shouldFarmDamage || !enoughHealth || preSpireFarming || (vmStatus.prepareForVoids && !enoughDamage));
     const needMetal = (!enoughHealth || !enoughDamage);
