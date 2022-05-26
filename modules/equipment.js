@@ -130,7 +130,7 @@ function autoEquipCap(hdStats, vmStatus) {
     if (numUnbought >= 2) return 1;
 
     //We must level up, otherwise we'll get stuck farming
-    if (numUnbought === 0 && !enoughDamage || hdStats.hdRatio >= getFarmCutOff(vmStatus) && countPrestigesInMap() === 0) {
+    if (numUnbought === 0 && countPrestigesInMap() === 0 && (!enoughDamage || hdStats.hdRatio >= getFarmCutOff(vmStatus))) {
         var equipmentList = ["Dagger", "Mace", "Polearm", "Battleaxe", "Greatsword", "Arbalest"];
 
         //For each equipment
